@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIA - Personal AI Agent Assistant</title>
+
+    <!-- Cybercore CSS -->
+    <link href="css/cybercore.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+
+<body class="cyber-theme">
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar cyber-bg-primary">
+            <div class="logo-panel">
+                <div class="logo cyber-glitch" data-text="PAIAgent">
+                    PAI Agent
+                </div>
+                <div class="cyber-status">
+                    <div class="cyber-status__dot"></div>
+                </div>
+            </div>
+
+            <div class="sessions-panel">
+                <div class="sessions-title cyber-text-glow">SESSIONS</div>
+                <div class="sessions-list" id="sessionsList">
+                    <!-- Сессии будут загружаться сюда -->
+                </div>
+            </div>
+
+            <div class="agent-selector-panel">
+                <div class="sessions-title cyber-text-glow">AGENTS</div>
+                <select id="agentSelector" class="cyber-select">
+                    <!-- Агенты будут загружаться сюда -->
+                </select>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="btnNewChat" class="cyber-btn --cyan --sm w-100">
+                    NEW CHAT
+                </button>
+
+                <button id="btnClearChat" class="cyber-btn --magenta --sm w-100">
+                    CLEAR CHAT
+                </button>
+
+                <button id="btnClearMemory" class="cyber-btn --red --sm w-100">
+                    PURGE MEMORY
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header cyber-tile--bottom">
+                <div class="system-status" id="system-status">SYSTEM INITIALIZING...</div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will load here -->
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <span class="typing-text">AI IS THINKING...</span>
+            </div>
+
+            <div class="input-area cyber-tile--top">
+                <div class="input-container">
+                    <textarea id="messageInput" class="cyber-textarea" placeholder="TRANSMIT MESSAGE..."></textarea>
+                </div>
+                <div class="send-button-container">
+
+                    <label for="chat-image-input" class="icon-card__icon cyber-icon cyber-icon--cyan"
+                        style="width: 30px; height: 30px; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32"
+                            height="32">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="#000" />
+                            <path fill="#000" d="M21 15l-5-5L5 21" />
+                        </svg>
+                        <!-- Or use the raw SVG files from node_modules/cybercore-css/src/icons/svg/ -->
+                    </label>
+                    <input type="file" id="chat-image-input" x-ref="imageInput" @change="handleImage" accept="image/*"
+                        style="display:none;">
+
+                    <button id="sendButton" class="cyber-btn" style="background-color: aqua;">
+                        <svg class="send-icon" viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+
+</html>
