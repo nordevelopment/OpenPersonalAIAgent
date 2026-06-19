@@ -129,6 +129,8 @@ You can change the agent's behavior, style, and tone in real-time by editing the
 
 <img width="1327" height="907" alt="Image" src="https://github.com/user-attachments/assets/f5c4e302-61fe-41bc-a6a3-d741492d9250" />
 
+<img width="1331" height="877" alt="Image" src="https://github.com/user-attachments/assets/f71a6b2f-0365-4f31-ba97-fa195f03e251" />
+
 ---
 
 ## 📄 License
