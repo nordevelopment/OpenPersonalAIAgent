@@ -6,7 +6,7 @@
 
 import type { ChatManager } from '../ai/ChatManager.js';
 import { config } from '../config.js';
-import { Telegraf, Context, Markup } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 
 export class TelegramBot {
   private bot: Telegraf | null = null;
@@ -82,7 +82,7 @@ export class TelegramBot {
       const sessionId = `telegram_${userId}`;
       const response = await this.chatManager.sendMessage(userMessage, sessionId);
 
-      await ctx.reply(response);
+      await ctx.reply(response.content);
     } catch (error) {
       console.error('[Telegram] Error handling message:', error);
       await ctx.reply('Error handling message');

@@ -105,6 +105,12 @@ export async function buildApp(): Promise<FastifyInstance> {
     });
 
     await app.register(staticPlugin, {
+      root: path.join(__dirname, '../../storage'),
+      prefix: '/storage/',
+      decorateReply: false,
+    });
+
+    await app.register(staticPlugin, {
       root: path.join(__dirname, '../../frontend'),
       prefix: '/',
     });

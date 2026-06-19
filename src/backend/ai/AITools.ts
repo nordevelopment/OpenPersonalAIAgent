@@ -6,6 +6,7 @@
 
 import { FileSystemManager } from "../services/FileSystemManager.js";
 import { WebPageContent } from "../services/WebPageContent.js";
+import { imageService } from "../services/imageService.js";
 
 export interface ToolCall {
   name: string;
@@ -59,6 +60,14 @@ export class AITools {
           result = await this.webPage.fetchPage({
             url: args.url as string
           });
+          break;
+        case 'generate_image':
+          result = await imageService.generateImage(
+            args.prompt as string,
+            args.aspectRatio as string | undefined,
+            args.steps as number | undefined,
+            args.provider as 'together' | 'xai' | 'together'
+          );
           break;
         default:
           throw new Error(`Tool ${name} is not implemented.`);
@@ -175,6 +184,39 @@ export class AITools {
               url: { type: 'string', description: 'URL of the page to retrieve' }
             },
             required: ['url']
+          }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'generate_image',
+          description: 'Generates an image from a text prompt using AI. Returns the relative path to the generated image.',
+          parameters: {
+            type: 'object',
+            properties: {
+              prompt: { type: 'string', description: 'The detailed description of the image to generate.' },
+              aspectRatio: {
+                type: 'string',
+                enum: ['1:1', '16:9', '9:16', '4:3', '3:4', '3:2', '2:3'],
+                default: '2:3',
+                description: 'The aspect ratio of the generated image.'
+              },
+              steps: {
+                type: 'integer',
+                minimum: 1,
+                maximum: 50,
+                default: 25,
+                description: 'The number of inference steps (quality/time trade-off).'
+              },
+              provider: {
+                type: 'string',
+                enum: ['together', 'xai'],
+                default: 'together',
+                description: 'The image generation provider.'
+              }
+            },
+            required: ['prompt']
           }
         }
       }

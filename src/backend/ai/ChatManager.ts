@@ -28,11 +28,25 @@ export class ChatManager {
    */
 
 
-  async sendMessage(userMessage: string, sessionId: string): Promise<{ content: string; reasoning?: string }> {
+  async sendMessage(userMessage: string, sessionId: string, imageBase64?: string): Promise<{ content: string; reasoning?: string }> {
+    let finalContent: any = userMessage;
+
+    if (imageBase64) {
+      try {
+        const processed = await this.aiClient.processImage({ base64: imageBase64, url: '' });
+        finalContent = [
+          { type: 'text', text: userMessage || 'Опиши это изображение' },
+          { type: 'image_url', image_url: { url: processed.filePath } }
+        ];
+      } catch (err) {
+        console.error('[ChatManager] Failed to process incoming image:', err);
+      }
+    }
+
     // 1. Сохраняем сообщение пользователя
     await this.historyManager.addMessage(sessionId, {
       role: 'user',
-      content: userMessage
+      content: finalContent
     });
 
     // Получаем текущие доступные инструменты

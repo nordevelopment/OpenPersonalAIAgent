@@ -75,11 +75,15 @@
 
             <div class="input-area cyber-tile--top">
                 <div class="input-container">
+                    <div id="imagePreviewContainer" class="image-preview-container">
+                        <img id="imagePreview" src="" alt="Selected Preview" />
+                        <button id="btnRemoveImage" class="btn-remove" type="button" title="REMOVE IMAGE">×</button>
+                    </div>
                     <textarea id="messageInput" class="cyber-textarea" placeholder="TRANSMIT MESSAGE..."></textarea>
                 </div>
                 <div class="send-button-container">
 
-                    <label for="chat-image-input" class="icon-card__icon cyber-icon cyber-icon--cyan"
+                    <label for="input-image-file" class="icon-card__icon cyber-icon cyber-icon--cyan"
                         style="width: 30px; height: 30px; cursor: pointer;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32"
                             height="32">
@@ -89,8 +93,7 @@
                         </svg>
                         <!-- Or use the raw SVG files from node_modules/cybercore-css/src/icons/svg/ -->
                     </label>
-                    <input type="file" id="chat-image-input" x-ref="imageInput" @change="handleImage" accept="image/*"
-                        style="display:none;">
+                    <input type="file" id="input-image-file" accept="image/*" style="display:none;">
 
                     <button id="sendButton" class="cyber-btn" style="background-color: aqua;">
                         <svg class="send-icon" viewBox="0 0 24 24" width="24" height="24">

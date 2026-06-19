@@ -110,11 +110,11 @@
 
         /* Custom Cyber Cards for Messages */
         .message-box {
-            padding: 20px 24px;
+            padding: 15px 20px;
             border-radius: 2px;
             position: relative;
             border: 1px solid var(--cyber-border);
-            clip-path: polygon(0 0, 95% 0, 100% 10%, 100% 100%, 5% 100%, 0 90%);
+            clip-path: polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%);
         }
 
         .message.agent .message-box {
@@ -134,6 +134,10 @@
             line-height: 1.8;
             font-size: 15px;
             letter-spacing: 0.5px;
+        }
+
+        .message-content img {
+            max-width: 200px;
         }
 
         .message-time {
@@ -403,4 +407,74 @@
                 opacity: 1;
                 box-shadow: 0 0 5px var(--cyber-primary);
             }
+        }
+
+        /* Image Preview in Input Area */
+        .image-preview-container {
+            display: none;
+            position: relative;
+            margin-bottom: 10px;
+            padding: 4px;
+            border: 1px dashed var(--cyber-border);
+            background: rgba(0, 0, 0, 0.4);
+            max-width: 120px;
+            border-radius: 2px;
+        }
+
+        .image-preview-container.active {
+            display: block;
+        }
+
+        .image-preview-container img {
+            max-width: 100%;
+            max-height: 100px;
+            display: block;
+            border: 1px solid var(--cyber-border);
+        }
+
+        .image-preview-container .btn-remove {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--cyber-secondary);
+            color: #fff;
+            border: 1px solid var(--cyber-border);
+            width: 20px;
+            height: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 0 5px var(--cyber-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .image-preview-container .btn-remove:hover {
+            background: #ff0055;
+            box-shadow: 0 0 10px #ff0055;
+        }
+
+        /* Chat Message Image */
+        .chat-message-image {
+            max-width: 300px;
+            max-height: 200px;
+            border: 1px solid var(--cyber-border);
+            border-radius: 2px;
+            margin-bottom: 10px;
+            display: block;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chat-message-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px var(--cyber-primary);
+        }
+
+        .message-image-container {
+            margin-top: 5px;
+            margin-bottom: 10px;
         }

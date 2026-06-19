@@ -25,9 +25,17 @@ export class ChatHistoryManager {
     // console.log('ChatHistoryManager: getHistory called', { sessionId });
     const messages = await this.messageModel.findBySessionId(sessionId);
     return messages.map(msg => {
+      let content: any = msg.content;
+      if (content && typeof content === 'string' && content.startsWith('[')) {
+        try {
+          content = JSON.parse(content);
+        } catch (e) {
+          // ignore
+        }
+      }
       const result: AIMessages = {
         role: msg.role,
-        content: msg.content,
+        content: content,
       };
       if (msg.tool_call_id) {
         result.tool_call_id = msg.tool_call_id;
@@ -58,7 +66,7 @@ export class ChatHistoryManager {
     const createDto: CreateMessage = {
       session_id: sessionId,
       role: message.role,
-      content: message.content,
+      content: typeof message.content === 'string' ? message.content : (message.content ? JSON.stringify(message.content) : ''),
     };
 
     if (message.tool_call_id !== undefined) {

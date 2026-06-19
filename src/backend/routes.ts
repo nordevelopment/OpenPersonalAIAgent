@@ -13,6 +13,7 @@ import { AgentService } from './ai/AgentService.js';
 interface ChatRequestBody {
   message: string;
   sessionId?: string;
+  image?: string;
 }
 
 interface ClearHistoryRequestBody {
@@ -39,10 +40,10 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
   // Маршрут для чата с агентом
   app.post('/api/chat', async (request: FastifyRequest<{ Body: ChatRequestBody }>, reply: FastifyReply) => {
-    const { message } = request.body;
+    const { message, image } = request.body;
     const sessionId = request.sessionId; // Магия!
-    console.log('Chat request:', { message, sessionId });
-    const response = await chatManager.sendMessage(message, sessionId);
+    console.log('Chat request:', { message, sessionId, hasImage: !!image });
+    const response = await chatManager.sendMessage(message, sessionId, image);
     return reply.send({ message: response.content, reasoning: response.reasoning });
   });
 

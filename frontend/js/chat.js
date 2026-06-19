@@ -13,10 +13,47 @@ class AIAgentChat {
         this.btnNewChat = document.getElementById('btnNewChat');
         this.sessionsList = document.getElementById('sessionsList');
         this.agentSelector = document.getElementById('agentSelector');
+
+        this.inputImageFile = document.getElementById('input-image-file');
+        this.imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        this.imagePreview = document.getElementById('imagePreview');
+        this.btnRemoveImage = document.getElementById('btnRemoveImage');
+        this.selectedImageBase64 = null;
+
         this.init();
     }
 
     async init() {
+        // Setup marked options and custom renderer first, before loading agents and history
+        const renderer = new marked.Renderer();
+        renderer.link = function (href, title, text) {
+            if (typeof href === 'object' && href !== null) {
+                const obj = href;
+                href = obj.href;
+                title = obj.title;
+                text = obj.text;
+            }
+            if (href && href.startsWith('/storage/')) {
+                return `<div class="message-image-container"><a href="${href}" target="_blank"><img src="${href}" class="chat-message-image" alt="${text || ''}" /></a></div>`;
+            }
+            return `<a href="${href || ''}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text || ''}</a>`;
+        };
+        renderer.image = function (href, title, text) {
+            if (typeof href === 'object' && href !== null) {
+                const obj = href;
+                href = obj.href;
+                title = obj.title;
+                text = obj.text;
+            }
+            return `<div class="message-image-container"><a href="${href || ''}" target="_blank"><img src="${href || ''}" class="chat-message-image" alt="${text || ''}" /></a></div>`;
+        };
+
+        marked.use({
+            breaks: true,
+            gfm: true,
+            renderer: renderer
+        });
+
         await this.getCurrentSession();
 
         this.sendButton.addEventListener('click', () => this.sendMessage());
@@ -26,6 +63,13 @@ class AIAgentChat {
                 this.sendMessage();
             }
         });
+
+        if (this.inputImageFile) {
+            this.inputImageFile.addEventListener('change', (e) => this.handleImageSelect(e));
+        }
+        if (this.btnRemoveImage) {
+            this.btnRemoveImage.addEventListener('click', () => this.removeSelectedImage());
+        }
 
         // Auto-resize textarea
         this.messageInput.addEventListener('input', () => {
@@ -41,19 +85,6 @@ class AIAgentChat {
         await this.loadAgents();
         await this.getHistory();
         await this.getSessions();
-
-        // Setup marked options
-        marked.use({
-            breaks: true,
-            gfm: true,
-        });
-
-        // Custom renderer for links to open in new tab
-        const renderer = new marked.Renderer();
-        renderer.link = function (href, title, text) {
-            return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-        };
-        marked.setOptions({ renderer });
     }
 
 
@@ -170,14 +201,47 @@ class AIAgentChat {
         }
     }
 
+    handleImageSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            this.selectedImageBase64 = event.target.result;
+            this.imagePreview.src = this.selectedImageBase64;
+            this.imagePreviewContainer.classList.add('active');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    removeSelectedImage() {
+        this.selectedImageBase64 = null;
+        this.imagePreview.src = '';
+        this.imagePreviewContainer.classList.remove('active');
+        if (this.inputImageFile) {
+            this.inputImageFile.value = '';
+        }
+    }
+
     async sendMessage() {
         const message = this.messageInput.value.trim();
-        if (!message) return;
+        const image = this.selectedImageBase64;
+        if (!message && !image) return;
 
-        console.log('Sending message:', { message, sessionId: this.sessionId });
-        this.addMessage(message, 'user');
+        console.log('Sending message:', { message, hasImage: !!image, sessionId: this.sessionId });
+        
+        if (image) {
+            this.addMessage([
+                { type: 'text', text: message },
+                { type: 'image_url', image_url: { url: image } }
+            ], 'user');
+        } else {
+            this.addMessage(message, 'user');
+        }
+
         this.messageInput.value = '';
         this.messageInput.style.height = 'auto';
+        this.removeSelectedImage();
         this.showTyping();
 
         try {
@@ -189,6 +253,7 @@ class AIAgentChat {
                 body: JSON.stringify({
                     message: message,
                     sessionId: this.sessionId,
+                    image: image
                 }),
             });
 
@@ -212,8 +277,58 @@ class AIAgentChat {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
 
-        // Parse markdown for agent messages
-        const parsedContent = type === 'agent' ? marked.parse(content) : content;
+        let displayContent = '';
+        const escapeHtml = (text) => {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
+        if (Array.isArray(content)) {
+            let text = '';
+            let imagesHtml = '';
+            content.forEach(item => {
+                if (item.type === 'text') {
+                    text += item.text;
+                } else if (item.type === 'image_url' && item.image_url) {
+                    imagesHtml += `<div class="message-image-container"><a href="${item.image_url.url}" target="_blank"><img src="${item.image_url.url}" class="chat-message-image" alt="Uploaded Image" /></a></div>`;
+                }
+            });
+            const parsedText = type === 'agent' ? marked.parse(text) : escapeHtml(text).replace(/\n/g, '<br>');
+            displayContent = `${imagesHtml}<div>${parsedText}</div>`;
+        } else if (typeof content === 'string') {
+            if (content.startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(content);
+                    this.addMessage(parsed, type, reasoning);
+                    return;
+                } catch (e) {
+                    // fallback
+                }
+            }
+            let processedContent = content;
+            if (type === 'agent') {
+                const storagePathRegex = /`?(\/?storage[/\\](?:generated|images)[/\\][a-zA-Z0-9._-]+\.(?:png|jpg|jpeg|webp))`?/gi;
+                processedContent = processedContent.replace(storagePathRegex, (match, pathGroup, offset) => {
+                    let cleanPath = pathGroup.replace(/\\/g, '/');
+                    if (!cleanPath.startsWith('/')) {
+                        cleanPath = '/' + cleanPath;
+                    }
+                    if (offset > 0) {
+                        const before = processedContent.substring(Math.max(0, offset - 3), offset);
+                        if (before.includes('](') || before.includes('![')) {
+                            return cleanPath;
+                        }
+                    }
+                    return `![Generated Image](${cleanPath})`;
+                });
+            }
+            displayContent = type === 'agent' ? marked.parse(processedContent) : escapeHtml(content).replace(/\n/g, '<br>');
+        }
 
         let reasoningHtml = '';
         if (reasoning && type === 'agent') {
@@ -228,7 +343,7 @@ class AIAgentChat {
         messageDiv.innerHTML = `
             <div class="message-box">
                 <div class="message-content">
-                    ${parsedContent}
+                    ${displayContent}
                     ${reasoningHtml}
                 </div>
             </div>

@@ -7,9 +7,13 @@ A lightweight, high-performance, and modular personal AI assistant workspace bui
 ## 🚀 Key Features
 
 *   **⚡ Lightweight & Fast**: Avoids heavy NPM packages. Built using pure TypeScript, Fastify, and direct API calls for optimal speed and memory footprint.
+*   **👁️ Multimodal AI Vision & Recognition**:
+    *   Directly attach images in the Web Workspace.
+    *   Automatic image preprocessing (resizing and JPEG conversion) to optimize payload size.
+    *   Local storage cache for uploaded images, translated back to base64 on-the-fly for AI completion requests.
 *   **🧩 Modular System Prompt Assembly**: Automatically compiles the agent's system prompt from multiple self-contained Markdown files (`Identity.md`, `User.md`, `Agent.md`, `Skills.md`, `Memory.md`).
 *   **💬 Dual User Interfaces**:
-    *   **Web Workspace**: A responsive, interactive chat UI running locally on your machine.
+    *   **Web Workspace**: A responsive, interactive chat UI with cyberpunk styling, image attachments, previews, and responsive layouts.
     *   **Telegram Bot**: Access and chat with your agent remotely on-the-go via a dedicated Telegram Bot.
 *   **💾 Local SQLite Database with Vector Support**:
     *   Saves chat sessions and history using `better-sqlite3`.
@@ -17,7 +21,7 @@ A lightweight, high-performance, and modular personal AI assistant workspace bui
 *   **🔧 Powerful Tool Execution (Function Calling)**:
     *   **File System Manager**: Confined read, write, update, and deletion of text files within a dedicated local `workspace/` folder.
     *   **Web Scraper**: Downloads and cleans web pages (stripping HTML, handling JSON) using Cheerio for real-time information retrieval.
-    *   **Image Generation**: Connects with Together AI or X.AI APIs to generate images using state-of-the-art models like FLUX or Grok Imagine.
+    *   **Image Generation (`generate_image`)**: AI can call Together AI or X.AI APIs to generate images on-demand. Generated images are rendered inline dynamically as clickable cards.
 
 ---
 
