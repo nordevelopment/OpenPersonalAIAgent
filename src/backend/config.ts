@@ -10,11 +10,11 @@ export const config = {
   AI_EMBEDDING_MODEL: process.env.AI_EMBEDDING_MODEL || 'Qwen/Qwen3-Embedding-8B',
   AI_API_KEY: process.env.AI_API_KEY || '',
   AI_API_URL: process.env.AI_API_URL || '',
-  AI_MAX_HISTORY_MESSAGES: 25,
-  AI_TEMPERATURE: 0.2,
-  AI_MAX_TOKENS: 8192,
-  AI_TOP_P: 0.9,
-  AI_TIMEOUT: 180000, // 3 minutes
+  AI_MAX_HISTORY_MESSAGES: process.env.AI_MAX_HISTORY_MESSAGES || 30,
+  AI_TEMPERATURE: process.env.AI_TEMPERATURE || 0.2,
+  AI_MAX_TOKENS: process.env.AI_MAX_TOKENS || 8192,
+  AI_TOP_P: process.env.AI_TOP_P || 0.9,
+  AI_TIMEOUT: 180000,
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
 
   images: {
