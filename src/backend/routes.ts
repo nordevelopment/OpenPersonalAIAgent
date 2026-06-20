@@ -27,6 +27,11 @@ interface ClearHistoryRequestBody {
  */
 export async function registerRoutes(app: FastifyInstance, chatManager: ChatManager, agentService: AgentService): Promise<void> {
 
+  // Main chat template route
+  app.get('/', async (_request, reply) => {
+    return reply.view('chat.ejs');
+  });
+
   // Health check
   app.get('/api/health', async (_request, _reply) => {
     return { status: 'ok', message: 'System initialized', timestamp: new Date().toISOString() };

@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 import staticPlugin from '@fastify/static';
 import cookiePlugin from '@fastify/cookie';
 import multipartPlugin from '@fastify/multipart';
+import pointOfView from '@fastify/view';
+import ejs from 'ejs';
 
 import { config } from './config.js';
 import { DatabaseClient } from './database/DatabaseClient.js';
@@ -115,15 +117,15 @@ export async function buildApp(): Promise<FastifyInstance> {
       prefix: '/',
     });
 
-    // Default route to chat.html
-    app.get('/', async (_request, reply) => {
-      return reply.sendFile('chat.html');
+    await app.register(pointOfView, {
+      engine: {
+        ejs: ejs,
+      },
+      root: path.join(process.cwd(), 'src/views'),
     });
 
     // Register routes
     await registerRoutes(app, chatManager, agentService);
-
-    console.log('Application initialized successfully with Auto-Sessions.');
 
     return app;
 

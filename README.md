@@ -48,18 +48,19 @@ The application is structured into a clean backend server serving a single-page 
 │   │   ├── Skills.md           # Description of available tools
 │   │   └── Memory.md           # Instructions on how memories are structured
 │   └── test_agent/             # Alternative agent profile
-├── frontend/                   # Web interface files (HTML, CSS, JS)
-│   ├── chat.html               # Main chat window
+├── frontend/                   # Web interface assets (CSS, JS)
 │   ├── css/                    # Custom styling (cybercore.css theme)
 │   └── js/                     # Frontend client logic
 ├── src/
-│   └── backend/                # Server source code (TypeScript)
-│       ├── ai/                 # Orchestrator, AI clients, tools, memory managers
-│       ├── database/           # SQLite connection, schema, database reset scripts
-│       ├── services/           # Filesystem, Image, Web fetching, and Telegram bot services
-│       ├── app.ts              # App configurations, hooks, session setup
-│       ├── config.ts           # System environment variables mapper
-│       └── server.ts           # Server entry point
+│   ├── backend/                # Server source code (TypeScript)
+│   │   ├── ai/                 # Orchestrator, AI clients, tools, memory managers
+│   │   ├── database/           # SQLite connection, schema, database reset scripts
+│   │   ├── services/           # Filesystem, Image, Web fetching, and Telegram bot services
+│   │   ├── app.ts              # App configurations, hooks, session setup
+│   │   ├── config.ts           # System environment variables mapper
+│   │   └── server.ts           # Server entry point
+│   └── views/                  # Frontend EJS views/templates
+│       └── chat.ejs            # Main chat template page
 ├── workspace/                  # Safe folder for agent file-system tool operations
 ├── package.json                # Project dependencies and script runner
 └── tsconfig.json               # TypeScript compiler config
