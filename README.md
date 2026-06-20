@@ -117,7 +117,6 @@ You can change the agent's behavior, style, and tone in real-time by editing the
 3.  **Agent**: "How should I act?" (Action-first principles, constraints, tool rules).
 4.  **Skills**: "What can I do?" (Capabilities overview).
 5.  **Memory**: "How do I recall details?" (Vector DB guidelines).
-
 ---
 
 ## 📸 Screenshots
