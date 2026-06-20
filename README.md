@@ -13,7 +13,7 @@ A lightweight, high-performance, and modular personal AI assistant workspace bui
     *   Local storage cache for uploaded images, translated back to base64 on-the-fly for AI completion requests.
 *   **🧩 Modular System Prompt Assembly**: Automatically compiles the agent's system prompt from multiple self-contained Markdown files (`Identity.md`, `User.md`, `Agent.md`, `Skills.md`, `Memory.md`).
 *   **💬 Dual User Interfaces**:
-    *   **Web Workspace**: A responsive, interactive chat UI with cyberpunk styling, image attachments, previews, and responsive layouts.
+    *   **Web Workspace**: A responsive, EJS-based interactive chat UI with cyberpunk styling, image attachments, previews, and responsive layouts.
     *   **Telegram Bot**: Access and chat with your agent remotely on-the-go via a dedicated Telegram Bot.
 *   **💾 Local SQLite Database with Vector Support**:
     *   Saves chat sessions and history using `better-sqlite3`.
@@ -29,7 +29,7 @@ A lightweight, high-performance, and modular personal AI assistant workspace bui
 
 The application is structured into a clean backend server serving a single-page chat frontend:
 
-*   **Backend**: [Fastify](https://fastify.dev/) (Fast and low-overhead web framework for Node.js), TypeScript.
+*   **Backend**: [Fastify](https://fastify.dev/) (Fast and low-overhead web framework for Node.js) with `@fastify/view` and [EJS](https://ejs.co/), TypeScript.
 *   **Database**: [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) & [sqlite-vec](https://github.com/asg017/sqlite-vec) (Vector search extension).
 *   **Telegram**: [Telegraf](https://github.com/telegraf/telegraf) (Telegram Bot API wrapper).
 *   **HTTP & Scraping**: [Axios](https://github.com/axios/axios) and [Cheerio](https://cheerio.js.org/).
