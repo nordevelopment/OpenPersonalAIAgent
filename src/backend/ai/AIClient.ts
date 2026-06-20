@@ -147,7 +147,7 @@ export class AIClient {
       requestBody.tool_choice = 'auto';
     }
 
-    console.log('AIClient: requestBody', requestBody);
+    // console.log('AIClient: requestBody', requestBody);
 
     try {
       const response = await axios.post(
@@ -164,7 +164,7 @@ export class AIClient {
       );
 
       const data = response.data;
-      console.log('AIClient: response', data);
+      // console.log('AIClient: response', data);
 
       const message = data.choices?.[0]?.message;
       const reasoning = message?.reasoning_content || message?.reasoning || undefined;

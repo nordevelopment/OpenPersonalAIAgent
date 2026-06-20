@@ -1,6 +1,7 @@
 /**
- * MemoryManager - Управление векторной памятью
- * Отвечает за хранение и поиск в векторной базе данных
+ * MemoryManager - Manages vector memory
+ * Responsible for storing and retrieving memories from the vector database
+ * Author: Norayr Petrosyan
  */
 
 export interface Memory {
@@ -18,15 +19,15 @@ export interface SearchResult {
 
 export class MemoryManager {
   /**
-   * Сохранить память с эмбеддингом
-   * @param content - текст для сохранения
-   * @param metadata - дополнительные метаданные
-   * @returns сохраненная память
+   * Save memory with embedding
+   * @param content - text to save
+   * @param metadata - additional metadata
+   * @returns saved memory
    */
   async saveMemory(content: string, metadata: Record<string, unknown> = {}): Promise<Memory> {
-    // TODO: Реализовать:
-    // 1. Получить эмбеддинг через embedding API
-    // 2. Сохранить в векторную БД
+    // TODO: Implement:
+    // 1. Get embedding through embedding API
+    // 2. Save to vector database
     console.log('MemoryManager: saveMemory called', { content, metadata });
     return {
       id: 'stub-id',
@@ -38,33 +39,33 @@ export class MemoryManager {
   }
 
   /**
-   * Поиск релевантных памятей
-   * @param query - поисковый запрос
-   * @param limit - максимальное количество результатов
-   * @returns массив релевантных памятей
+   * Search for relevant memories
+   * @param query - search query
+   * @param limit - maximum number of results
+   * @returns array of relevant memories
    */
   async searchMemories(query: string, limit: number = 5): Promise<SearchResult[]> {
-    // TODO: Реализовать:
-    // 1. Получить эмбеддинг запроса
-    // 2. Поиск в векторной БД (similarity search)
+    // TODO: Implement:
+    // 1. Get embedding of the query
+    // 2. Search in the vector database (similarity search)
     console.log('MemoryManager: searchMemories called', { query, limit });
     return [];
   }
 
   /**
-   * Удалить память по ID
-   * @param id - идентификатор памяти
+   * Delete memory by ID
+   * @param id - memory ID
    */
   async deleteMemory(id: string): Promise<void> {
-    // TODO: Реализовать удаление из векторной БД
+    // TODO: Implement deletion from vector database
     console.log('MemoryManager: deleteMemory called', { id });
   }
 
   /**
-   * Очистить все памяти
+   * Clear all memories
    */
   async clearAll(): Promise<void> {
-    // TODO: Реализовать очистку векторной БД
+    // TODO: Implement clearing vector database
     console.log('MemoryManager: clearAll called');
   }
 }

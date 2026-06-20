@@ -17,6 +17,8 @@ export const config = {
   AI_TIMEOUT: 180000,
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
 
+  default_agent: 'main_agent',
+
   images: {
     defaultProvider: process.env.IMAGE_DEFAULT_PROVIDER || 'together',
     together: {

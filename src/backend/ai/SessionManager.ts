@@ -1,6 +1,7 @@
 /**
- * SessionManager - Управление сессиями чата
- * Отвечает за создание, поиск и удаление сессий
+ * SessionManager - Session management
+ * Responsible for creating, finding and deleting sessions
+ * Author: Norayr Petrosyan
  */
 import { Session } from '../models/session.js';
 import { DatabaseClient } from '../database/DatabaseClient.js';
@@ -13,9 +14,10 @@ export class SessionManager {
   }
 
   /**
-   * Создать новую сессию
-   * @param sessionId - идентификатор сессии
-   * @returns созданная сессия
+   * Create new session
+   * @param sessionId - session ID
+   * @param agentId - agent ID
+   * @returns created session
    */
   async createSession(sessionId: string, agentId?: string): Promise<Session> {
     await this.sessionModel.create({
@@ -26,33 +28,34 @@ export class SessionManager {
   }
 
   /**
-   * Получить сессию по id
-   * @param sessionId - идентификатор сессии
-   * @returns сессия или null
+   * Get session by ID
+   * @param sessionId - session ID
+   * @returns session or null
    */
   async getSession(sessionId: string): Promise<Session | null> {
     return await this.sessionModel.findById(sessionId);
   }
 
   /**
-   * Получить все сессии
-   * @returns массив всех сессий
+   * Get all sessions
+   * @returns array of sessions
    */
   async getAllSessions(): Promise<Session[]> {
     return await this.sessionModel.findAll();
   }
 
   /**
-   * Получить последнюю сессию
+   * Get last session
+   * @returns last session or null
    */
   async getLastSession(): Promise<Session | null> {
     return await this.sessionModel.findLast();
   }
 
   /**
-   * Удалить сессию по id
-   * @param sessionId - идентификатор сессии
-   * @returns количество удаленных записей
+   * Delete session by ID
+   * @param sessionId - session ID
+   * @returns number of deleted records
    */
   async deleteSession(sessionId: string): Promise<number> {
     return await this.sessionModel.deleteById(sessionId);

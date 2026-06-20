@@ -18,7 +18,7 @@ import { MemoryManager } from './ai/MemoryManager.js';
 import { ChatManager } from './ai/ChatManager.js';
 import { AgentService } from './ai/AgentService.js';
 
-// Расширяем типы Fastify для поддержки sessionId
+// Augment Fastify types to support sessionId
 declare module 'fastify' {
   interface FastifyRequest {
     sessionId: string;

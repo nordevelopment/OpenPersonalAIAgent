@@ -1,6 +1,6 @@
 /**
- * AgentService.ts - Сервис для работы с описаниями агентов
- * Позволяет получать список доступных агентов и их конфигурации
+ * AgentService.ts - Service for working with agent descriptions
+ * Allows you to get a list of available agents and their configurations
  * Author: Norayr Petrosyan
  */
 import fs from 'fs';
@@ -14,12 +14,12 @@ export class AgentService {
     private baseAgentsPath: string;
 
     constructor() {
-        // Путь к папке agents в корне проекта
+        // Path to agents folder in project root
         this.baseAgentsPath = path.join(__dirname, '../../../agents');
     }
 
     /**
-     * Получить список доступных агентов (названия папок в директории agents)
+     * Get list of available agents (folder names in agents directory)
      */
     async getAvailableAgents(): Promise<string[]> {
         if (!fs.existsSync(this.baseAgentsPath)) {
@@ -34,8 +34,8 @@ export class AgentService {
     }
 
     /**
-     * Проверить существование агента
-     * @param agentId - ID агента (название папки)
+     * Check if agent exists
+     * @param agentId - agent ID (folder name)
      */
     async agentExists(agentId: string): Promise<boolean> {
         const agentPath = path.join(this.baseAgentsPath, agentId);

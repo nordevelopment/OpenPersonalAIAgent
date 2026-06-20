@@ -1,6 +1,6 @@
 /**
- * FileSystemManager.ts - Управление файловой системой
- * Безопасные операции с файлами и директориями для AI инструментов
+ * FileSystemManager.ts - File system management
+ * Safe file and directory operations for AI tools
  * Author: Norayr Petrosyan
  */
 
@@ -13,13 +13,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Создать директорию если не существует (синхронно)
+ * Create directory if not exists (synchronous)
  */
 function ensureDir(dirPath: string): void {
   try {
     fsSync.mkdirSync(dirPath, { recursive: true });
   } catch (error) {
-    // Игнорируем ошибку если директория уже существует
+    // Ignore error if directory already exists
     if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
       throw error;
     }
@@ -88,7 +88,7 @@ export class FileSystemManager {
    */
   async readFile(filePath: string, options: ReadFileOptions = {}): Promise<string> {
     const validatedPath = this.validatePath(filePath);
-    
+
     const stats = await fs.stat(validatedPath);
     if (stats.isDirectory()) {
       throw new Error(`Path ${filePath} is a directory, not a file`);
@@ -106,10 +106,10 @@ export class FileSystemManager {
    */
   async writeFile(filePath: string, content: string): Promise<void> {
     const validatedPath = this.validatePath(filePath);
-    
+
     const dir = path.dirname(validatedPath);
     await fs.mkdir(dir, { recursive: true });
-    
+
     await fs.writeFile(validatedPath, content, 'utf-8');
   }
 
@@ -118,12 +118,12 @@ export class FileSystemManager {
    */
   async deleteFile(filePath: string): Promise<void> {
     const validatedPath = this.validatePath(filePath);
-    
+
     const stats = await fs.stat(validatedPath);
     if (stats.isDirectory()) {
       throw new Error(`Path ${validatedPath} is a directory, use deleteDirectory instead`);
     }
-    
+
     await fs.unlink(validatedPath);
   }
 
@@ -132,14 +132,14 @@ export class FileSystemManager {
    */
   async listDirectory(dirPath: string): Promise<FileInfo[]> {
     const validatedPath = this.validatePath(dirPath);
-    
+
     const stats = await fs.stat(validatedPath);
     if (!stats.isDirectory()) {
       throw new Error(`Path ${validatedPath} is not a directory`);
     }
 
     const entries = await fs.readdir(validatedPath, { withFileTypes: true });
-    
+
     return entries.map(entry => {
       const fullPath = path.join(validatedPath, entry.name);
       return {
@@ -165,7 +165,7 @@ export class FileSystemManager {
    */
   async deleteDirectory(dirPath: string, recursive: boolean = false): Promise<void> {
     const validatedPath = this.validatePath(dirPath);
-    
+
     const stats = await fs.stat(validatedPath);
     if (!stats.isDirectory()) {
       throw new Error(`Path ${validatedPath} is not a directory`);
@@ -209,7 +209,7 @@ export class FileSystemManager {
    */
   async getStats(itemPath: string): Promise<FileInfo> {
     const validatedPath = this.validatePath(itemPath);
-    
+
     const stats = await fs.stat(validatedPath);
     return {
       name: path.basename(validatedPath),
@@ -226,10 +226,10 @@ export class FileSystemManager {
   async copyFile(sourcePath: string, destPath: string): Promise<void> {
     const validatedSource = this.validatePath(sourcePath);
     const validatedDest = this.validatePath(destPath);
-    
+
     const destDir = path.dirname(validatedDest);
     await fs.mkdir(destDir, { recursive: true });
-    
+
     await fs.copyFile(validatedSource, validatedDest);
   }
 
@@ -239,10 +239,10 @@ export class FileSystemManager {
   async moveFile(sourcePath: string, destPath: string): Promise<void> {
     const validatedSource = this.validatePath(sourcePath);
     const validatedDest = this.validatePath(destPath);
-    
+
     const destDir = path.dirname(validatedDest);
     await fs.mkdir(destDir, { recursive: true });
-    
+
     await fs.rename(validatedSource, validatedDest);
   }
 }

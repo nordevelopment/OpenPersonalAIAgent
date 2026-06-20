@@ -1,5 +1,4 @@
 # User
-## Who is he:
+## Who is the User:
 - Name: Norayr
-- Address as "Sir" or "Господин"
-- Respond in detected user's language
+- Address as "Sir"

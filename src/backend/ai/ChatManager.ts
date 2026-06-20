@@ -1,7 +1,8 @@
 /**
- * ChatManager.ts - Оркестратор чата
- * Собирает все компоненты вместе: AIClient, ChatHistoryManager, AITools, MemoryManager
+ * ChatManager.ts - Orchestrator of chat
  * Author: Norayr Petrosyan
+ * 
+ * Orchestrates the chat by coordinating the AIClient, ChatHistoryManager, AITools, and MemoryManager
  */
 
 import { AIClient, AIMessages } from './AIClient.js';
@@ -21,10 +22,10 @@ export class ChatManager {
   ) { }
 
   /**
-   * Отправить сообщение в чат
-   * @param userMessage - сообщение пользователя
-   * @param sessionId - идентификатор сессии
-   * @returns ответ от AI
+   * Send message to AI
+   * @param userMessage - user message
+   * @param sessionId - session ID
+   * @returns AI response
    */
 
 
@@ -35,7 +36,7 @@ export class ChatManager {
       try {
         const processed = await this.aiClient.processImage({ base64: imageBase64, url: '' });
         finalContent = [
-          { type: 'text', text: userMessage || 'Опиши это изображение' },
+          { type: 'text', text: userMessage || 'What is this image? Describe it in details.' },
           { type: 'image_url', image_url: { url: processed.filePath } }
         ];
       } catch (err) {
@@ -43,38 +44,38 @@ export class ChatManager {
       }
     }
 
-    // 1. Сохраняем сообщение пользователя
+    // Save user message in history
     await this.historyManager.addMessage(sessionId, {
       role: 'user',
       content: finalContent
     });
 
-    // Получаем текущие доступные инструменты
+    // Get current available tools
     const availableTools = this.tools.getAvailableTools();
 
     let lastReasoning: string | undefined = undefined;
 
-    // Запускаем цикл взаимодействия с AI (максимум 5 итераций, чтобы не уйти в бесконечный цикл)
+    // Run loop of interaction with AI (maximum 5 iterations, to not go into infinite loop)
     for (let i = 0; i < 5; i++) {
       const fullHistory = await this.historyManager.getHistory(sessionId);
 
-      // Ограничиваем историю последних сообщений из конфига
+      // Limit history of last messages from config
       const history = fullHistory.slice(-config.AI_MAX_HISTORY_MESSAGES);
 
-      // 2. Получаем ID агента для этой сессии
+      // Get agent ID for this session
       const session = await this.sessionManager.getSession(sessionId);
-      const agentId = session?.agent_id || 'main_agent';
+      const agentId = session?.agent_id || config.default_agent;
 
-      // 3. Запрос к AI (передаем историю, ID агента и описание инструментов)
+      // Query AI (pass history, agent ID and description of tools)
       const aiResponse = await this.aiClient.sendMessage(history, agentId, availableTools);
 
       if (aiResponse.reasoning) {
         lastReasoning = aiResponse.reasoning;
       }
 
-      // Если ИИ просто ответил текстом (без вызова инструментов)
+      // If AI just answered text (without calling tools)
       if (!aiResponse.toolCalls || aiResponse.toolCalls.length === 0) {
-        const finalContent = aiResponse.content ?? "Я не смог подготовить ответ, Господин.";
+        const finalContent = aiResponse.content ?? "I couldn't prepare an answer, Master.";
 
         await this.historyManager.addMessage(sessionId, {
           role: 'assistant',
@@ -90,8 +91,7 @@ export class ChatManager {
         tool_calls: aiResponse.toolCalls
       });
 
-      console.log(`[Agent] AI decided to use ${aiResponse.toolCalls.length} tools`);
-      console.log('Executing tools:', aiResponse.toolCalls);
+      //console.log(`[Agent] AI decided to use ${aiResponse.toolCalls.length} tools: ${JSON.stringify(aiResponse.toolCalls, null, 2)}`);
 
       for (const toolCall of aiResponse.toolCalls) {
         try {
@@ -100,7 +100,7 @@ export class ChatManager {
             arguments: JSON.parse(toolCall.function.arguments)
           });
 
-          // 4. Сохраняем результат выполнения инструмента в историю
+          // Save result of tool execution in history
           await this.historyManager.addMessage(sessionId, {
             role: 'tool',
             content: JSON.stringify(result.result),
@@ -108,7 +108,7 @@ export class ChatManager {
           });
         } catch (error) {
           console.error(`[ChatManager] Error executing tool ${toolCall.function.name}:`, error);
-          // Сохраняем ошибку в историю, чтобы AI знал, что пошло не так
+          // save error in history for AI to know
           await this.historyManager.addMessage(sessionId, {
             role: 'tool',
             content: JSON.stringify({ error: (error as Error).message }),
@@ -119,14 +119,14 @@ export class ChatManager {
 
     }
 
-    return { content: "Превышен лимит итераций размышления, Господин." };
+    return { content: "The thinking iteration limit has been exceeded, Try again later." };
   }
 
 
   /**
-   * Получить историю чата
-   * @param sessionId - идентификатор сессии
-   * @returns массив сообщений
+   * Get chat history
+   * @param sessionId - session ID
+   * @returns array of messages
    */
   async getHistory(sessionId: string): Promise<AIMessages[]> {
     console.log(`[ChatManager] Getting history for session: ${sessionId}`);
@@ -142,8 +142,8 @@ export class ChatManager {
   }
 
   /**
-   * Очистить историю чата
-   * @param sessionId - идентификатор сессии
+   * Clear chat history
+   * @param sessionId - session ID
    */
   async clearHistory(sessionId: string): Promise<void> {
     await this.historyManager.clearHistory(sessionId);
@@ -151,26 +151,26 @@ export class ChatManager {
 
 
   /**
-   * Создать новую сессию
-   * @param sessionId - идентификатор сессии
-   * @param agentId - идентификатор агента
+   * Create new session
+   * @param sessionId - session ID
+   * @param agentId - agent ID
    */
   async createSession(sessionId: string, agentId?: string): Promise<void> {
     await this.sessionManager.createSession(sessionId, agentId);
   }
 
   /**
-   * Удалить сессию
-   * @param sessionId - идентификатор сессии
+   * Delete session
+   * @param sessionId - session ID
    */
   async deleteSession(sessionId: string): Promise<number> {
-    // История сообщений и воспоминания удалятся автоматически благодаря ON DELETE CASCADE
+    // Message history and memories will be deleted automatically due to ON DELETE CASCADE
     return await this.sessionManager.deleteSession(sessionId);
   }
 
   /**
-   * Получить сессию
-   * @param sessionId - идентификатор сессии
+   * Get session
+   * @param sessionId - session ID
    */
   async getSession(sessionId: string): Promise<any> {
     return await this.sessionManager.getSession(sessionId);

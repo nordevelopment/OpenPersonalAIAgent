@@ -77,7 +77,7 @@ class AIAgentChat {
             this.messageInput.style.height = this.messageInput.scrollHeight + 'px';
         });
         this.btnClearChat.addEventListener('click', () => this.clearChat());
-        this.btnClearMemory.addEventListener('click', () => this.clearMemory());
+        // this.btnClearMemory.addEventListener('click', () => this.clearMemory());
         this.btnNewChat.addEventListener('click', () => this.createNewChat());
         this.initializeServices();
 
@@ -229,7 +229,7 @@ class AIAgentChat {
         if (!message && !image) return;
 
         console.log('Sending message:', { message, hasImage: !!image, sessionId: this.sessionId });
-        
+
         if (image) {
             this.addMessage([
                 { type: 'text', text: message },

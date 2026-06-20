@@ -1,6 +1,7 @@
 /**
- * ChatHistoryManager - Управление историей чата
- * Отвечает за хранение и извлечение истории сообщений в SQLite
+ * ChatHistoryManager - Manages chat history
+ * Responsible for storing and retrieving message history in SQLite
+ * Author: Norayr Petrosyan
  */
 import { AIMessages } from './AIClient.js';
 import { Message, CreateMessage } from '../models/message.js';
@@ -17,9 +18,9 @@ export class ChatHistoryManager {
   }
 
   /**
-   * Получить историю для сессии
-   * @param sessionId - идентификатор сессии
-   * @returns массив сообщений
+   * Get chat history
+   * @param sessionId - session ID
+   * @returns array of messages
    */
   async getHistory(sessionId: string): Promise<AIMessages[]> {
     // console.log('ChatHistoryManager: getHistory called', { sessionId });
@@ -48,14 +49,14 @@ export class ChatHistoryManager {
   }
 
   /**
-   * Добавить сообщение в историю
-   * @param sessionId - идентификатор сессии
-   * @param message - сообщение для добавления
+   * Add message to history
+   * @param sessionId - session ID
+   * @param message - message to add
    */
   async addMessage(sessionId: string, message: AIMessages): Promise<void> {
     console.log('ChatHistoryManager: addMessage called', { sessionId, message });
 
-    // Убедиться, что сессия существует
+    // Ensure session exists
     const session = await this.sessionModel.findById(sessionId);
     console.log('Session exists:', !!session);
     if (!session) {
@@ -81,8 +82,8 @@ export class ChatHistoryManager {
   }
 
   /**
-   * Очистить историю сессии
-   * @param sessionId - идентификатор сессии
+   * Clear chat history
+   * @param sessionId - session ID
    */
   async clearHistory(sessionId: string): Promise<void> {
     // console.log('ChatHistoryManager: clearHistory called', { sessionId });
