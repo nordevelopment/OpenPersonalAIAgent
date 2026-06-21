@@ -31,47 +31,16 @@ The application is structured into a clean backend server serving a single-page 
 
 *   **Backend**: [Fastify](https://fastify.dev/) (Fast and low-overhead web framework for Node.js) with `@fastify/view` and [EJS](https://ejs.co/), TypeScript.
 *   **Database**: [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) & [sqlite-vec](https://github.com/asg017/sqlite-vec) (Vector search extension).
-*   **Telegram**: [Telegraf](https://github.com/telegraf/telegraf) (Telegram Bot API wrapper).
-*   **HTTP & Scraping**: [Axios](https://github.com/axios/axios) and [Cheerio](https://cheerio.js.org/).
 *   **Image Processing**: [Sharp](https://github.com/lovell/sharp).
-
----
-
-## 📁 Directory Structure
-
-```text
-├── agents/                     # Agent profile definitions
-│   ├── main_agent/             # Default active agent profile
-│   │   ├── Identity.md         # Personality, name, tone, and traits
-│   │   ├── User.md             # Custom user configuration (preferences, name)
-│   │   ├── Agent.md            # Main loop and operational rules
-│   │   ├── Skills.md           # Description of available tools
-│   │   └── Memory.md           # Instructions on how memories are structured
-│   └── test_agent/             # Alternative agent profile
-├── frontend/                   # Web interface assets (CSS, JS)
-│   ├── css/                    # Custom styling (cybercore.css theme)
-│   └── js/                     # Frontend client logic
-├── src/
-│   ├── backend/                # Server source code (TypeScript)
-│   │   ├── ai/                 # Orchestrator, AI clients, tools, memory managers
-│   │   ├── database/           # SQLite connection, schema, database reset scripts
-│   │   ├── services/           # Filesystem, Image, Web fetching, and Telegram bot services
-│   │   ├── app.ts              # App configurations, hooks, session setup
-│   │   ├── config.ts           # System environment variables mapper
-│   │   └── server.ts           # Server entry point
-│   └── views/                  # Frontend EJS views/templates
-│       └── chat.ejs            # Main chat template page
-├── workspace/                  # Safe folder for agent file-system tool operations
-├── package.json                # Project dependencies and script runner
-└── tsconfig.json               # TypeScript compiler config
-```
+*   **HTTP & Scraping**: [Axios](https://github.com/axios/axios) and [Cheerio](https://cheerio.js.org/).
+*   **Telegram**: [Telegraf](https://github.com/telegraf/telegraf) (Telegram Bot API wrapper).
 
 ---
 
 ## ⚙️ Setup & Installation
 
 ### Prerequisites
-*   Node.js (v18.x or later)
+*   Node.js (v20.x or later)
 *   npm (v9.x or later)
 
 ### 1. Clone & Install Dependencies
@@ -87,8 +56,8 @@ cp .env.example .env
 ```
 Open `.env` and fill in your keys:
 *   `AI_API_KEY`: Your OpenRouter API Key (to use the completion and embedding models).
-*   `TELEGRAM_BOT_TOKEN`: (Optional) If you want to chat through Telegram, create a bot via BotFather and paste the token here.
 *   `TOGETHER_API_KEY` / `XAI_API_KEY`: (Optional) Required if you want the agent to use Together AI or X.AI for generating images.
+*   `TELEGRAM_BOT_TOKEN`: (Optional) If you want to chat through Telegram, create a bot via BotFather and paste the token here.
 
 ### 3. Initialize & Run
 ```bash
