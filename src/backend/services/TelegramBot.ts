@@ -1,7 +1,7 @@
 /**
- * TelegramBot.ts - Обработка сообщений из Telegram
- * Использует Telegraf для взаимодействия с Telegram API
+ * TelegramBot.ts - Telegram Bot Service
  * Author: Norayr Petrosyan
+ * Using Telegraf for interaction with Telegram API
  */
 
 import type { ChatManager } from '../ai/ChatManager.js';
@@ -13,8 +13,8 @@ export class TelegramBot {
   private chatManager: ChatManager | null = null;
   private isEnabled: boolean = false;
 
-  constructor(token?: string, chatManager?: ChatManager) {
-    const botToken = token || config.TELEGRAM_BOT_TOKEN;
+  constructor(chatManager?: ChatManager) {
+    const botToken = config.TELEGRAM_BOT_TOKEN;
 
     this.chatManager = chatManager ?? null;
 
@@ -27,34 +27,31 @@ export class TelegramBot {
     this.bot = new Telegraf(botToken);
     this.isEnabled = true;
 
-    console.log('[Telegram] Bot initialized successfully.');
+    // console.log('[Telegram] Bot initialized successfully.');
     this.setupHandlers();
   }
 
   /**
-   * Настроить обработчики сообщений
+   * Setup handlers 
    */
   private setupHandlers(): void {
     if (!this.isEnabled || !this.bot) return;
 
-    // Обработка текстовых сообщений
+    this.bot.start(async (ctx: Context) => {
+      await ctx.reply("Hi! I'm Personal AI Agent. How can I help you today?");
+    });
+
+    this.bot.help(async (ctx: Context) => {
+      await ctx.reply("Commands:\n/start - Start\n/help - Help");
+    });
+
     this.bot.on('text', async (ctx: Context) => {
       await this.handleTextMessage(ctx);
-    });
-
-    // Обработка команд /start
-    this.bot.start(async (ctx: Context) => {
-      await ctx.reply('Привет! Я AI ассистент. Отправь мне сообщение и я отвечу.');
-    });
-
-    // Обработка команды /help
-    this.bot.help(async (ctx: Context) => {
-      await ctx.reply('Commands:\n/start - Start\n/help - Help');
     });
   }
 
   /**
-   * Обработать текстовое сообщение
+   * Handle text message
    */
   private async handleTextMessage(ctx: Context): Promise<void> {
     const message = ctx.message;
@@ -65,12 +62,11 @@ export class TelegramBot {
 
     const userId = ctx.from?.id;
     const userMessage = message.text;
-    const username = ctx.from?.username || 'unknown';
+    //const username = ctx.from?.username || 'unknown';
 
-    console.log(`[Telegram] User: ${username} (${userId}), Message: ${userMessage}`);
+    // console.log(`[Telegram] User: ${username} (${userId}), Message: ${userMessage}`);
 
     try {
-      // Интеграция с ChatManager для обработки через AI
       if (!this.chatManager) {
         await ctx.reply('AI service is not available');
         return;
@@ -78,7 +74,6 @@ export class TelegramBot {
 
       await ctx.sendChatAction('typing');
 
-      // Используем userId как sessionId для сохранения истории чата
       const sessionId = `telegram_${userId}`;
       const response = await this.chatManager.sendMessage(userMessage, sessionId);
 
@@ -90,7 +85,7 @@ export class TelegramBot {
   }
 
   /**
-   * Запустить бота (polling)
+   * Start bot (polling)
    */
   async start(): Promise<void> {
     if (!this.isEnabled || !this.bot) {
@@ -99,14 +94,14 @@ export class TelegramBot {
     }
     try {
       await this.bot.launch();
-      console.log('[Telegram] Bot started');
+      // console.log('[Telegram] Bot started');
     } catch (error) {
       console.error('[Telegram] Error starting bot:', error);
     }
   }
 
   /**
-   * Остановить бота
+   * Stop bot
    */
   async stop(): Promise<void> {
     if (!this.isEnabled || !this.bot) {
@@ -114,11 +109,11 @@ export class TelegramBot {
       return;
     }
     this.bot.stop();
-    console.log('[Telegram] Bot stopped');
+    // console.log('[Telegram] Bot stopped');
   }
 
   /**
-   * Отправить сообщение в чат
+   * Send message to chat
    */
   async sendMessage(chatId: number | string, text: string): Promise<void> {
     if (!this.isEnabled || !this.bot) {
@@ -129,7 +124,7 @@ export class TelegramBot {
   }
 
   /**
-   * Получить информацию о боте
+   * Get bot info
    */
   async getBotInfo(): Promise<any> {
     if (!this.isEnabled || !this.bot) {

@@ -54,13 +54,11 @@ export class ChatHistoryManager {
    * @param message - message to add
    */
   async addMessage(sessionId: string, message: AIMessages): Promise<void> {
-    console.log('ChatHistoryManager: addMessage called', { sessionId, message });
+    // console.log('ChatHistoryManager: addMessage called', { sessionId, message });
 
     // Ensure session exists
     const session = await this.sessionModel.findById(sessionId);
-    console.log('Session exists:', !!session);
     if (!session) {
-      console.log('Creating session:', sessionId);
       await this.sessionModel.create({ id: sessionId });
     }
 
@@ -77,8 +75,7 @@ export class ChatHistoryManager {
       createDto.tool_calls = JSON.stringify(message.tool_calls);
     }
 
-    const result = await this.messageModel.create(createDto);
-    console.log('Message created with ID:', result);
+    await this.messageModel.create(createDto);
   }
 
   /**

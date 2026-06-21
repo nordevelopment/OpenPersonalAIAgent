@@ -18,6 +18,8 @@ import { MemoryManager } from './ai/MemoryManager.js';
 import { ChatManager } from './ai/ChatManager.js';
 import { AgentService } from './ai/AgentService.js';
 
+import { TelegramBot } from './services/TelegramBot.js';
+
 // Augment Fastify types to support sessionId
 declare module 'fastify' {
   interface FastifyRequest {
@@ -68,6 +70,10 @@ export async function buildApp(): Promise<FastifyInstance> {
     const agentService = new AgentService();
     const chatManager = new ChatManager(aiClient, historyManager, tools, memoryManager, sessionManager);
 
+    // --- Telegram Bot Service initialization---
+    const telegramBot = new TelegramBot(chatManager);
+    await telegramBot.start();
+
     // --- SESSION AUTO-MANAGEMENT HOOK ---
     app.addHook('onRequest', async (request, reply) => {
       // Игнорируем статику и системные пути
@@ -102,6 +108,9 @@ export async function buildApp(): Promise<FastifyInstance> {
 
     // Register hook for graceful shutdown
     app.addHook('onClose', async () => {
+      app.log.info('Stopping Telegram bot...');
+      await telegramBot.stop();
+
       app.log.info('Closing database connection...');
       db.close();
     });
