@@ -143,7 +143,7 @@ export class DatabaseClient {
       const values = Object.values(where);
 
       const sql = `DELETE FROM ${table} WHERE ${whereClause}`;
-      console.log(sql);
+      //console.log(sql);
       const stmt = this.db.prepare(sql);
       const result = stmt.run(...values);
 
@@ -167,7 +167,6 @@ export class DatabaseClient {
 
     const schema = fs.readFileSync(schemaPath, 'utf-8');
     this.db.exec(schema);
-    console.log('DatabaseClient: initialized');
   }
 
   /**

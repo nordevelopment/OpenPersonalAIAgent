@@ -10,7 +10,7 @@ async function start() {
   let app: ReturnType<typeof buildApp> extends Promise<infer T> ? T : never;
 
   try {
-     // Create and configure application
+    // Create and configure application
     app = await buildApp();
 
     // Start server

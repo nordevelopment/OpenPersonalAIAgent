@@ -78,7 +78,7 @@ export class ImageService {
     if (!nodeFs.existsSync(config.generatedImagesDir)) {
       nodeFs.mkdirSync(config.generatedImagesDir, { recursive: true });
     }
-    console.log('[Image] Image service initialized', config.generatedImagesDir);
+    // console.log('[Image] Image service initialized', config.generatedImagesDir);
   }
 
   /**

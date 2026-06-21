@@ -72,7 +72,9 @@ export async function buildApp(): Promise<FastifyInstance> {
 
     // --- Telegram Bot Service initialization---
     const telegramBot = new TelegramBot(chatManager);
-    await telegramBot.start();
+    telegramBot.start().catch(err => {
+      app.log.error({ err }, 'Failed to start Telegram bot');
+    });
 
     // --- SESSION AUTO-MANAGEMENT HOOK ---
     app.addHook('onRequest', async (request, reply) => {
