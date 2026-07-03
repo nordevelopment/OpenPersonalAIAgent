@@ -107,7 +107,6 @@ If you've tried running other self-hosted AI interfaces, you know how resource-h
 If this project saved your RAM and made your local AI workflow smoother, consider supporting its development:
 
 *   **GitHub Sponsors**: [Sponsor nordevelopment](https://github.com/sponsors/nordevelopment)
-*   **Buy Me a Coffee**: [Buy me a coffee](https://www.buymeacoffee.com/nordevelopment) (or configure your own link!)
 
 ---
 
