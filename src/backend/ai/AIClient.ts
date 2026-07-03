@@ -210,8 +210,13 @@ export class AIClient {
       const data = matches ? matches[2] : imageData.base64;
       const imgBuffer = Buffer.from(data, 'base64');
 
-      const resized = await sharp(imgBuffer)
-        .resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true })
+      const metadata = await sharp(imgBuffer).metadata();
+      let pipeline = sharp(imgBuffer);
+      if (metadata.width && metadata.width > 1024) {
+        pipeline = pipeline.resize({ width: 1024 });
+      }
+
+      const resized = await pipeline
         .jpeg({ quality: 85 })
         .toBuffer();
 
