@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIA - Edit Agent [<%= agentId %>]</title>
+    <!-- Use relative or absolute paths starting with slash since static path prefix is '/' -->
+    <link href="/css/cybercore.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+
+<body class="cyber-theme">
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar cyber-bg-primary">
+            <div class="logo-panel">
+                <div class="logo cyber-glitch" data-text="PAIAgent">
+                    PAI Agent
+                </div>
+                <div class="cyber-status">
+                    <div class="cyber-status__dot"></div>
+                </div>
+            </div>
+
+            <div class="agent-info-panel">
+                <button id="btnBackToChat" class="cyber-btn cyber-btn--green">
+                    BACK TO CHAT
+                </button>
+            </div>
+
+            <div class="agent-info-panel" style="margin-top: 20px;">
+                <div class="sessions-title cyber-text-glow">CURRENT AGENT</div>
+                <div class="agent-name-display" id="currentAgentId" data-agent-id="<%= agentId %>">
+                    <%= agentId.toUpperCase().replace('_', ' ' ) %>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="btnSaveChanges" class="cyber-btn --cyan --sm w-100">
+                    SAVE CHANGES
+                </button>
+            </div>
+        </div>
+
+        <!-- Editor Main Area -->
+        <div class="chat-area editor-main" style="display: flex; flex-direction: column; flex: 1; height: 100vh;">
+            <!-- Tabs Header -->
+            <div class="editor-header-tabs cyber-tile--bottom" style="display: flex;">
+                <% const allowedFiles=['Agent.md', 'Identity.md' , 'Memory.md' , 'Skills.md' , 'User.md' ]; %>
+                    <% allowedFiles.forEach((file, index)=> { %>
+                        <button class="editor-tab-btn <%= index === 0 ? 'active' : '' %>" data-file="<%= file %>">
+                            <%= file %>
+                                <span class="change-indicator" id="indicator-<%= file.replace('.', '_') %>"></span>
+                        </button>
+                        <% }); %>
+            </div>
+
+            <!-- Editor Body -->
+            <div class="editor-body"
+                style="flex: 1; position: relative; background: rgba(2, 4, 8, 0.7); overflow: hidden;">
+                <% allowedFiles.forEach((file, index)=> { %>
+                    <div class="editor-tab-content <%= index === 0 ? 'active' : '' %>"
+                        id="content-<%= file.replace('.', '_') %>" data-file="<%= file %>"
+                        style="display: <%= index === 0 ? 'block' : 'none' %>; width: 100%; height: 100%;">
+                        <textarea class="editor-textarea cyber-textarea" id="textarea-<%= file.replace('.', '_') %>"
+                            placeholder="Edit <%= file %> content..."><%= files[file] || '' %></textarea>
+                    </div>
+                    <% }); %>
+            </div>
+
+            <!-- Editor Footer -->
+            <div class="editor-status-bar cyber-tile--top"
+                style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(6, 8, 16, 0.9); border-top: 1px solid var(--cyber-green-500); font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.5); height: 40px; box-sizing: border-box;">
+                <div class="status-left">
+                    STATUS: <span id="saveStatus" style="color: var(--cyber-primary); font-weight: bold;">ALL FILES
+                        SAVED</span>
+                </div>
+                <div class="status-right" id="editorCharCount">
+                    LINES: 0 | CHARS: 0
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/editor.js"></script>
+</body>
+
+</html>

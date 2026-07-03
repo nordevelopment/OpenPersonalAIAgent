@@ -1,0 +1,40 @@
+-- ============================================
+-- PAIAgent Database Schema
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY,
+  agent_id TEXT DEFAULT 'main_agent',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+ 
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_id TEXT NOT NULL,
+  role TEXT NOT NULL,
+  content TEXT NOT NULL,
+  tool_call_id TEXT,
+  tool_calls TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS memories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_id TEXT NOT NULL,
+  key TEXT NOT NULL,                       -- Key of the memory
+  value TEXT NOT NULL,                     -- Value of the memory
+  category TEXT DEFAULT 'personal' CHECK(category IN ('personal', 'preference', 'event', 'goal', 'task', 'information', 'intention', 'fact', 'context')),
+  content TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+);
+
+-- ============================================
+-- Vector embeddings table (sqlite-vec)
+-- ============================================
+CREATE VIRTUAL TABLE IF NOT EXISTS vec_memories USING vec0(
+  embedding float[4096]
+);
