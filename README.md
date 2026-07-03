@@ -1,5 +1,8 @@
 # 🤖 Open Personal AI Agent (PAIAgent)
 
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/nordevelopment?color=EA4AAA&style=flat-square)](https://github.com/sponsors/nordevelopment)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+
 A lightweight, fast, and modular personal AI assistant workspace running locally on your computer or server. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
 
 **Author:** Norayr Petrosyan
