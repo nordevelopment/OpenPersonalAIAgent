@@ -256,8 +256,10 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       const cleanToken = telegramBotToken!.trim();
       configData.telegram_bot_token = cleanToken;
       config.TELEGRAM_BOT_TOKEN = cleanToken;
-      // Reload the Telegram Bot dynamically
-      await telegramBot.updateToken(cleanToken);
+      // Reload the Telegram Bot dynamically in background without blocking response
+      telegramBot.updateToken(cleanToken).catch(err => {
+        request.log.error({ err }, 'Failed to reload Telegram bot dynamically');
+      });
     }
     if (isNewKey(togetherApiKey)) {
       configData.together_api_key = togetherApiKey!.trim();

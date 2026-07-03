@@ -33,6 +33,7 @@
     "storage",
     "tests_manual",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "config.json"
   ]
 }
