@@ -73,6 +73,7 @@ The server will start at `http://127.0.0.1:3000`. Open it in your browser. If ke
 ---
 
 ## 📸 Screenshots
+<img width="926" height="950" alt="Image" src="https://github.com/user-attachments/assets/d69210a3-d40e-4c9e-a1a7-c7cfe1ea6eaa" />
 
 <img width="1321" height="896" alt="Image" src="https://github.com/user-attachments/assets/1ba12201-1598-4fb8-b4db-d4784b29053a" />
 
