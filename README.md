@@ -87,6 +87,30 @@ The server will start at `http://127.0.0.1:3000`. Open it in your browser. If ke
 
 ---
 
+## ⚖️ Comparison: PAIAgent vs. Heavyweight Alternatives
+
+If you've tried running other self-hosted AI interfaces, you know how resource-heavy they can be. Here is how **PAIAgent** compares to popular alternatives:
+
+| Feature / Metric | 🤖 **PAIAgent (This Project)** | 🐳 **Open WebUI** | 💬 **LibreChat** | 📦 **AnythingLLM** |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tech Stack** | Node.js + Fastify + SQLite | Python + Go + Svelte | Node + React + Mongo + Redis | Electron / Docker |
+| **RAM Footprint** | **~50 - 100 MB** | 1.5 GB+ (Docker container) | 1 GB+ (Docker multi-container) | 500 MB+ (Electron/Docker) |
+| **Dependencies** | None (Just Node.js & npm) | Requires Docker & Ollama | Requires Docker, Mongo, Redis | Requires Docker or Desktop App |
+| **Startup Time** | **< 1 second** | 30 - 60 seconds | 30 - 60 seconds | 10 - 20 seconds |
+| **Database** | Embedded SQLite (+ `sqlite-vec`) | PostgreSQL / MySQL / SQLite | MongoDB + Meilisearch | Embedded Vector DB + SQLite |
+| **Ideal For** | Fast, lightweight personal use | Heavy multi-user hosting | Multi-user enterprise chat | Document-focused local RAG |
+
+---
+
+## 💖 Support the Project
+
+If this project saved your RAM and made your local AI workflow smoother, consider supporting its development:
+
+*   **GitHub Sponsors**: [Sponsor nordevelopment](https://github.com/sponsors/nordevelopment)
+*   **Buy Me a Coffee**: [Buy me a coffee](https://www.buymeacoffee.com/nordevelopment) (or configure your own link!)
+
+---
+
 ## 📄 License
 
 This project is open-source and licensed under the [MIT License](LICENSE).
