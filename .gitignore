@@ -5,3 +5,4 @@ database.*
 storage/*
 workspace/*
 config.json
+setup_git.bat
