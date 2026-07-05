@@ -158,7 +158,14 @@ export class DatabaseClient {
    * Инициализировать базу данных (создать таблицы)
    */
   async initialize(): Promise<void> {
-    const schemaPath = path.join(__dirname, 'schema.sql');
+    let schemaPath = path.join(__dirname, 'schema.sql');
+
+    if (!fs.existsSync(schemaPath)) {
+      const fallbackPath = path.join(process.cwd(), 'src/backend/database/schema.sql');
+      if (fs.existsSync(fallbackPath)) {
+        schemaPath = fallbackPath;
+      }
+    }
 
     if (!fs.existsSync(schemaPath)) {
       console.warn('DatabaseClient: schema.sql not found, skipping initialization');
