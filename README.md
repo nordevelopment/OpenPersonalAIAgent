@@ -6,9 +6,7 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/commits/main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-A lightweight, fast, and modular personal AI assistant workspace running locally on your computer or server. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
-
-**Author:** Norayr Petrosyan
+A lightweight, fast and Personal AI Agent (PAIAgent) running locally on your computer or server. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
 
 ---
 
@@ -104,6 +102,10 @@ If you've tried running other self-hosted AI interfaces, you know how resource-h
 | **Startup Time** | **< 1 second** | 30 - 60 seconds | 30 - 60 seconds | 10 - 20 seconds |
 | **Database** | Embedded SQLite (+ `sqlite-vec`) | PostgreSQL / MySQL / SQLite | MongoDB + Meilisearch | Embedded Vector DB + SQLite |
 | **Ideal For** | Fast, lightweight personal use | Heavy multi-user hosting | Multi-user enterprise chat | Document-focused local RAG |
+
+---
+
+### Author: Norayr Petrosyan
 
 ---
 
