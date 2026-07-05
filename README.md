@@ -17,16 +17,15 @@ This project is designed for anyone who wants a personal AI assistant that can m
 
 ---
 
-## ⚡ Key Features
-
-*   **🧠 Modular System Prompt Assembly**: The agent's personality and instructions are compiled dynamically from simple Markdown files (`Identity.md`, `User.md`, `Agent.md`, etc.). Want to retrain your agent? Just edit the text!
+## ⚡Features
+*   **💬 Dual Interfaces**: A beautiful cyberpunk-themed Web UI + Remote chat access via a Telegram bot.
+*   **👁️ AI Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
+*   **🧠 Modular System Prompt**: The agent's personality and instructions are compiled dynamically from simple Markdown files (`Agent.md`, `Identity.md`, `User.md`, `Memory.md`, `Skills.md` etc.).
 *   **⚙️ Web Settings Panel (Setup Wizard)**: Forget manually editing `.env` files. On first launch, the app automatically redirects you to a system settings page to input your API keys. Configurations are saved securely in a local, gitignored `config.json`.
 *   **🔧 Powerful Tool Execution (Function Calling)**:
     *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
     *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis.
     *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
-*   **👁️ Multimodal Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
-*   **💬 Dual Interfaces**: A beautiful cyberpunk-themed Web Workspace + remote chat access via a Telegram bot.
 *   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
 
 ---
