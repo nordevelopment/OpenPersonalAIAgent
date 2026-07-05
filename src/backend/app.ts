@@ -48,7 +48,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     logger: {
       level: config.LOG_LEVEL,
     },
-    bodyLimit: 10485760, // 10MB
+    bodyLimit: 20971520, // 20MB
   });
 
   try {

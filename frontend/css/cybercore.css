@@ -93,11 +93,11 @@
       0 0 20px var(--cyber-lime-500),
       0 0 40px color-mix(in srgb, var(--cyber-lime-500) 50%, transparent);
     --glow-text-cyan:
-      0 0 10px var(--cyber-cyan-500),
-      0 0 20px color-mix(in srgb, var(--cyber-cyan-500) 60%, transparent);
+      0 0 5px var(--cyber-cyan-500),
+      0 0 10px color-mix(in srgb, var(--cyber-cyan-500) 60%, transparent);
     --glow-text-magenta:
-      0 0 10px var(--cyber-magenta-500),
-      0 0 20px color-mix(in srgb, var(--cyber-magenta-500) 60%, transparent);
+      0 0 5px var(--cyber-magenta-500),
+      0 0 10px color-mix(in srgb, var(--cyber-magenta-500) 60%, transparent);
     --glow-text-yellow:
       0 0 10px var(--cyber-yellow-500),
       0 0 20px color-mix(in srgb, var(--cyber-yellow-500) 60%, transparent);

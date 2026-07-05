@@ -76,17 +76,13 @@ The server will start at `http://127.0.0.1:3000`. Open it in your browser. If ke
 ---
 
 ## 📸 Screenshots
-<img width="926" height="950" alt="Image" src="https://github.com/user-attachments/assets/d69210a3-d40e-4c9e-a1a7-c7cfe1ea6eaa" />
+<img width="1303" height="895" alt="Image" src="https://github.com/user-attachments/assets/dd7af846-8534-4f9a-860b-59f654326fac" />
 
-<img width="1321" height="896" alt="Image" src="https://github.com/user-attachments/assets/1ba12201-1598-4fb8-b4db-d4784b29053a" />
+<img width="1297" height="898" alt="Image" src="https://github.com/user-attachments/assets/d9a2a92e-6338-4a39-bb11-a68821ff2e4b" />
 
-<img width="1324" height="906" alt="Image" src="https://github.com/user-attachments/assets/fd67abfb-d6cc-419d-96a8-c50e1e9b9386" />
+<img width="1305" height="897" alt="Image" src="https://github.com/user-attachments/assets/f02a3c3b-0ea0-41de-b73d-99a36dabd475" />
 
-<img width="1327" height="909" alt="Image" src="https://github.com/user-attachments/assets/c7c5b65c-dfd6-4ce4-a39b-730c49287329" />
-
-<img width="1327" height="907" alt="Image" src="https://github.com/user-attachments/assets/f5c4e302-61fe-41bc-a6a3-d741492d9250" />
-
-<img width="1331" height="877" alt="Image" src="https://github.com/user-attachments/assets/f71a6b2f-0365-4f31-ba97-fa195f03e251" />
+<img width="1549" height="903" alt="Image" src="https://github.com/user-attachments/assets/5a6d1b22-39a2-4e05-a167-1c5eef931b65" />
 
 ---
 

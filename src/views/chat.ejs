@@ -25,14 +25,19 @@
                 </div>
             </div>
 
-            <div class="sessions-panel">
+            <button id="btnNewChat" class="cyber-btn">
+                NEW CHAT
+            </button>
+
+
+            <div class="sidebar-panel">
                 <div class="sessions-title cyber-text-glow">SESSIONS</div>
                 <div class="sessions-list" id="sessionsList">
                     <!-- Sessions will be loaded here -->
                 </div>
             </div>
 
-            <div class="agent-selector-panel">
+            <div class="sidebar-panel">
                 <div class="sessions-title cyber-text-glow">AGENTS</div>
                 <select id="agentSelector" class="cyber-select">
                     <!-- Agents will be loaded here -->
@@ -41,20 +46,18 @@
                     EDIT AGENT
                 </button>
                 <div class="agent-buttons" style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button id="btnCreateAgent" class="cyber-btn cyber-btn--green" style="flex: 1; font-size: 11px; padding: 8px;">
+                    <button id="btnCreateAgent" class="cyber-btn cyber-btn--green"
+                        style="flex: 1; font-size: 11px; padding: 8px;">
                         CREATE AGENT
                     </button>
-                    <button id="btnDeleteAgent" class="cyber-btn cyber-btn--magenta" style="flex: 1; font-size: 11px; padding: 8px;">
+                    <button id="btnDeleteAgent" class="cyber-btn cyber-btn--magenta"
+                        style="flex: 1; font-size: 11px; padding: 8px;">
                         DELETE AGENT
                     </button>
                 </div>
             </div>
 
             <div class="sidebar-footer">
-                <button id="btnNewChat" class="cyber-btn">
-                    NEW CHAT
-                </button>
-
                 <a href="/settings" style="text-decoration: none; width: 100%;">
                     <button id="btnOpenSettings" class="cyber-btn --cyan" style="width: 100%;">
                         SETTINGS ⚙️
@@ -78,8 +81,11 @@
             </div>
 
             <!-- Setup Warning Banner -->
-            <div id="setupWarningBanner" style="display: none; background: rgba(255, 0, 85, 0.15); border-bottom: 1px solid var(--cyber-secondary); padding: 12px 20px; font-family: var(--font-mono); font-size: 13px; color: var(--cyber-secondary); text-align: center; text-shadow: 0 0 5px var(--cyber-secondary); animation: flicker 0.15s infinite;">
-                ⚠️ SYSTEM OFFLINE: AI API Key is not configured. Please open <a href="#" id="setupWarningLink" style="color: var(--cyber-primary); text-decoration: underline;">Settings</a> to configure your API keys.
+            <div id="setupWarningBanner"
+                style="display: none; background: rgba(255, 0, 85, 0.15); border-bottom: 1px solid var(--cyber-secondary); padding: 12px 20px; font-family: var(--font-mono); font-size: 13px; color: var(--cyber-secondary); text-align: center; text-shadow: 0 0 5px var(--cyber-secondary); animation: flicker 0.15s infinite;">
+                ⚠️ SYSTEM OFFLINE: AI API Key is not configured. Please open <a href="#" id="setupWarningLink"
+                    style="color: var(--cyber-primary); text-decoration: underline;">Settings</a> to configure your API
+                keys.
             </div>
 
             <div class="chat-messages" id="chatMessages">
