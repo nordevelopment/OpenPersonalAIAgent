@@ -293,11 +293,17 @@ class AIAgentChat {
             console.log('Chat response:', data);
             this.hideTyping();
             this.addMessage(data.message, 'agent', data.reasoning || null);
+            if (window.robotPet) {
+                window.robotPet.toHappy();
+            }
 
         } catch (error) {
             console.error('Chat error:', error);
             this.hideTyping();
             this.addMessage('⚠️ NEURAL INTERFACE ERROR. Retry transmission.', 'agent');
+            if (window.robotPet) {
+                window.robotPet.toError();
+            }
         }
     }
 
@@ -384,6 +390,9 @@ class AIAgentChat {
     showTyping() {
         this.typingIndicator.classList.add('active');
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        if (window.robotPet) {
+            window.robotPet.toThinking();
+        }
     }
 
     hideTyping() {

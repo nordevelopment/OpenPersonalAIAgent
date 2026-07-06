@@ -1,0 +1,65 @@
+<div class="robot-pet-container">
+    <svg id="robot-pet-svg" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+        
+        <!-- Тень под роботом -->
+        <ellipse class="pet-shadow" cx="50" cy="135" rx="25" ry="5" fill="#000" opacity="0.15" />
+        
+        <!-- Уши -->
+        <rect x="16" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
+        <rect x="78" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
+
+        <!-- Антенна -->
+        <line x1="50" y1="20" x2="50" y2="10" stroke="#3a3a45" stroke-width="2.5" stroke-linecap="round" />
+        <circle class="pet-neon pet-antenna-glow" cx="50" cy="8" r="4" fill="#00f0ff" style="--glow-color: #00f0ff;" />
+
+        <!-- Ноги -->
+        <g class="pet-legs">
+            <!-- Левая нога -->
+            <rect class="pet-metal pet-leg" x="33" y="105" width="10" height="25" rx="5" />
+            <rect class="pet-dark-plate" x="35" y="122" width="6" height="6" rx="2" />
+            <!-- Правая нога -->
+            <rect class="pet-metal pet-leg" x="57" y="105" width="10" height="25" rx="5" />
+            <rect class="pet-dark-plate" x="59" y="122" width="6" height="6" rx="2" />
+        </g>
+
+        <!-- Руки -->
+        <g class="pet-arms">
+            <!-- Левая рука -->
+            <rect class="pet-metal pet-arm pet-arm-left" x="12" y="65" width="10" height="35" rx="5" />
+            <circle class="pet-neon pet-joint" cx="17" cy="70" r="2" fill="#00f0ff" />
+            <!-- Правая рука -->
+            <rect class="pet-metal pet-arm pet-arm-right" x="78" y="65" width="10" height="35" rx="5" />
+            <circle class="pet-neon pet-joint" cx="83" cy="70" r="2" fill="#00f0ff" />
+        </g>
+
+        <!-- Туловище -->
+        <g class="pet-torso">
+            <rect class="pet-metal" x="25" y="60" width="50" height="55" rx="15" />
+            <!-- Панель на животе -->
+            <rect class="pet-dark-plate" x="32" y="68" width="36" height="38" rx="8" />
+            <!-- Светодиод на животе -->
+            <circle class="pet-neon pet-belly-led" cx="50" cy="87" r="6" fill="#00f0ff" style="--glow-color: #00f0ff;" />
+            <!-- Декор-линии -->
+            <line x1="38" y1="75" x2="62" y2="75" stroke="#2c2c35" stroke-width="1" />
+            <line x1="38" y1="80" x2="42" y2="80" stroke="#2c2c35" stroke-width="1" />
+        </g>
+        
+        <!-- Голова -->
+        <g class="pet-head">
+            <rect class="pet-metal" x="22" y="18" width="56" height="50" rx="18" />
+            
+            <!-- Лицевой экран -->
+            <rect class="pet-dark-plate" x="28" y="24" width="44" height="30" rx="10" />
+            
+            <!-- Глаза -->
+            <g class="pet-eyes">
+                <circle class="pet-neon pet-eye" id="pet-eye-left" cx="41" cy="36" r="4.5" fill="#00f0ff" />
+                <circle class="pet-neon pet-eye" id="pet-eye-right" cx="59" cy="36" r="4.5" fill="#00f0ff" />
+            </g>
+            
+            <!-- Рот -->
+            <path class="pet-neon pet-mouth" id="pet-mouth-path" d="M 43 46 Q 50 46 57 46" stroke="#00f0ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </g>
+
+    </svg>
+</div>

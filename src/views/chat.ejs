@@ -9,6 +9,7 @@
     <!-- Cybercore CSS -->
     <link href="css/cybercore.css" rel="stylesheet">
     <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/robotpet.css">
 </head>
 
 <body class="cyber-theme">
@@ -71,6 +72,12 @@
                 <!-- <button id="btnClearMemory" class="cyber-btn --red --sm w-100">
                     PURGE MEMORY
                 </button> -->
+                <!-- Robot Pet Widget -->
+                <div class="sidebar-panel"
+                    style="display: flex; justify-content: center; align-items: center; padding: 10px 0; margin-bottom: 5px;">
+                    <%- include('robotpet.ejs') %>
+                </div>
+
             </div>
         </div>
 
@@ -135,6 +142,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/robotpet.js"></script>
     <script src="js/chat.js"></script>
 </body>
 

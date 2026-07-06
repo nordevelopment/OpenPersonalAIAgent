@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Full Body Robot Pet</title>
+    <style>
+        /* Обнуление и базовый фон */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Контейнер робота-питомца */
+        .robot-pet-container {
+            width: 200px; /* Увеличил размер, так как теперь есть тело */
+            height: 300px;
+            user-select: none;
+            position: relative;
+        }
+
+        /* Анимация левитации всего робота */
+        #robot-pet-svg {
+            width: 100%;
+            height: 100%;
+            animation: floatRobot 4s ease-in-out infinite;
+        }
+
+        /* Анимация тени под роботом */
+        .pet-shadow {
+            transform-origin: 50% 95%; /* Точка трансформации в центре тени */
+            animation: scaleShadow 4s ease-in-out infinite;
+        }
+
+        /* Базовые стили для элементов SVG */
+        .pet-metal {
+			fill: #eaeaf0;
+			stroke: #868688;
+            stroke-width: 2;
+            transition: fill 0.3s ease, stroke 0.3s ease;
+        }
+
+        .pet-dark-plate {
+			fill: #fff;
+			stroke: #bcbcbc;
+            stroke-width: 1.5;
+        }
+
+        /* Группы элементов для анимации при наведении */
+        .pet-head, .pet-arm, .pet-leg {
+            transition: transform 0.3s ease-out;
+        }
+
+        /* Элементы неонового свечения (глаза, рот, антенна, индикатор) */
+        .pet-neon {
+            transition: fill 0.3s ease, stroke 0.3s ease, r 0.2s ease, transform 0.2s ease;
+        }
+
+        .pet-eye { transform-origin: center; }
+
+        .pet-antenna-glow {
+            transform-origin: 50px 10px;
+            animation: antennaBlink 1.5s infinite ease-in-out;
+        }
+
+        /* Индикатор на животе - пульсация */
+        .pet-belly-led {
+            animation: bellyPulse 2s infinite ease-in-out;
+        }
+
+        /* --- Эффекты при наведении мыши --- */
+        
+        /* Глаза увеличиваются */
+        .robot-pet-container:hover .pet-eye {
+            transform: scale(1.15);
+        }
+
+        /* Голова немного наклоняется */
+        .robot-pet-container:hover .pet-head {
+            transform: rotate(-2deg) translateY(-2px);
+            transform-origin: 50px 50px;
+        }
+
+        /* Руки немного разводятся */
+        .robot-pet-container:hover .pet-arm-left { transform: rotate(5deg); transform-origin: 25px 65px; }
+        .robot-pet-container:hover .pet-arm-right { transform: rotate(-5deg); transform-origin: 75px 65px; }
+
+        /* --- Ключевые кадры CSS Анимаций --- */
+        @keyframes floatRobot {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes scaleShadow {
+            0%, 100% { transform: scale(1); opacity: 0.15; }
+            50% { transform: scale(0.7); opacity: 0.05; }
+        }
+
+        @keyframes antennaBlink {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; filter: drop-shadow(0 0 3px var(--glow-color, #00f0ff)); }
+        }
+
+        @keyframes bellyPulse {
+            0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px var(--glow-color, #00f0ff)); }
+            50% { opacity: 1; filter: drop-shadow(0 0 5px var(--glow-color, #00f0ff)); }
+        }
+
+        /* Панель управления */
+        .demo-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-btn {
+            background: #2c2c35;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .demo-btn:hover { background: #3a3a45; border-color: #00f0ff; }
+        .demo-btn.active { background: #00f0ff; color: #1e1e24; border-color: #00f0ff; box-shadow: 0 0 10px rgba(0,240,255,0.5); }
+    </style>
+</head>
+<body>
+
+    <div class="robot-pet-container">
+        <!-- Увеличил viewBox по вертикали, чтобы влезло тело (0 0 100 140) -->
+        <svg id="robot-pet-svg" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+            
+            <!-- Тень (теперь ниже, под ногами) -->
+            <ellipse class="pet-shadow" cx="50" cy="135" rx="25" ry="5" fill="#000" opacity="0.15" />
+            
+            <!-- Уши (остались от твоей версии) -->
+            <rect x="16" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
+            <rect x="78" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
+
+            <!-- Антенна -->
+            <line x1="50" y1="20" x2="50" y2="10" stroke="#3a3a45" stroke-width="2.5" stroke-linecap="round" />
+            <circle class="pet-neon pet-antenna-glow" cx="50" cy="8" r="4" fill="#00f0ff" style="--glow-color: #00f0ff;" />
+
+            <!-- НОГИ -->
+            <g class="pet-legs">
+                <!-- Левая нога -->
+                <rect class="pet-metal pet-leg" x="33" y="105" width="10" height="25" rx="5" />
+                <rect class="pet-dark-plate" x="35" y="122" width="6" height="6" rx="2" />
+                <!-- Правая нога -->
+                <rect class="pet-metal pet-leg" x="57" y="105" width="10" height="25" rx="5" />
+                <rect class="pet-dark-plate" x="59" y="122" width="6" height="6" rx="2" />
+            </g>
+
+            <!-- РУКИ -->
+            <g class="pet-arms">
+                <!-- Левая рука -->
+                <rect class="pet-metal pet-arm pet-arm-left" x="12" y="65" width="10" height="35" rx="5" />
+                <circle class="pet-neon pet-joint" cx="17" cy="70" r="2" fill="#00f0ff" />
+                <!-- Правая рука -->
+                <rect class="pet-metal pet-arm pet-arm-right" x="78" y="65" width="10" height="35" rx="5" />
+                <circle class="pet-neon pet-joint" cx="83" cy="70" r="2" fill="#00f0ff" />
+            </g>
+
+            <!-- ТУЛОВИЩЕ (Живот) -->
+            <g class="pet-torso">
+                <rect class="pet-metal" x="25" y="60" width="50" height="55" rx="15" />
+                <!-- Панель на животе -->
+                <rect class="pet-dark-plate" x="32" y="68" width="36" height="38" rx="8" />
+                <!-- Пульсирующий индикатор (LED) -->
+                <circle class="pet-neon pet-belly-led" cx="50" cy="87" r="6" fill="#00f0ff" style="--glow-color: #00f0ff;" />
+                <!-- Декоративные линии -->
+                <line x1="38" y1="75" x2="62" y2="75" stroke="#2c2c35" stroke-width="1" />
+                <line x1="38" y1="80" x2="42" y2="80" stroke="#2c2c35" stroke-width="1" />
+            </g>
+            
+            <!-- ГОЛОВА (Твоя оригинальная, немного смещена вверх) -->
+            <g class="pet-head">
+                <rect class="pet-metal" x="22" y="18" width="56" height="50" rx="18" />
+                
+                <!-- Экран лица -->
+                <rect class="pet-dark-plate" x="28" y="24" width="44" height="30" rx="10" />
+                
+                <!-- Глаза -->
+                <g class="pet-eyes">
+                    <circle class="pet-neon pet-eye" id="pet-eye-left" cx="41" cy="36" r="4.5" fill="#00f0ff" />
+                    <circle class="pet-neon pet-eye" id="pet-eye-right" cx="59" cy="36" r="4.5" fill="#00f0ff" />
+                </g>
+                
+                <!-- Рот -->
+                <path class="pet-neon pet-mouth" id="pet-mouth-path" d="M 43 46 Q 50 46 57 46" stroke="#00f0ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </g>
+
+        </svg>
+    </div>
+
+    <!-- Панель демо -->
+    <div class="demo-panel">
+        <button class="demo-btn active" onclick="changeState('neutral', this)">Нейтральный</button>
+        <button class="demo-btn" onclick="changeState('thinking', this)">Думает...</button>
+        <button class="demo-btn" onclick="changeState('happy', this)">Радуется</button>
+        <button class="demo-btn" onclick="changeState('error', this)">Ошибка</button>
+    </div>
+
+    <script>
+        class RobotPet {
+            constructor(svgId) {
+                this.svg = document.getElementById(svgId);
+                this.mouth = this.svg.querySelector('#pet-mouth-path');
+                this.eyes = this.svg.querySelectorAll('.pet-eye');
+                this.antenna = this.svg.querySelector('.pet-antenna-glow');
+                this.bellyLed = this.svg.querySelector('.pet-belly-led');
+                this.joints = this.svg.querySelectorAll('.pet-joint'); // Шарниры рук
+                
+                // Элементы, которые меняют цвет
+                this.neonElements = [...this.eyes, this.mouth, this.antenna, this.bellyLed, ...this.joints];
+            }
+
+            // Вспомогательный метод для обновления цвета всех неоновых элементов
+            _setNeonColor(color) {
+                this.neonElements.forEach(el => {
+                    if (el.tagName === 'path' || el.tagName === 'line') {
+                        el.style.stroke = color;
+                    } else {
+                        el.style.fill = color;
+                    }
+                });
+                // Обновляем CSS переменную для drop-shadow в анимациях
+                this.svg.style.setProperty('--glow-color', color);
+            }
+
+            _resetEyes() {
+                this.eyes.forEach(eye => {
+                    eye.style.transform = 'scale(1)';
+                    eye.setAttribute('r', '4.5');
+                });
+            }
+
+            // --- Состояния ---
+
+            toNeutral() {
+                this._resetEyes();
+                this._setNeonColor('#00f0ff'); // Голубой
+                this.mouth.setAttribute('d', 'M 43 46 Q 50 46 57 46'); // Прямой рот
+                this.antenna.style.animationDuration = '1.5s';
+                this.bellyLed.style.animationDuration = '2s'; // Спокойная пульсация
+            }
+
+            toThinking() {
+                this._resetEyes();
+                this._setNeonColor('#f1c40f'); // Янтарный
+                this.mouth.setAttribute('d', 'M 45 46 Q 50 46 55 46'); // Узкий рот
+                
+                this.eyes.forEach(eye => eye.setAttribute('r', '3')); // Прищурился
+                
+                this.antenna.style.animationDuration = '0.4s'; // Быстро мигает
+                this.bellyLed.style.animationDuration = '0.8s'; // Быстро пульсирует
+            }
+
+            toHappy() {
+                this._resetEyes();
+                this._setNeonColor('#2ecc71'); // Зеленый
+                this.mouth.setAttribute('d', 'M 41 43 Q 50 53 59 43'); // Улыбка (корректировал координаты под новую позицию головы)
+                
+                this.eyes.forEach(eye => eye.setAttribute('r', '5.5')); // Большие глаза
+                
+                this.antenna.style.animationDuration = '1s';
+                this.bellyLed.style.animationDuration = '1.5s';
+            }
+
+            toError() {
+                this._resetEyes();
+                this._setNeonColor('#e74c3c'); // Красный
+                this.mouth.setAttribute('d', 'M 43 49 Q 50 41 57 49'); // Грустный рот
+                
+                this.antenna.style.animationDuration = '0.2s'; // Паника
+                this.bellyLed.style.animationDuration = '0.4s';
+            }
+        }
+
+        // Инициализация
+        const pet = new RobotPet('robot-pet-svg');
+
+        // Управление демо-панелью
+        function changeState(state, btn) {
+            document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            switch(state) {
+                case 'neutral': pet.toNeutral(); break;
+                case 'thinking': pet.toThinking(); break;
+                case 'happy': pet.toHappy(); break;
+                case 'error': pet.toError(); break;
+            }
+        }
+    </script>
+</body>
+</html>

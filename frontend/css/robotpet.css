@@ -1,0 +1,140 @@
+/* Контейнер робота-питомца */
+.robot-pet-container {
+    width: 150px;
+    height: 200px;
+    user-select: none;
+    position: relative;
+    margin: 0 auto;
+}
+
+/* Анимация левитации всего робота */
+#robot-pet-svg {
+    width: 100%;
+    height: 100%;
+    animation: floatRobot 4s ease-in-out infinite;
+}
+
+/* Анимация тени под роботом */
+.pet-shadow {
+    transform-origin: 50% 95%;
+    /* Точка трансформации в центре тени */
+    animation: scaleShadow 4s ease-in-out infinite;
+}
+
+/* Базовые стили для элементов SVG */
+.pet-metal {
+    fill: #eaeaf0;
+    stroke: #868688;
+    stroke-width: 2;
+    transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+.pet-dark-plate {
+    fill: #fff;
+    stroke: #bcbcbc;
+    stroke-width: 1.5;
+}
+
+/* Группы элементов для анимации при наведении */
+.pet-head,
+.pet-arm,
+.pet-leg {
+    transition: transform 0.3s ease-out;
+}
+
+/* Элементы неонового свечения (глаза, рот, антенна, индикатор) */
+.pet-neon {
+    transition: fill 0.3s ease, stroke 0.3s ease, r 0.2s ease, transform 0.2s ease;
+}
+
+.pet-eye {
+    transform-origin: center;
+}
+
+.pet-antenna-glow {
+    transform-origin: 50px 10px;
+    animation: antennaBlink 1.5s infinite ease-in-out;
+}
+
+/* Индикатор на животе - пульсация */
+.pet-belly-led {
+    animation: bellyPulse 2s infinite ease-in-out;
+}
+
+/* --- Эффекты при наведении мыши --- */
+
+/* Глаза увеличиваются */
+.robot-pet-container:hover .pet-eye {
+    transform: scale(1.15);
+}
+
+/* Голова немного наклоняется */
+.robot-pet-container:hover .pet-head {
+    transform: rotate(-2deg) translateY(-2px);
+    transform-origin: 50px 50px;
+}
+
+/* Руки немного разводятся */
+.robot-pet-container:hover .pet-arm-left {
+    transform: rotate(5deg);
+    transform-origin: 25px 65px;
+}
+
+.robot-pet-container:hover .pet-arm-right {
+    transform: rotate(-5deg);
+    transform-origin: 75px 65px;
+}
+
+/* --- Ключевые кадры CSS Анимаций --- */
+@keyframes floatRobot {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes scaleShadow {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.15;
+    }
+
+    50% {
+        transform: scale(0.7);
+        opacity: 0.05;
+    }
+}
+
+@keyframes antennaBlink {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 3px var(--glow-color, #00f0ff));
+    }
+}
+
+@keyframes bellyPulse {
+
+    0%,
+    100% {
+        opacity: 0.7;
+        filter: drop-shadow(0 0 2px var(--glow-color, #00f0ff));
+    }
+
+    50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 5px var(--glow-color, #00f0ff));
+    }
+}
