@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Personal AI Agent (PAIAgent) - Lightweight Personal AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Features Section */
+        .features {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            background: #f8f9fa;
+            padding: 80px 0;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tech-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        /* Installation Section */
+        .installation {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .step {
+            margin-bottom: 30px;
+        }
+
+        .step h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        /* Comparison Table */
+        .comparison {
+            background: #f8f9fa;
+            padding: 80px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        /* Support Section */
+        .support {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .support h2 {
+            margin-bottom: 20px;
+        }
+
+        .support p {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>🤖 Open Personal AI Agent</h1>
+            <p>A lightweight, fast, and powerful Personal AI Agent running locally on your computer or server. No bloated frameworks, just clean TypeScript, high-speed execution, and total control over your private data.</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/nordevelopment/OpenPersonalAIAgent" class="btn btn-primary">View on GitHub</a>
+                <a href="#installation" class="btn btn-secondary">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">⚡ Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Dual Interfaces</h3>
+                    <p>Beautiful cyberpunk-themed Web UI + Remote chat access via Telegram bot for seamless communication anywhere.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👁️</div>
+                    <h3>AI Vision</h3>
+                    <p>Attach images in chat - the AI automatically resizes and converts them to analyze visuals with precision.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Modular System Prompt</h3>
+                    <p>Agent's personality and instructions compiled dynamically from simple Markdown files for complete customization.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Web Settings Panel</h3>
+                    <p>Forget manual .env editing. Automatic setup wizard on first launch with secure local configuration storage.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Powerful Tools</h3>
+                    <p>File system management, web scraping, and image generation with smart fallback logic for reliability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Semantic Memory</h3>
+                    <p>SQLite + Vector search saves chat sessions with intelligent semantic search capabilities.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack">
+        <div class="container">
+            <h2 class="section-title">🛠️ Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>Backend</h4>
+                    <p>Node.js, Fastify, TypeScript</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Frontend</h4>
+                    <p>EJS, Vanilla CSS (Cyberpunk), Vanilla JS</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Database</h4>
+                    <p>better-sqlite3 & sqlite-vec</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Media Processing</h4>
+                    <p>sharp (image optimization)</p>
+                </div>
+                <div class="tech-item">
+                    <h4>HTTP & Scraping</h4>
+                    <p>axios + cheerio</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Telegram</h4>
+                    <p>telegraf integration</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="installation" id="installation">
+        <div class="container">
+            <h2 class="section-title">⚙️ Quick Installation</h2>
+            
+            <div class="step">
+                <h3>1. Prerequisites</h3>
+                <p>Ensure you have Node.js (v20.x or later) and npm (v9.x or later) installed.</p>
+            </div>
+
+            <div class="step">
+                <h3>2. Clone & Install Dependencies</h3>
+                <div class="code-block">git clone https://github.com/nordevelopment/OpenPersonalAIAgent.git
+cd OpenPersonalAIAgent
+npm install</div>
+            </div>
+
+            <div class="step">
+                <h3>3. Configure Environment</h3>
+                <div class="code-block">cp .env.example .env</div>
+                <p>Or configure directly in your browser on first launch!</p>
+            </div>
+
+            <div class="step">
+                <h3>4. Run the Application</h3>
+                <div class="code-block"># Development mode (with hot reloading)
+npm run dev
+
+# Production mode
+npm run build
+npm start</div>
+                <p>Server starts at <strong>http://127.0.0.1:3000</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="comparison">
+        <div class="container">
+            <h2 class="section-title">⚖️ Performance Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature / Metric</th>
+                        <th>PAIAgent</th>
+                        <th>Open WebUI</th>
+                        <th>LibreChat</th>
+                        <th>AnythingLLM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tech Stack</strong></td>
+                        <td>Node.js + Fastify + SQLite</td>
+                        <td>Python + Go + Svelte</td>
+                        <td>Node + React + Mongo + Redis</td>
+                        <td>Electron / Docker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RAM Footprint</strong></td>
+                        <td>~50-100 MB</td>
+                        <td>1.5 GB+ (Docker)</td>
+                        <td>1 GB+ (Multi-container)</td>
+                        <td>500 MB+ (Docker)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dependencies</strong></td>
+                        <td>None (Just Node.js)</td>
+                        <td>Docker & Ollama</td>
+                        <td>Docker, Mongo, Redis</td>
+                        <td>Docker or Desktop</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Startup Time</strong></td>
+                        <td>&lt; 1 second</td>
+                        <td>30-60 seconds</td>
+                        <td>30-60 seconds</td>
+                        <td>10-20 seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Database</strong></td>
+                        <td>SQLite (+ sqlite-vec)</td>
+                        <td>PostgreSQL/MySQL</td>
+                        <td>MongoDB + Meilisearch</td>
+                        <td>Vector DB + SQLite</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ideal For</strong></td>
+                        <td>Personal use</td>
+                        <td>Multi-user hosting</td>
+                        <td>Enterprise chat</td>
+                        <td>Document RAG</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section class="support">
+        <div class="container">
+            <h2>💖 Support the Project</h2>
+            <p>If PAIAgent saved your RAM and made your local AI workflow smoother, consider supporting its development.</p>
+            <a href="https://github.com/sponsors/nordevelopment" class="btn btn-primary">Sponsor on GitHub</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p><strong>Open Personal AI Agent (PAIAgent)</strong></p>
+            <p>Author: Norayr Petrosyan</p>
+            <p>Open-source under MIT License</p>
+            <p>© 2024 All Rights Reserved</p>
+        </div>
+    </footer>
+</body>
+</html>
