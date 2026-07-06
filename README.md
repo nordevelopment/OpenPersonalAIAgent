@@ -47,31 +47,30 @@ This project is designed for anyone who wants a personal AI assistant that can m
 
 ### 1. Clone & Install Dependencies
 ```bash
+git clone https://github.com/sponsors/nordevelopment
+or you can download the zip file from https://github.com/sponsors/nordevelopment
+
 npm install
 ```
-
-### 2. Configure Environment Variables
-Copy `.env.example` to a new `.env` file:
+### 2. Run the Application
 ```bash
-cp .env.example .env
-```
-*(You can write keys here, or configure them directly in your browser on first launch!)*
+# Run Server - build and start app
+# Start the compiled production app
+npm start
 
-### 3. Run the Application
-```bash
+
+# For Developers
 # Run the development server (with hot reloading)
 npm run dev
 
 # Recreate/reset the SQLite database schema
 npm run db:reset
 
-# Compile TypeScript to JavaScript
-npm run build
-
-# Start the compiled production app
-npm start
+# run only build command
+npm run buld 
 ```
-The server will start at `http://127.0.0.1:3000`. Open it in your browser. If keys are missing, you will be automatically redirected to the settings wizard page.
+The server will start at `http://127.0.0.1:3000`. Open it in your browser. 
+First run or no config files found, you will be automatically redirected to the settings wizard page.
 
 ---
 

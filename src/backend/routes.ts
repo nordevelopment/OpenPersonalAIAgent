@@ -8,6 +8,7 @@ import { ChatManager } from './ai/ChatManager.js';
 import { AgentService } from './ai/AgentService.js';
 import { TelegramBot } from './services/TelegramBot.js';
 import { config } from './config.js';
+import { updateEnvFile } from './utils/envHelper.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -223,54 +224,106 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   app.post('/api/settings', async (request: FastifyRequest<{ Body: { aiApiKey?: string, aiApiUrl?: string, aiDefaultModel?: string, telegramBotToken?: string, togetherApiKey?: string, xaiApiKey?: string } }>, reply: FastifyReply) => {
     const { aiApiKey, aiApiUrl, aiDefaultModel, telegramBotToken, togetherApiKey, xaiApiKey } = request.body;
 
+    const envPath = path.join(process.cwd(), '.env');
     const configJsonPath = path.join(process.cwd(), 'config.json');
-    let configData: Record<string, string> = {};
-    if (fs.existsSync(configJsonPath)) {
-      try {
-        const raw = fs.readFileSync(configJsonPath, 'utf-8');
-        if (raw.trim()) {
-          configData = JSON.parse(raw);
-        }
-      } catch (err) {
-        // ignore
-      }
-    }
-
     const isNewKey = (key?: string) => key !== undefined && key !== '******';
 
-    if (isNewKey(aiApiKey)) {
-      configData.ai_api_key = aiApiKey!.trim();
-      config.AI_API_KEY = configData.ai_api_key;
-    }
-    if (aiApiUrl !== undefined) {
-      const cleanUrl = aiApiUrl.trim();
-      configData.ai_api_url = cleanUrl;
-      config.AI_API_URL = cleanUrl;
-    }
-    if (aiDefaultModel !== undefined) {
-      const cleanModel = aiDefaultModel.trim();
-      configData.ai_default_model = cleanModel;
-      config.AI_DEFAULT_MODEL = cleanModel;
-    }
-    if (isNewKey(telegramBotToken)) {
-      const cleanToken = telegramBotToken!.trim();
-      configData.telegram_bot_token = cleanToken;
-      config.TELEGRAM_BOT_TOKEN = cleanToken;
-      // Reload the Telegram Bot dynamically in background without blocking response
-      telegramBot.updateToken(cleanToken).catch(err => {
-        request.log.error({ err }, 'Failed to reload Telegram bot dynamically');
-      });
-    }
-    if (isNewKey(togetherApiKey)) {
-      configData.together_api_key = togetherApiKey!.trim();
-      config.images.together.key = configData.together_api_key;
-    }
-    if (isNewKey(xaiApiKey)) {
-      configData.xai_api_key = xaiApiKey!.trim();
-      config.images.xai.key = configData.xai_api_key;
+    if (fs.existsSync(envPath)) {
+      // .env mode
+      const envUpdates: Record<string, string> = {};
+
+      if (isNewKey(aiApiKey)) {
+        const clean = aiApiKey!.trim();
+        envUpdates.AI_API_KEY = clean;
+        config.AI_API_KEY = clean;
+      }
+      if (aiApiUrl !== undefined) {
+        const clean = aiApiUrl.trim();
+        envUpdates.AI_API_URL = clean;
+        config.AI_API_URL = clean;
+      }
+      if (aiDefaultModel !== undefined) {
+        const clean = aiDefaultModel.trim();
+        envUpdates.AI_DEFAULT_MODEL = clean;
+        config.AI_DEFAULT_MODEL = clean;
+      }
+      if (isNewKey(telegramBotToken)) {
+        const clean = telegramBotToken!.trim();
+        envUpdates.TELEGRAM_BOT_TOKEN = clean;
+        config.TELEGRAM_BOT_TOKEN = clean;
+        telegramBot.updateToken(clean).catch(err => {
+          request.log.error({ err }, 'Failed to reload Telegram bot dynamically');
+        });
+      }
+      if (isNewKey(togetherApiKey)) {
+        const clean = togetherApiKey!.trim();
+        envUpdates.TOGETHER_API_KEY = clean;
+        config.images.together.key = clean;
+      }
+      if (isNewKey(xaiApiKey)) {
+        const clean = xaiApiKey!.trim();
+        envUpdates.XAI_API_KEY = clean;
+        config.images.xai.key = clean;
+      }
+
+      updateEnvFile(envPath, envUpdates);
+
+      // Clean up config.json if it exists to prevent conflict/duplication
+      if (fs.existsSync(configJsonPath)) {
+        try {
+          fs.unlinkSync(configJsonPath);
+        } catch (e) {
+          // ignore
+        }
+      }
+    } else {
+      // config.json mode
+      let configData: Record<string, string> = {};
+      if (fs.existsSync(configJsonPath)) {
+        try {
+          const raw = fs.readFileSync(configJsonPath, 'utf-8');
+          if (raw.trim()) {
+            configData = JSON.parse(raw);
+          }
+        } catch (err) {
+          // ignore
+        }
+      }
+
+      if (isNewKey(aiApiKey)) {
+        configData.ai_api_key = aiApiKey!.trim();
+        config.AI_API_KEY = configData.ai_api_key;
+      }
+      if (aiApiUrl !== undefined) {
+        const cleanUrl = aiApiUrl.trim();
+        configData.ai_api_url = cleanUrl;
+        config.AI_API_URL = cleanUrl;
+      }
+      if (aiDefaultModel !== undefined) {
+        const cleanModel = aiDefaultModel.trim();
+        configData.ai_default_model = cleanModel;
+        config.AI_DEFAULT_MODEL = cleanModel;
+      }
+      if (isNewKey(telegramBotToken)) {
+        const cleanToken = telegramBotToken!.trim();
+        configData.telegram_bot_token = cleanToken;
+        config.TELEGRAM_BOT_TOKEN = cleanToken;
+        telegramBot.updateToken(cleanToken).catch(err => {
+          request.log.error({ err }, 'Failed to reload Telegram bot dynamically');
+        });
+      }
+      if (isNewKey(togetherApiKey)) {
+        configData.together_api_key = togetherApiKey!.trim();
+        config.images.together.key = configData.together_api_key;
+      }
+      if (isNewKey(xaiApiKey)) {
+        configData.xai_api_key = xaiApiKey!.trim();
+        config.images.xai.key = configData.xai_api_key;
+      }
+
+      fs.writeFileSync(configJsonPath, JSON.stringify(configData, null, 2), 'utf-8');
     }
 
-    fs.writeFileSync(configJsonPath, JSON.stringify(configData, null, 2), 'utf-8');
     return reply.send({ success: true, message: 'Settings saved successfully' });
   });
 
