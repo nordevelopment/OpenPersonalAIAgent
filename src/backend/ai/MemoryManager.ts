@@ -25,7 +25,7 @@ export interface SearchResult {
 }
 
 export class MemoryManager {
-  constructor(private db: DatabaseClient) {}
+  constructor(private db: DatabaseClient) { }
 
   /**
    * Get semantic embedding for text
@@ -189,7 +189,7 @@ export class MemoryManager {
   }
 
   async getRelevantContext(sessionId: string, query: string, limit: number = 3): Promise<string> {
-    if (!query || query.trim().length < 10) return '';
+    if (!query || query.trim().length < 15) return '';
 
     try {
       // Optimization: Skip embedding API call if there are no memories stored for this session
@@ -202,15 +202,15 @@ export class MemoryManager {
 
     console.log('[MemoryManager] Relevant memories query:', query);
 
-    // Lower threshold to 0.4 to ensure all relevant session memories are retrieved
+    // Lower threshold to 0.5 to ensure all relevant session memories are retrieved
     // even for indirect queries. The LLM will ignore them if they are irrelevant to the prompt.
-    const threshold = 0.4;
-    
+    const threshold = 0.5;
+
     const results = await this.searchMemories(sessionId, query, limit);
     const filtered = results.filter(r => r.similarity > threshold);
     console.log('[MemoryManager] Relevant memories - filtered:', filtered);
     if (filtered.length === 0) return '';
-    
+
     const contextItems = filtered.map(r => `  - ${r.memory.key}: ${r.memory.value}`);
     return `\n\n[YOUR MEMORIES]\n${contextItems.join('\n')}`;
   }
