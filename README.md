@@ -6,6 +6,8 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/commits/main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
+<a href="https://nordevelopment.github.io/OpenPersonalAIAgent/">Open Personal AI Agent project page</a>
+
 A lightweight, fast and Personal AI Agent (PAIAgent) running locally on your computer or server. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
 
 ---
