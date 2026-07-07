@@ -12,14 +12,28 @@ import { AITools } from './AITools.js';
 import { MemoryManager } from './MemoryManager.js';
 import { config } from '../config.js';
 
+export interface ChatManagerDeps {
+  aiClient: AIClient;
+  historyManager: ChatHistoryManager;
+  tools: AITools;
+  memoryManager: MemoryManager;
+  sessionManager: SessionManager;
+}
+
 export class ChatManager {
-  constructor(
-    private aiClient: AIClient,
-    private historyManager: ChatHistoryManager,
-    private tools: AITools,
-    private memoryManager: MemoryManager,
-    private sessionManager: SessionManager
-  ) { }
+  private aiClient: AIClient;
+  private historyManager: ChatHistoryManager;
+  private tools: AITools;
+  private memoryManager: MemoryManager;
+  private sessionManager: SessionManager;
+
+  constructor(deps: ChatManagerDeps) {
+    this.aiClient = deps.aiClient;
+    this.historyManager = deps.historyManager;
+    this.tools = deps.tools;
+    this.memoryManager = deps.memoryManager;
+    this.sessionManager = deps.sessionManager;
+  }
 
   /**
    * Send message to AI

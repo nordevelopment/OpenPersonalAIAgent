@@ -1,6 +1,6 @@
 /**
- * AIClient.ts - Клиент для общения с AI API
- * Отвечает за отправку сообщений в AI и получение ответов
+ * AIClient.ts - Client for communication with AI API
+ * Responsible for sending messages to AI and receiving responses
  * Author: Norayr Petrosyan
  */
 import { config } from '../config.js';
@@ -17,13 +17,13 @@ const __dirname = path.dirname(__filename);
 export interface AIMessages {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string | AiContentItem[] | null;
-  tool_call_id?: string; // ОБЯЗАТЕЛЬНО для role: 'tool'
-  tool_calls?: any[];    // Для role: 'assistant' при вызове инструментов
+  tool_call_id?: string; // For role: 'tool' 
+  tool_calls?: any[];    // For role: 'assistant' when calling tools
 }
 
 export interface AIResponse {
   content: string;
-  toolCalls?: any[]; // Если ИИ захотел вызвать инструмент
+  toolCalls?: any[]; // If the AI wants to call a tool
   reasoning?: string;
   usage?: {
     promptTokens: number;
@@ -42,7 +42,7 @@ export class AIClient {
     return config.AI_API_KEY;
   }
   get apiUrl(): string {
-    return config.AI_API_URL || 'https://openrouter.ai/api/v1/chat/completions';
+    return config.AI_API_URL || '';
   }
   get model(): string {
     return config.AI_DEFAULT_MODEL;
@@ -55,7 +55,7 @@ export class AIClient {
     const mainAgentPath = path.join(__dirname, `../../../agents/${agentId}`);
 
     if (fs.existsSync(mainAgentPath)) {
-      // Определяем строгий порядок загрузки файлов
+      // Strict order of file loading
       const order = [
         'Identity.md',
         'User.md',
@@ -84,12 +84,12 @@ export class AIClient {
   }
 
   /**
-   * Отправить сообщение в AI
-   * @param messages - массив сообщений (история диалога)
-   * @param tools - список доступных инструментов (из AITools.getAvailableTools())
-   * @param agentId - ID агента (название папки в agents/)
-   * @param tools - список доступных инструментов
-   * @param additionalSystem - дополнительный системный промпт (например, контекст памяти)
+   * Send a message to AI
+   * @param messages - array of messages (dialog history)
+   * @param tools - list of available tools (from AITools.getAvailableTools())
+   * @param agentId - ID of the agent (folder name in agents/)
+   * @param tools - list of available tools
+   * @param additionalSystem - additional system prompt (e.g., memory context)
    * @returns ответ от AI
    */
   async sendMessage(messages: AIMessages[], agentId?: string, tools?: any[], additionalSystem?: string): Promise<AIResponse> {
@@ -126,7 +126,7 @@ export class AIClient {
       return msg;
     }));
 
-    // Добавить системный промпт в начало сообщений
+    // Add system prompt to the beginning of messages
     const messagesWithSystem: AIMessages[] = [];
     let finalSystemPrompt = systemPrompt;
     if (additionalSystem) {
@@ -140,8 +140,8 @@ export class AIClient {
     }
     messagesWithSystem.push(...processedMessages);
 
-    // Здесь будет реальный код для отправки запроса к AI API
-    // Например, с использованием axios
+    // Real code to send a request to the AI API
+    // For example, using axios
     const requestBody: Record<string, unknown> = {
       model: this.model,
       messages: messagesWithSystem,
@@ -150,7 +150,7 @@ export class AIClient {
       top_p: config.AI_TOP_P,
     };
 
-    // Если инструменты переданы, добавляем их в запрос
+    // If tools are passed, add them to the request
     if (tools && tools.length > 0) {
       requestBody.tools = tools;
       requestBody.tool_choice = 'auto';
@@ -178,7 +178,7 @@ export class AIClient {
       const message = data.choices?.[0]?.message;
       const reasoning = message?.reasoning_content || message?.reasoning || undefined;
 
-      // Если нет ни текста, ни вызова функций, ни рассуждений — тогда беда
+      // If there is no text, no function calls, no reasoning, then there is trouble
       if (!message?.content && (!message?.tool_calls || message.tool_calls.length === 0) && !reasoning) {
         return {
           content: 'Error: AI response not received',
@@ -186,7 +186,7 @@ export class AIClient {
       }
 
       return {
-        content: message?.content || '', // Пустая строка — это ок, если есть tool_calls
+        content: message?.content || '', // Empty string is ok if there are tool calls
         toolCalls: message?.tool_calls || undefined,
         reasoning: reasoning,
       };

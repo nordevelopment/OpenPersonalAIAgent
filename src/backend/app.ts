@@ -69,7 +69,13 @@ export async function buildApp(): Promise<FastifyInstance> {
     const memoryManager = new MemoryManager(db);
     const tools = new AITools(memoryManager);
     const agentService = new AgentService();
-    const chatManager = new ChatManager(aiClient, historyManager, tools, memoryManager, sessionManager);
+    const chatManager = new ChatManager({
+      aiClient,
+      historyManager,
+      tools,
+      memoryManager,
+      sessionManager
+    });
 
     // --- Telegram Bot Service initialization---
     const telegramBot = new TelegramBot(chatManager);
