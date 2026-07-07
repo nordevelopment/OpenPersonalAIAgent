@@ -11,7 +11,7 @@ async function main() {
   console.log('=== WebPageContent Manual Tests ===\n');
   try {
 
-    const url = 'https://en.wikipedia.org/wiki/Artificial_intelligence';
+    const url = 'https://alptransfer.com';
 
     const result = await webPage.fetchPage({ url });
     console.log('Result length:', result.length);
