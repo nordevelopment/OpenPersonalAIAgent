@@ -5,7 +5,7 @@
   :root {
     --cyber-cyan-300: #87eaf2;
     --cyber-cyan-400: #54d1db;
-    --cyber-cyan-500: #00f0ff;
+    --cyber-cyan-500: #0ee0ef;
     --cyber-cyan-600: #00c4cc;
     --cyber-cyan-700: #0097a7;
     --cyber-cyan-900: #005d6a;
@@ -53,7 +53,7 @@
     --cyber-white-200: #edf2f7;
     --cyber-white-300: #e2e8f0;
     --cyber-holo-light-bg: #f0fdfa;
-    --cyber-background: #011318cc;
+    --cyber-background: #021920cc;
     --cyber-glass: rgba(255, 255, 255, 0.05);
     --cyber-glass-cyan: rgba(0, 240, 255, 0.05);
     --cyber-glass-magenta: rgba(255, 42, 109, 0.05);
@@ -201,7 +201,7 @@
     font-size: var(--text-base);
     line-height: 1.4;
     color: var(--color-text-primary);
-    background-color: var(--color-bg-primary);
+    background-color: var(--cyber-background);
   }
 
   code {

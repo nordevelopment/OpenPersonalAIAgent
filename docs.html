@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIAgent Documentation - Lightweight Personal AI Assistant</title>
+    <!-- Google Fonts for Cyberpunk Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Link to the Cybercore CSS Framework -->
+    <link rel="stylesheet" href="frontend/css/cybercore.css">
+
+    <style>
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+        }
+
+        .docs-header {
+            padding: var(--space-xl) 0;
+            border-bottom: 1px solid var(--color-border-default);
+            background: linear-gradient(180deg, var(--cyber-void-800) 0%, var(--cyber-void-700) 100%);
+            text-align: center;
+        }
+
+        .docs-title {
+            font-family: var(--font-display);
+            font-size: var(--text-4xl);
+            color: var(--cyber-cyan-500);
+            text-shadow: var(--glow-text-cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .docs-subtitle {
+            font-family: var(--font-body);
+            color: var(--color-text-secondary);
+            margin-top: var(--space-xs);
+        }
+
+        .docs-layout {
+            display: flex;
+            gap: var(--space-xl);
+            padding: var(--space-xl) 0 var(--space-3xl);
+            position: relative;
+        }
+
+        .docs-sidebar {
+            width: 280px;
+            position: sticky;
+            top: 90px;
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+            flex-shrink: 0;
+            padding-right: var(--space-sm);
+        }
+
+        /* Custom Scrollbar for Sidebar */
+        .docs-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .docs-sidebar::-webkit-scrollbar-track {
+            background: var(--cyber-void-900);
+        }
+
+        .docs-sidebar::-webkit-scrollbar-thumb {
+            background: var(--cyber-cyan-900);
+            border-radius: var(--radius-sm);
+        }
+
+        .docs-content {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        /* Menu Styles */
+        .docs-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2xs);
+        }
+
+        .docs-menu__link {
+            display: block;
+            padding: var(--space-xs) var(--space-sm);
+            border-left: 2px solid var(--color-border-default);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all var(--duration-fast);
+        }
+
+        .docs-menu__link:hover,
+        .docs-menu__link--active {
+            border-color: var(--cyber-cyan-500);
+            color: var(--cyber-cyan-500);
+            background: var(--cyber-glass-cyan);
+            text-shadow: var(--glow-text-cyan);
+        }
+
+        /* Content Sections */
+        .docs-section {
+            margin-bottom: var(--space-2xl);
+            scroll-margin-top: 100px;
+        }
+
+        .docs-section h2 {
+            font-family: var(--font-display);
+            font-size: var(--text-2xl);
+            color: var(--cyber-cyan-500);
+            text-shadow: var(--glow-text-cyan);
+            border-bottom: 1px solid var(--color-border-default);
+            padding-bottom: var(--space-xs);
+            margin-bottom: var(--space-md);
+            letter-spacing: 0.05em;
+        }
+
+        .docs-section h3 {
+            font-family: var(--font-display);
+            font-size: var(--text-lg);
+            color: var(--cyber-magenta-500);
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-xs);
+            letter-spacing: 0.05em;
+        }
+
+        .docs-section p {
+            font-family: var(--font-body);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+        }
+
+        .docs-section ul,
+        .docs-section ol {
+            margin-left: var(--space-lg);
+            margin-bottom: var(--space-md);
+            color: var(--color-text-primary);
+        }
+
+        .docs-section li {
+            margin-bottom: var(--space-3xs);
+            line-height: 1.5;
+        }
+
+        /* Terminal box */
+        .terminal-box {
+            position: relative;
+            background: var(--cyber-void-900);
+            border: 1px solid var(--cyber-magenta-500);
+            box-shadow: inset 0 0 15px rgba(255, 42, 109, 0.15);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--cyber-green-400);
+            overflow-x: auto;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 42, 109, 0.3);
+            margin-bottom: var(--space-sm);
+            padding-bottom: var(--space-3xs);
+            color: var(--cyber-magenta-500);
+            font-family: var(--font-display);
+            font-size: var(--text-xs);
+            letter-spacing: 0.1em;
+        }
+
+        .terminal-actions {
+            display: flex;
+            gap: var(--space-3xs);
+        }
+
+        .terminal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cyber-magenta-500);
+        }
+
+        .terminal-dot:nth-child(2) {
+            background: var(--cyber-cyan-500);
+        }
+
+        .terminal-dot:nth-child(3) {
+            background: var(--cyber-yellow-500);
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 15px;
+            top: 45px;
+        }
+
+        .highlight-text {
+            color: var(--cyber-cyan-500);
+            text-shadow: var(--glow-text-cyan);
+        }
+
+        /* Alerts */
+        .cyber-alert {
+            border: 1px solid var(--cyber-yellow-500);
+            background: rgba(252, 238, 10, 0.05);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+        }
+
+        .cyber-alert--danger {
+            border-color: var(--cyber-red-500);
+            background: rgba(255, 0, 60, 0.05);
+        }
+
+        .cyber-alert__title {
+            font-family: var(--font-display);
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--cyber-yellow-500);
+            margin-bottom: var(--space-3xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .cyber-alert--danger .cyber-alert__title {
+            color: var(--cyber-red-500);
+        }
+
+        @media (max-width: 768px) {
+            .docs-layout {
+                flex-direction: column;
+            }
+
+            .docs-sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                margin-bottom: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Cyberpunk Navbar -->
+    <nav class="cyber-nav">
+        <a href="index.html" class="cyber-nav__brand">PAIAgent</a>
+        <ul class="cyber-nav__links">
+            <li><a href="index.html" class="cyber-nav__link">Home</a></li>
+            <li><a href="docs.html" class="cyber-nav__link cyber-nav__link--active">Docs</a></li>
+            <li><a href="https://github.com/nordevelopment/OpenPersonalAIAgent" class="cyber-nav__link"
+                    target="_blank">GitHub</a></li>
+        </ul>
+        <div class="cyber-status">
+            <span class="cyber-status__dot"></span>
+            <span>SYSTEM: ONLINE</span>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="docs-header cyber-scanlines cyber-scanlines--scroll">
+        <div class="container">
+            <h1 class="docs-title">PAIAgent // DOCUMENTATION</h1>
+            <p class="docs-subtitle">Technical blueprint and system integration instructions for Open Personal AI Agent
+            </p>
+        </div>
+    </header>
+
+    <!-- Docs Layout -->
+    <div class="container">
+        <div class="docs-layout">
+            <!-- Sidebar Navigation -->
+            <aside class="docs-sidebar">
+                <ul class="docs-menu">
+                    <li><a href="#introduction" class="docs-menu__link docs-menu__link--active">1. Introduction</a></li>
+                    <li><a href="#quickstart" class="docs-menu__link">2. Quick Start</a></li>
+                    <li><a href="#configuration" class="docs-menu__link">3. Configuration</a></li>
+                    <li><a href="#modular-prompts" class="docs-menu__link">4. Modular Prompts</a></li>
+                    <li><a href="#tool-system" class="docs-menu__link">5. Tool Execution</a></li>
+                    <li><a href="#memory-db" class="docs-menu__link">6. Semantic Memory</a></li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="docs-content">
+
+                <!-- Introduction -->
+                <section id="introduction" class="docs-section">
+                    <h2>1. Introduction</h2>
+                    <p>
+                        <strong>Open Personal AI Agent (PAIAgent)</strong> is a state-of-the-art, hyper-lightweight
+                        local agent framework. Built with Node.js, Fastify, and TypeScript, it is designed for
+                        developers and power users who want a customized local AI assistant without the resource
+                        overhead of heavyweight enterprise solutions.
+                    </p>
+                    <p>
+                        Unlike solutions that require complex virtualization or multi-gigabyte container clusters,
+                        PAIAgent boots in less than a second and operates within a tiny memory footprint of 50-100 MB
+                        RAM.
+                    </p>
+                    <div class="cyber-alert">
+                        <div class="cyber-alert__title">💡 Core Architecture Goal</div>
+                        <p>Maintain total data privacy. Everything from system prompts to memory states and file
+                            workspaces is stored locally on your own machine. No external telemetry or cloud-forced
+                            databases.</p>
+                    </div>
+                </section>
+
+                <!-- Quick Start -->
+                <section id="quickstart" class="docs-section">
+                    <h2>2. Quick Start</h2>
+                    <p>Follow these steps to download, install, and run your agent locally.</p>
+
+                    <h3>Prerequisites</h3>
+                    <ul>
+                        <li><strong>Node.js</strong>: Version 20.x or later.</li>
+                        <li><strong>npm</strong>: Version 9.x or later.</li>
+                        <li><strong>Git</strong>: For cloning the repository.</li>
+                    </ul>
+
+                    <h3>Installation Command Sequence</h3>
+                    <p>Clone the repository and install npm packages:</p>
+
+                    <div class="terminal-box">
+                        <div class="terminal-header">
+                            <span>BASH // PROJECT SETUP</span>
+                            <div class="terminal-actions">
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                            </div>
+                        </div>
+                        <pre><code>git clone https://github.com/nordevelopment/OpenPersonalAIAgent.git
+cd OpenPersonalAIAgent
+npm install</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
+                            onclick="copyCode(this)">Copy</button>
+                    </div>
+
+                    <h3>Running The Agent</h3>
+                    <p>For active development, run the server with hot reloading enabled:</p>
+                    <div class="terminal-box">
+                        <div class="terminal-header">
+                            <span>BASH // DEV ENVIRONMENT</span>
+                            <div class="terminal-actions">
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                            </div>
+                        </div>
+                        <pre><code>npm run dev</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
+                            onclick="copyCode(this)">Copy</button>
+                    </div>
+
+                    <p>For production deployment, compile TypeScript assets first and execute the compiled JavaScript:
+                    </p>
+                    <div class="terminal-box">
+                        <div class="terminal-header">
+                            <span>BASH // PRODUCTION DEPLOY</span>
+                            <div class="terminal-actions">
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                            </div>
+                        </div>
+                        <pre><code>npm run build
+npm start</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
+                            onclick="copyCode(this)">Copy</button>
+                    </div>
+                </section>
+
+                <!-- Configuration -->
+                <section id="configuration" class="docs-section">
+                    <h2>3. Configuration & APIs</h2>
+                    <p>
+                        PAIAgent features a built-in <strong>Setup Wizard</strong>. When you launch the server for the
+                        first time, you will be automatically redirected to a web settings page.
+                    </p>
+                    <p>
+                        The configuration is saved in a local, git-ignored file named <code>config.json</code> in your
+                        project root. Alternatively, you can copy the environment template manually:
+                    </p>
+                    <div class="terminal-box">
+                        <div class="terminal-header">
+                            <span>BASH // ENV SETUP</span>
+                            <div class="terminal-actions">
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                            </div>
+                        </div>
+                        <pre><code>cp .env.example .env</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
+                            onclick="copyCode(this)">Copy</button>
+                    </div>
+
+                    <h3>Configurable API Providers</h3>
+                    <ul>
+                        <li><strong>Gemini API</strong>: The default LLM provider for chat interactions, code writing,
+                            and image analysis (Vision).</li>
+                        <li><strong>Together AI / Grok X.AI</strong>: Used as API providers for the image generation
+                            tool. Features automatic fallback if one service is offline.</li>
+                        <li><strong>Telegram Bot Token</strong>: Connects your local server to the Telegram Bot API for
+                            remote agent interactions.</li>
+                    </ul>
+
+                    <div class="cyber-alert cyber-alert--danger">
+                        <div class="cyber-alert__title">⚠️ Security Warning</div>
+                        <p>Do NOT commit your <code>config.json</code> or <code>.env</code> files to public Git
+                            repositories. They contain raw API keys and private tokens. Both files are listed in
+                            <code>.gitignore</code> by default.</p>
+                    </div>
+                </section>
+
+                <!-- Modular Prompts -->
+                <section id="modular-prompts" class="docs-section">
+                    <h2>4. Modular Prompts</h2>
+                    <p>
+                        PAIAgent compiles the system prompt dynamically on application boot. Instead of maintaining a
+                        single massive string, system instructions are divided into clean, readable Markdown documents
+                        located under your prompt workspace directory.
+                    </p>
+                    <h3>Prompts structure:</h3>
+                    <ul>
+                        <li><code>Agent.md</code>: The main ruleset defining how tools are structured and how responses
+                            should be formatted.</li>
+                        <li><code>Identity.md</code>: The persona, tone, and character definitions of the assistant.
+                        </li>
+                        <li><code>User.md</code>: Contextual information about the user (preferences, environment
+                            settings).</li>
+                        <li><code>Memory.md</code>: Guidelines on how the agent should structure memory summaries and
+                            search triggers.</li>
+                    </ul>
+                    <p>
+                        This modular layout allows you to easily edit agent behaviors using any Markdown editor without
+                        touching the core codebase.
+                    </p>
+                </section>
+
+                <!-- Tool System -->
+                <section id="tool-system" class="docs-section">
+                    <h2>5. Tool Execution (Function Calling)</h2>
+                    <p>
+                        The agent has native capability to execute Javascript/Node.js functions as tools. These tools
+                        are exposed to the LLM model using structured JSON schemas.
+                    </p>
+
+                    <h3>File System Manager</h3>
+                    <p>
+                        Allows the AI to perform CRUD operations on files. For safety, this tool is restricted to a
+                        dedicated <code>workspace/</code> directory.
+                    </p>
+                    <div class="cyber-alert">
+                        <div class="cyber-alert__title">🔒 Sandbox Restriction</div>
+                        <p>The file system manager uses strict path resolution to prevent directory traversal attacks.
+                            The agent cannot read or write to directories outside of the local <code>workspace/</code>
+                            folder.</p>
+                    </div>
+
+                    <h3>Web Scraper</h3>
+                    <p>
+                        Accepts a URL, downloads the markup, and strips out bloated HTML, script tags, and CSS using
+                        <code>cheerio</code>. This supplies the agent with clean, token-efficient text for real-time
+                        analysis.
+                    </p>
+
+                    <h3>Image Generation</h3>
+                    <p>
+                        Triggers text-to-image models. The system automatically routes requests through **Together AI**
+                        or **Grok X.AI** depending on which credentials are valid, ensuring highly available media
+                        generation.
+                    </p>
+                </section>
+
+                <!-- Memory DB -->
+                <section id="memory-db" class="docs-section">
+                    <h2>6. Semantic Memory & Database</h2>
+                    <p>
+                        PAIAgent features a hybrid memory engine powered by **better-sqlite3** and the **sqlite-vec**
+                        extension.
+                    </p>
+                    <p>
+                        When a chat session runs, the agent saves conversation turns. During queries, contextually
+                        relevant historic logs are matched using vector embeddings. This local semantic search feeds the
+                        prompt with relevant long-term memories.
+                    </p>
+                    <p>
+                        To completely wipe the database and reset the system:
+                    </p>
+                    <div class="terminal-box">
+                        <div class="terminal-header">
+                            <span>BASH // RESET DATABASE</span>
+                            <div class="terminal-actions">
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                            </div>
+                        </div>
+                        <pre><code>npm run db:reset</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
+                            onclick="copyCode(this)">Copy</button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer
+        style="background: var(--cyber-void-800); border-top: 1px solid var(--color-border-default); padding: var(--space-lg) 0; text-align: center; font-family: var(--font-mono); font-size: var(--text-sm);">
+        <div class="container">
+            <p><strong class="highlight-text">Open Personal AI Agent (PAIAgent)</strong></p>
+            <p>Author: Norayr Petrosyan</p>
+            <p>Licensed under MIT // © 2024 - 2026 Nordevelopment</p>
+        </div>
+    </footer>
+
+    <!-- JS for scrollspy and copying code -->
+    <script>
+        function copyCode(btn) {
+            const pre = btn.previousElementSibling;
+            const code = pre.querySelector('code') ? pre.querySelector('code').innerText : pre.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span>[ COPIED! ]</span>';
+                btn.style.borderColor = 'var(--cyber-green-500)';
+                btn.style.color = 'var(--cyber-green-500)';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                }, 2000);
+            });
+        }
+
+        // Scrollspy logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('.docs-menu__link');
+            const sections = document.querySelectorAll('.docs-section');
+
+            function changeActiveLink() {
+                let index = sections.length;
+
+                while (--index && window.scrollY + 120 < sections[index].offsetTop) { }
+
+                links.forEach((link) => link.classList.remove('docs-menu__link--active'));
+                if (sections[index]) {
+                    const activeLink = document.querySelector(`.docs-menu a[href="#${sections[index].id}"]`);
+                    if (activeLink) activeLink.classList.add('docs-menu__link--active');
+                }
+            }
+
+            changeActiveLink();
+            window.addEventListener('scroll', changeActiveLink);
+        });
+    </script>
+</body>
+
+</html>
