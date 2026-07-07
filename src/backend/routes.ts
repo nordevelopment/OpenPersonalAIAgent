@@ -154,8 +154,10 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Clear memory route
-  app.post('/api/memory/clear', async (_request, _reply) => {
-    return _reply.send({ success: true, message: 'Memory cleared' });
+  app.post('/api/memory/clear', async (request: FastifyRequest, reply: FastifyReply) => {
+    const sessionId = request.sessionId;
+    await chatManager.clearMemory(sessionId);
+    return reply.send({ success: true, message: 'Memory cleared' });
   });
 
   // Create new session

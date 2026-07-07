@@ -66,8 +66,8 @@ export async function buildApp(): Promise<FastifyInstance> {
     const aiClient = new AIClient();
     const historyManager = new ChatHistoryManager(db);
     const sessionManager = new SessionManager(db);
-    const tools = new AITools();
-    const memoryManager = new MemoryManager();
+    const memoryManager = new MemoryManager(db);
+    const tools = new AITools(memoryManager);
     const agentService = new AgentService();
     const chatManager = new ChatManager(aiClient, historyManager, tools, memoryManager, sessionManager);
 

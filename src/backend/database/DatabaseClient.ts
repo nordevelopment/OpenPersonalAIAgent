@@ -1,7 +1,9 @@
 /**
- * DatabaseClient - Клиент для работы с SQLite
- * Низкоуровневый доступ к базе данных
+ * DatabaseClient - Client for working with SQLite
+ * Low-level access to the database
+ * Author: Norayr Petrosyan
  */
+
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
@@ -21,25 +23,25 @@ export class DatabaseClient {
   private db: Database.Database;
 
   constructor(dbPath: string = './database.sqlite') {
-    // Создаём/открываем базу
+    // Create/open database
     this.db = new Database(dbPath);
 
-    // Загружаем sqlite-vec расширение для векторного поиска
+    // Load sqlite-vec extension for vector search
     sqliteVec.load(this.db);
 
-    // Включаем WAL режим для лучшей производительности
+    // Enable WAL mode for better performance
     this.db.pragma('journal_mode = WAL');
 
-    // Включаем foreign keys
+    // Enable foreign keys
     this.db.pragma('foreign_keys = ON');
     this.db.pragma('synchronous = NORMAL');
   }
 
   /**
-   * Выполнить SQL запрос (SELECT)
-   * @param sql - SQL запрос
-   * @param params - параметры запроса
-   * @returns результат запроса
+   * Execute SQL query (SELECT)
+   * @param sql - SQL query
+   * @param params - query parameters
+   * @returns query result
    */
   async query(sql: string, params: unknown[] = []): Promise<QueryResult> {
     try {
@@ -56,10 +58,10 @@ export class DatabaseClient {
   }
 
   /**
-   * Вставить данные в таблицу
-   * @param table - имя таблицы
-   * @param data - данные для вставки
-   * @returns ID вставленной записи
+   * Insert data into table
+   * @param table - table name
+   * @param data - data to insert
+   * @returns ID of inserted record
    */
   async insert(table: string, data: Record<string, unknown>): Promise<number> {
     try {
@@ -80,10 +82,10 @@ export class DatabaseClient {
   }
 
   /**
-   * Получить данные из таблицы
-   * @param table - имя таблицы
-   * @param where - условия фильтрации
-   * @returns массив записей
+   * Get data from table
+   * @param table - table name
+   * @param where - filter conditions
+   * @returns array of records
    */
   async select(table: string, where: Record<string, unknown> = {}): Promise<unknown[]> {
     try {
@@ -107,11 +109,11 @@ export class DatabaseClient {
   }
 
   /**
-   * Обновить данные в таблице
-   * @param table - имя таблицы
-   * @param data - данные для обновления
-   * @param where - условия фильтрации
-   * @returns количество измененных записей
+   * Update data
+   * @param table - table name
+   * @param data - data to update
+   * @param where - filter conditions
+   * @returns number of updated records
    */
   async update(table: string, data: Record<string, unknown>, where: Record<string, unknown>): Promise<number> {
     try {
@@ -132,10 +134,10 @@ export class DatabaseClient {
   }
 
   /**
-   * Удалить данные из таблицы
-   * @param table - имя таблицы
-   * @param where - условия фильтрации
-   * @returns количество удаленных записей
+   * Deletw data
+   * @param table - table name
+   * @param where - filter conditions
+   * @returns number of deleted records
    */
   async delete(table: string, where: Record<string, unknown>): Promise<number> {
     try {
@@ -155,7 +157,7 @@ export class DatabaseClient {
   }
 
   /**
-   * Инициализировать базу данных (создать таблицы)
+   * Initialize database (create tables)
    */
   async initialize(): Promise<void> {
     let schemaPath = path.join(__dirname, 'schema.sql');
@@ -177,9 +179,26 @@ export class DatabaseClient {
   }
 
   /**
-   * Закрыть соединение с базой
+   * Execute SQL commands (INSERT, UPDATE, DELETE), not returning data
+   * @param sql - SQL command
+   * @param params - parameters
+   * @returns execution result
+   */
+  async run(sql: string, params: unknown[] = []): Promise<Database.RunResult> {
+    try {
+      const stmt = this.db.prepare(sql);
+      return stmt.run(...params);
+    } catch (error) {
+      console.error('DatabaseClient: run error', { sql, params, error });
+      throw error;
+    }
+  }
+
+  /**
+   * Close connection to database
    */
   close(): void {
     this.db.close();
   }
 }
+

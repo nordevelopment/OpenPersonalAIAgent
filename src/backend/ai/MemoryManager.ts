@@ -1,15 +1,22 @@
 /**
- * MemoryManager - Manages vector memory
+ * MemoryManager - Manages vector memory using sqlite-vec
  * Responsible for storing and retrieving memories from the vector database
  * Author: Norayr Petrosyan
  */
 
+import { DatabaseClient } from '../database/DatabaseClient.js';
+import { config } from '../config.js';
+import axios from 'axios';
+
 export interface Memory {
-  id: string;
+  id: number;
+  session_id: string;
+  key: string;
+  value: string;
+  category: string;
   content: string;
-  embedding: number[];
-  metadata: Record<string, unknown>;
-  createdAt: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SearchResult {
@@ -18,54 +25,193 @@ export interface SearchResult {
 }
 
 export class MemoryManager {
+  constructor(private db: DatabaseClient) {}
+
+  /**
+   * Get semantic embedding for text
+   */
+  private async getEmbedding(text: string): Promise<number[]> {
+    if (!config.AI_API_KEY) {
+      console.error('[MemoryManager] ❌ No API key');
+      return [];
+    }
+
+    try {
+      const model = config.AI_EMBEDDING_MODEL || 'Qwen/Qwen3-Embedding-8B';
+      const embeddingUrl = config.AI_API_URL.replace('/chat/completions', '/embeddings') || 'https://openrouter.ai/api/v1/embeddings';
+
+      const response = await axios.post(
+        embeddingUrl,
+        { model, input: text.replace(/\n/g, ' ') },
+        {
+          headers: {
+            'Authorization': `Bearer ${config.AI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          timeout: 10000
+        }
+      );
+
+      if (response.data?.data?.[0]?.embedding) {
+        return response.data.data[0].embedding;
+      }
+      return [];
+    } catch (error: any) {
+      console.error('[MemoryManager] ❌ Embedding API error:', error.message);
+      return [];
+    }
+  }
+
+  private serializeEmbedding(embedding: number[]): Buffer {
+    const buffer = Buffer.alloc(embedding.length * 4);
+    for (let i = 0; i < embedding.length; i++) {
+      buffer.writeFloatLE(embedding[i], i * 4);
+    }
+    return buffer;
+  }
+
   /**
    * Save memory with embedding
-   * @param content - text to save
-   * @param metadata - additional metadata
-   * @returns saved memory
    */
-  async saveMemory(content: string, metadata: Record<string, unknown> = {}): Promise<Memory> {
-    // TODO: Implement:
-    // 1. Get embedding through embedding API
-    // 2. Save to vector database
-    console.log('MemoryManager: saveMemory called', { content, metadata });
-    return {
-      id: 'stub-id',
-      content,
-      embedding: [],
-      metadata,
-      createdAt: new Date(),
-    };
+  async saveMemory(
+    sessionId: string,
+    key: string,
+    value: string,
+    category: string = 'personal'
+  ): Promise<Memory> {
+    const content = `${key}: ${value}`;
+    const embedding = await this.getEmbedding(content);
+
+    // Save text record first
+    const memoryId = await this.db.insert('memories', {
+      session_id: sessionId,
+      key,
+      value,
+      category,
+      content
+    });
+
+    if (embedding.length > 0) {
+      try {
+        const serialized = this.serializeEmbedding(embedding);
+        const vecSql = 'INSERT INTO vec_memories (rowid, embedding) VALUES (CAST(? AS INTEGER), ?)';
+        await this.db.run(vecSql, [memoryId, serialized]);
+        console.log(`[MemoryManager] ✅ Vector saved for ID ${memoryId} Bytes ${serialized.length}`);
+      } catch (err: any) {
+        console.error(`[MemoryManager] ❌ Vector save failed (ID ${memoryId}):`, err.message);
+      }
+    }
+
+    return (await this.getById(memoryId))!;
   }
 
-  /**
-   * Search for relevant memories
-   * @param query - search query
-   * @param limit - maximum number of results
-   * @returns array of relevant memories
-   */
-  async searchMemories(query: string, limit: number = 5): Promise<SearchResult[]> {
-    // TODO: Implement:
-    // 1. Get embedding of the query
-    // 2. Search in the vector database (similarity search)
-    console.log('MemoryManager: searchMemories called', { query, limit });
-    return [];
+  async getById(id: number): Promise<Memory | undefined> {
+    const rows = await this.db.select('memories', { id });
+    return rows[0] as Memory | undefined;
   }
 
-  /**
-   * Delete memory by ID
-   * @param id - memory ID
-   */
-  async deleteMemory(id: string): Promise<void> {
-    // TODO: Implement deletion from vector database
-    console.log('MemoryManager: deleteMemory called', { id });
+  async searchMemories(
+    sessionId: string,
+    query: string,
+    limit: number = 5
+  ): Promise<SearchResult[]> {
+    const queryEmbedding = await this.getEmbedding(query);
+
+    if (queryEmbedding.length === 0) {
+      const keywords = await this.searchMemoriesByKeyword(sessionId, query, limit);
+      return keywords.map(m => ({ memory: m, similarity: 0.5 }));
+    }
+
+    const serializedQuery = this.serializeEmbedding(queryEmbedding);
+
+    try {
+      const sql = `
+        SELECT 
+          m.*, 
+          1 - vec_distance_cosine(vm.embedding, ?) as similarity
+        FROM memories m
+        JOIN vec_memories vm ON m.id = vm.rowid
+        WHERE m.session_id = ?
+        ORDER BY similarity DESC
+        LIMIT ?
+      `;
+
+      const result = await this.db.query(sql, [serializedQuery, sessionId, limit]);
+
+      return (result.rows as any[]).map((row: any) => ({
+        memory: {
+          id: row.id,
+          session_id: row.session_id,
+          key: row.key,
+          value: row.value,
+          category: row.category,
+          content: row.content,
+          created_at: row.created_at,
+          updated_at: row.updated_at
+        },
+        similarity: row.similarity
+      }));
+    } catch (error: any) {
+      console.error('[MemoryManager] ❌ Search error:', error.message);
+      const fallback = await this.searchMemoriesByKeyword(sessionId, query, limit);
+      return fallback.map(m => ({ memory: m, similarity: 0.5 }));
+    }
   }
 
-  /**
-   * Clear all memories
-   */
-  async clearAll(): Promise<void> {
-    // TODO: Implement clearing vector database
-    console.log('MemoryManager: clearAll called');
+  async searchMemoriesByKeyword(sessionId: string, query: string, limit: number = 5): Promise<Memory[]> {
+    const searchTerm = `%${query.toLowerCase()}%`;
+    const sql = `
+      SELECT * FROM memories 
+      WHERE session_id = ? 
+      AND (LOWER(key) LIKE ? OR LOWER(value) LIKE ? OR LOWER(content) LIKE ?) 
+      ORDER BY updated_at DESC LIMIT ?
+    `;
+    const result = await this.db.query(sql, [sessionId, searchTerm, searchTerm, searchTerm, limit]);
+    return result.rows as Memory[];
+  }
+
+  async deleteMemoryByKey(sessionId: string, key: string): Promise<void> {
+    // Find memories matching session_id and key to delete their vectors
+    const sqlSelect = 'SELECT id FROM memories WHERE session_id = ? AND key = ?';
+    const result = await this.db.query(sqlSelect, [sessionId, key]);
+    for (const row of result.rows as any[]) {
+      await this.db.run('DELETE FROM vec_memories WHERE rowid = ?', [row.id]);
+    }
+    await this.db.run('DELETE FROM memories WHERE session_id = ? AND key = ?', [sessionId, key]);
+  }
+
+  async clearAll(sessionId: string): Promise<void> {
+    await this.db.run(`
+      DELETE FROM vec_memories 
+      WHERE rowid IN (SELECT id FROM memories WHERE session_id = ?)
+    `, [sessionId]);
+    await this.db.run('DELETE FROM memories WHERE session_id = ?', [sessionId]);
+  }
+
+  async getRelevantContext(sessionId: string, query: string, limit: number = 3): Promise<string> {
+    if (!query || query.trim().length < 10) return '';
+
+    try {
+      // Optimization: Skip embedding API call if there are no memories stored for this session
+      const countResult = await this.db.query('SELECT COUNT(*) as count FROM memories WHERE session_id = ?', [sessionId]);
+      const count = (countResult.rows[0] as any)?.count || 0;
+      if (count === 0) return '';
+    } catch (err) {
+      console.error('[MemoryManager] Failed to count memories:', err);
+    }
+
+    console.log('[MemoryManager] Relevant memories query:', query);
+
+    // Lower threshold to 0.4 to ensure all relevant session memories are retrieved
+    // even for indirect queries. The LLM will ignore them if they are irrelevant to the prompt.
+    const threshold = 0.4;
+    
+    const results = await this.searchMemories(sessionId, query, limit);
+    const filtered = results.filter(r => r.similarity > threshold);
+    console.log('[MemoryManager] Relevant memories - filtered:', filtered);
+    if (filtered.length === 0) return '';
+    
+    const contextItems = filtered.map(r => `  - ${r.memory.key}: ${r.memory.value}`);
+    return `\n\n[YOUR MEMORIES]\n${contextItems.join('\n')}`;
   }
 }

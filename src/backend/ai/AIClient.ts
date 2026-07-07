@@ -88,9 +88,11 @@ export class AIClient {
    * @param messages - массив сообщений (история диалога)
    * @param tools - список доступных инструментов (из AITools.getAvailableTools())
    * @param agentId - ID агента (название папки в agents/)
+   * @param tools - список доступных инструментов
+   * @param additionalSystem - дополнительный системный промпт (например, контекст памяти)
    * @returns ответ от AI
    */
-  async sendMessage(messages: AIMessages[], agentId?: string, tools?: any[]): Promise<AIResponse> {
+  async sendMessage(messages: AIMessages[], agentId?: string, tools?: any[], additionalSystem?: string): Promise<AIResponse> {
 
     const systemPrompt = this.buildSystemPrompt(agentId);
 
@@ -126,10 +128,14 @@ export class AIClient {
 
     // Добавить системный промпт в начало сообщений
     const messagesWithSystem: AIMessages[] = [];
-    if (systemPrompt) {
+    let finalSystemPrompt = systemPrompt;
+    if (additionalSystem) {
+      finalSystemPrompt = finalSystemPrompt ? `${finalSystemPrompt}\n${additionalSystem}` : additionalSystem;
+    }
+    if (finalSystemPrompt) {
       messagesWithSystem.push({
         role: 'system',
-        content: systemPrompt,
+        content: finalSystemPrompt,
       });
     }
     messagesWithSystem.push(...processedMessages);

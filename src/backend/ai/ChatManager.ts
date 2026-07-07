@@ -17,7 +17,7 @@ export class ChatManager {
     private aiClient: AIClient,
     private historyManager: ChatHistoryManager,
     private tools: AITools,
-    _memoryManager: MemoryManager,
+    private memoryManager: MemoryManager,
     private sessionManager: SessionManager
   ) { }
 
@@ -55,6 +55,14 @@ export class ChatManager {
 
     let lastReasoning: string | undefined = undefined;
 
+    // Fetch relevant memories context
+    let memoriesContext = '';
+    try {
+      memoriesContext = await this.memoryManager.getRelevantContext(sessionId, userMessage);
+    } catch (err) {
+      console.error('[ChatManager] Failed to fetch relevant memories context:', err);
+    }
+
     // Run loop of interaction with AI (maximum 5 iterations, to not go into infinite loop)
     for (let i = 0; i < 5; i++) {
       const fullHistory = await this.historyManager.getHistory(sessionId);
@@ -66,8 +74,8 @@ export class ChatManager {
       const session = await this.sessionManager.getSession(sessionId);
       const agentId = session?.agent_id || config.default_agent;
 
-      // Query AI (pass history, agent ID and description of tools)
-      const aiResponse = await this.aiClient.sendMessage(history, agentId, availableTools);
+      // Query AI (pass history, agent ID, description of tools and memories context)
+      const aiResponse = await this.aiClient.sendMessage(history, agentId, availableTools, memoriesContext);
 
       if (aiResponse.reasoning) {
         lastReasoning = aiResponse.reasoning;
@@ -98,7 +106,7 @@ export class ChatManager {
           const result = await this.tools.executeTool({
             name: toolCall.function.name,
             arguments: JSON.parse(toolCall.function.arguments)
-          });
+          }, sessionId);
 
           // Save result of tool execution in history
           await this.historyManager.addMessage(sessionId, {
@@ -147,6 +155,14 @@ export class ChatManager {
    */
   async clearHistory(sessionId: string): Promise<void> {
     await this.historyManager.clearHistory(sessionId);
+  }
+
+  /**
+   * Clear all memories for a session
+   * @param sessionId - session ID
+   */
+  async clearMemory(sessionId: string): Promise<void> {
+    await this.memoryManager.clearAll(sessionId);
   }
 
 

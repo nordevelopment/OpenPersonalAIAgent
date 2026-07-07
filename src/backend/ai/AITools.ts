@@ -7,6 +7,7 @@
 import { FileSystemManager } from "../services/FileSystemManager.js";
 import { WebPageContent } from "../services/WebPageContent.js";
 import { imageService } from "../services/imageService.js";
+import { MemoryManager } from "./MemoryManager.js";
 
 export interface ToolCall {
   name: string;
@@ -21,13 +22,15 @@ export interface ToolResult {
 export class AITools {
   private fsManager = new FileSystemManager();
   private webPage = new WebPageContent();
+
+  constructor(private memoryManager?: MemoryManager) {}
   /**
    * Execute a tool
    * @param toolCall - tool call from AI
    * @returns execution result
    */
 
-  async executeTool(toolCall: ToolCall): Promise<ToolResult> {
+  async executeTool(toolCall: ToolCall, sessionId?: string): Promise<ToolResult> {
     const { name, arguments: args } = toolCall;
     const p = args.path as string;
 
@@ -68,6 +71,37 @@ export class AITools {
             args.steps as number | undefined,
             args.provider as 'together' | 'xai' | undefined
           );
+          break;
+        case 'save_memory':
+          if (!this.memoryManager) throw new Error("MemoryManager is not configured on this agent.");
+          if (!sessionId) throw new Error("Session ID is required for memory operations.");
+          result = await this.memoryManager.saveMemory(
+            sessionId,
+            args.key as string,
+            args.value as string,
+            (args.category as string) || 'personal'
+          );
+          break;
+        case 'search_memories':
+          if (!this.memoryManager) throw new Error("MemoryManager is not configured on this agent.");
+          if (!sessionId) throw new Error("Session ID is required for memory operations.");
+          const searchResults = await this.memoryManager.searchMemories(
+            sessionId,
+            args.query as string,
+            (args.limit as number) || 5
+          );
+          result = searchResults.map(r => ({
+            key: r.memory.key,
+            value: r.memory.value,
+            category: r.memory.category,
+            similarity: r.similarity
+          }));
+          break;
+        case 'delete_memory':
+          if (!this.memoryManager) throw new Error("MemoryManager is not configured on this agent.");
+          if (!sessionId) throw new Error("Session ID is required for memory operations.");
+          await this.memoryManager.deleteMemoryByKey(sessionId, args.key as string);
+          result = `Memory with key '${args.key}' deleted successfully.`;
           break;
         default:
           throw new Error(`Tool ${name} is not implemented.`);
@@ -217,6 +251,56 @@ export class AITools {
               }
             },
             required: ['prompt']
+          }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'save_memory',
+          description: 'Saves or updates an important fact about the user, preference, or context in long-term memory.',
+          parameters: {
+            type: 'object',
+            properties: {
+              key: { type: 'string', description: 'Short snake_case unique key for the memory (e.g. user_name, favorite_pizza).' },
+              value: { type: 'string', description: 'The description/value to remember.' },
+              category: {
+                type: 'string',
+                enum: ['personal', 'preference', 'event', 'goal', 'task', 'information', 'intention', 'fact', 'context'],
+                default: 'personal',
+                description: 'Category classification.'
+              }
+            },
+            required: ['key', 'value']
+          }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'search_memories',
+          description: 'Searches stored memories semantically or using keyword matches for relevant information.',
+          parameters: {
+            type: 'object',
+            properties: {
+              query: { type: 'string', description: 'The topic, keyword, or query to search for.' },
+              limit: { type: 'integer', default: 5, description: 'Max results to return.' }
+            },
+            required: ['query']
+          }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'delete_memory',
+          description: 'Deletes a specific fact from memory using its key.',
+          parameters: {
+            type: 'object',
+            properties: {
+              key: { type: 'string', description: 'The exact key of the memory to delete.' }
+            },
+            required: ['key']
           }
         }
       }

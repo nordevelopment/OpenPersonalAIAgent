@@ -80,7 +80,7 @@ class AIAgentChat {
             this.messageInput.style.height = this.messageInput.scrollHeight + 'px';
         });
         this.btnClearChat.addEventListener('click', () => this.clearChat());
-        // this.btnClearMemory.addEventListener('click', () => this.clearMemory());
+        this.btnClearMemory.addEventListener('click', () => this.clearMemory());
         this.btnNewChat.addEventListener('click', () => this.createNewChat());
         if (this.btnEditAgent) {
             this.btnEditAgent.addEventListener('click', () => {
