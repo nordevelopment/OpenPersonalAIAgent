@@ -135,7 +135,7 @@ class TaskManager {
         if (hasRunning) {
             if (!this.refreshInterval) {
                 console.log('Running tasks detected. Starting auto-refresh...');
-                this.refreshInterval = setInterval(() => this.loadTasks(), 3000);
+                this.refreshInterval = setInterval(() => this.loadTasks(), 5000);
             }
         } else {
             if (this.refreshInterval) {
