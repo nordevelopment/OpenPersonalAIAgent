@@ -5,6 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open Personal AI Agent (PAIAgent) - Lightweight Personal AI Assistant</title>
+    <meta name="description"
+        content="Open Personal AI Agent (PAIAgent) - A lightweight, ultra-fast, and highly secure local personal AI assistant running on your hardware. Works with Web UI and Telegram, support visual models, vector DB, dynamic markdown prompts.">
+    <meta name="keywords"
+        content="AI Agent, Personal AI, local LLM, Telegram Bot, SQLite vector, Web UI, TypeScript, AI assistant, lightweight AI">
+    <meta name="author" content="Norayr Petrosyan">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/nordevelopment/OpenPersonalAIAgent">
+    <meta property="og:title" content="Open Personal AI Agent (PAIAgent) - Lightweight Personal AI Assistant">
+    <meta property="og:description"
+        content="A lightweight, lightning-fast, and highly secure Personal AI Agent running locally on your hardware. Avoid bloated frameworks, run locally.">
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://github.com/nordevelopment/OpenPersonalAIAgent">
+    <meta property="twitter:title" content="Open Personal AI Agent (PAIAgent) - Lightweight Personal AI Assistant">
+    <meta property="twitter:description"
+        content="A lightweight, lightning-fast, and highly secure Personal AI Agent running locally on your hardware.">
+    <meta property="twitter:image"
+        content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
     <!-- Google Fonts for Cyberpunk Aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -179,7 +203,7 @@
             <h1 class="hero-title" data-text="OPEN PERSONAL AI AGENT">🤖 OPEN PERSONAL AI AGENT</h1>
             <p class="hero-subtitle">
                 A lightweight, lightning-fast, and highly secure <span class="highlight-text">Personal AI Agent</span>
-                running locally on your hardware. Avoid bloated frameworks that devour your RAM. Just clean TypeScript,
+                running locally on your hardware. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. Support for both local models (Ollama, LM Studio) and cloud APIs (OpenRouter, Gemini, OpenAI). Avoid bloated frameworks that devour your RAM. Just clean TypeScript,
                 modular markdown prompt design, and absolute data privacy.
             </p>
             <div class="hero-buttons">
@@ -245,8 +269,7 @@
                         <h3 class="cyber-card__title">Settings Panel</h3>
                         <span class="cyber-card__badge">WIZARD</span>
                     </div>
-                    <p>No manual editing of <code>.env</code> configurations. Local setup wizard triggers on first start
-                        and securely writes to a git-ignored JSON config.</p>
+                    <p>No manual editing of <code>.env</code>. Local setup wizard configures everything (including local LLM endpoints or cloud APIs) and writes to a git-ignored JSON config.</p>
                 </div>
 
                 <!-- Tool Execution -->
@@ -293,13 +316,13 @@
                 </div>
                 <div class="cyber-card cyber-card--yellow">
                     <h3 class="highlight-text" style="color: var(--cyber-yellow-500); text-shadow: var(--glow-yellow);">
-                        // DATABASE</h3>
+                        // DATABASE & MEMORY</h3>
                     <p><code>better-sqlite3</code> for configuration and logs + <code>sqlite-vec</code> for local vector
                         embeddings.</p>
                 </div>
                 <div class="cyber-card cyber-card--green">
                     <h3 class="highlight-text" style="color: var(--cyber-green-500); text-shadow: var(--glow-green);">//
-                        MEDIA</h3>
+                        IMAGE PROCESSING</h3>
                     <p><code>sharp</code> for blazing-fast local image resizing and optimization.</p>
                 </div>
                 <div class="cyber-card">
@@ -308,74 +331,9 @@
                 </div>
                 <div class="cyber-card cyber-card--magenta">
                     <h3 class="highlight-text"
-                        style="color: var(--cyber-magenta-500); text-shadow: var(--glow-magenta);">// REMOTE CHAT</h3>
+                        style="color: var(--cyber-magenta-500); text-shadow: var(--glow-magenta);">// TELEGRAM BOT</h3>
                     <p><code>telegraf</code> integration for secure connection with the Telegram Bot API.</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Comparison Section -->
-    <section id="comparison" class="section-padding">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">⚖️ Performance Benchmark</h2>
-            </div>
-
-            <p class="hero-subtitle" style="text-align: center; margin-bottom: var(--space-lg);">
-                Why choose PAIAgent? The proof is in the hardware metrics. Run a complete agent locally without melting
-                your RAM.
-            </p>
-
-            <div class="cyber-table-wrapper">
-                <table class="cyber-table cyber-table--striped cyber-table--bordered">
-                    <thead>
-                        <tr>
-                            <th>Metric / Feature</th>
-                            <th class="highlight-text">🤖 PAIAgent</th>
-                            <th>🐳 Open WebUI</th>
-                            <th>💬 LibreChat</th>
-                            <th>📦 AnythingLLM</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="row-highlight">
-                            <td><strong>RAM Footprint</strong></td>
-                            <td><span class="advantage-badge">~50 - 100 MB</span></td>
-                            <td>1.5 GB+ (Docker)</td>
-                            <td>1 GB+ (Docker Compose)</td>
-                            <td>500 MB+ (Electron/Docker)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Startup Time</strong></td>
-                            <td><span class="advantage-badge">&lt; 1 second</span></td>
-                            <td>30 - 60 seconds</td>
-                            <td>30 - 60 seconds</td>
-                            <td>10 - 20 seconds</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Dependencies</strong></td>
-                            <td>Node.js & npm (Native)</td>
-                            <td>Docker & Ollama</td>
-                            <td>Docker, Mongo, Redis</td>
-                            <td>Docker or Desktop</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Database</strong></td>
-                            <td>SQLite (embedded)</td>
-                            <td>PostgreSQL / MySQL</td>
-                            <td>MongoDB + Meilisearch</td>
-                            <td>Vector DB + SQLite</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Ideal For</strong></td>
-                            <td>Lightweight personal workspace</td>
-                            <td>Multi-user hosting</td>
-                            <td>Enterprise chat solutions</td>
-                            <td>Document-based RAG</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </section>
@@ -384,13 +342,21 @@
     <section id="installation" class="section-padding">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">⚙️ Terminal Installation</h2>
+                <h2 class="section-title">⚙️ Quick Start</h2>
             </div>
+            
+            <p class="hero-subtitle" style="text-align: center; margin-bottom: var(--space-lg);">
+                Get your local agent up and running in less than a minute. No complex databases, Docker, or external dependencies required.
+            </p>
 
             <div class="cyber-grid--2">
                 <div>
                     <h3 class="highlight-text">1. Prerequisites</h3>
-                    <p>Ensure you have Node.js (v20.x or later) and npm (v9.x or later) installed on your system.</p>
+                    <div class="cyber-alert" style="margin-bottom: var(--space-md); margin-top: var(--space-xs);">
+                        <div class="cyber-alert__title">System Requirements</div>
+                        <p>Ensure you have <strong>Node.js (v20.x or later)</strong> and <strong>npm (v9.x or
+                                later)</strong> installed on your system.</p>
+                    </div>
 
                     <h3 class="highlight-text" style="margin-top: var(--space-md);">2. Clone & Setup</h3>
                     <p>Run these commands to clone the repository and download dependencies:</p>
@@ -413,8 +379,30 @@ npm install</code></pre>
                 </div>
 
                 <div>
-                    <h3 class="highlight-text">3. Configurations</h3>
-                    <p>Initialize your local configuration environment:</p>
+                    <h3 class="highlight-text">3. Boot Up & Setup Wizard</h3>
+                    <p>Start the application. It will automatically build and start the local server. On the first
+                        launch, it will redirect you to the visual web settings panel to set your API keys:</p>
+                    <div class="terminal-box">
+                        <div class="terminal-header">
+                            <span>BASH // PRODUCTION START</span>
+                            <div class="terminal-actions">
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                                <span class="terminal-dot"></span>
+                            </div>
+                        </div>
+                        <pre><code>npm start</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
+                            onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <p style="margin-top: var(--space-xs);">Open <strong
+                            class="highlight-text">http://127.0.0.1:3000</strong> in your browser. (For active
+                        development with hot-reload, run <code>npm run dev</code> instead).</p>
+
+                    <h3 class="highlight-text" style="margin-top: var(--space-md);">4. Manual .env Config (Optional)
+                    </h3>
+                    <p>If you prefer using traditional environment variables, copy the template and edit it manually:
+                    </p>
                     <div class="terminal-box">
                         <div class="terminal-header">
                             <span>BASH // INITIAL CONFIG</span>
@@ -428,31 +416,86 @@ npm install</code></pre>
                         <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
                             onclick="copyCode(this)">Copy</button>
                     </div>
-
-                    <h3 class="highlight-text" style="margin-top: var(--space-md);">4. Boot Up</h3>
-                    <p>Run in development mode or compile production assets:</p>
-                    <div class="terminal-box">
-                        <div class="terminal-header">
-                            <span>BASH // SERVER START</span>
-                            <div class="terminal-actions">
-                                <span class="terminal-dot"></span>
-                                <span class="terminal-dot"></span>
-                                <span class="terminal-dot"></span>
-                            </div>
-                        </div>
-                        <pre><code># Start the hot-reload dev server
-npm run dev
-
-# Or build and launch production build
-npm run build
-npm start</code></pre>
-                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
-                            onclick="copyCode(this)">Copy</button>
-                    </div>
-                    <p style="margin-top: var(--space-sm);">Open <strong
-                            class="highlight-text">http://127.0.0.1:3000</strong> in your browser to launch the config
-                        setup wizard.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="comparison" class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">⚖️ Features & Resource Comparison</h2>
+            </div>
+
+            <p class="hero-subtitle" style="text-align: center; margin-bottom: var(--space-lg);">
+                Compare PAIAgent with heavyweight alternatives. The metrics prove how lightweight and efficient it is
+                for local hardware.
+            </p>
+
+            <div class="cyber-table-wrapper">
+                <table class="cyber-table cyber-table--striped cyber-table--bordered">
+                    <thead>
+                        <tr>
+                            <th>Metric / Feature</th>
+                            <th class="highlight-text">🤖 PAIAgent</th>
+                            <th>🐳 Open WebUI</th>
+                            <th>💬 LibreChat</th>
+                            <th>📦 AnythingLLM</th>
+                            <th>🦞 OpenClaw</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-highlight">
+                            <td><strong>RAM Footprint</strong></td>
+                            <td><span class="advantage-badge">~50 - 100 MB</span></td>
+                            <td>1.5 GB+ (Docker)</td>
+                            <td>1 GB+ (Docker Compose)</td>
+                            <td>500 MB+ (Electron/Docker)</td>
+                            <td>200 MB+ (pnpm/Docker)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Startup Time</strong></td>
+                            <td><span class="advantage-badge">&lt; 1 second</span></td>
+                            <td>30 - 60 seconds</td>
+                            <td>30 - 60 seconds</td>
+                            <td>10 - 20 seconds</td>
+                            <td>5 - 10 seconds</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Installation</strong></td>
+                            <td><span class="advantage-badge">&lt; 1 minute (One-command)</span></td>
+                            <td>5+ minutes (Docker setup)</td>
+                            <td>10+ minutes (Complex Compose)</td>
+                            <td>5+ minutes (Docker / Installer)</td>
+                            <td>5+ minutes (pnpm / Docker)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dependencies</strong></td>
+                            <td>Node.js & npm (Native)</td>
+                            <td>Docker & Ollama</td>
+                            <td>Docker, Mongo, Redis</td>
+                            <td>Docker or Desktop</td>
+                            <td>Node.js & pnpm (or Docker)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td>SQLite (embedded)</td>
+                            <td>PostgreSQL / MySQL</td>
+                            <td>MongoDB + Meilisearch</td>
+                            <td>Vector DB + SQLite</td>
+                            <td>SQLite (embedded)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ideal For</strong></td>
+                            <td>Lightweight personal workspace</td>
+                            <td>Multi-user hosting</td>
+                            <td>Enterprise chat solutions</td>
+                            <td>Document-based RAG</td>
+                            <td>Multi-channel agent bots</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>

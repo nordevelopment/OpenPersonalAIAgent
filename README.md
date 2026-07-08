@@ -8,7 +8,7 @@
 
 <a href="https://nordevelopment.github.io/OpenPersonalAIAgent/">Open Personal AI Agent project page</a>
 
-A lightweight, fast and Personal AI Agent (PAIAgent) running locally on your computer or server. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
+A lightweight, fast and Personal AI Agent (PAIAgent) running locally on your computer or server. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
 
 ---
 
@@ -91,14 +91,15 @@ First run or no config files found, you will be automatically redirected to the 
 
 If you've tried running other self-hosted AI interfaces, you know how resource-heavy they can be. Here is how **PAIAgent** compares to popular alternatives:
 
-| Feature / Metric | 🤖 **PAIAgent (This Project)** | 🐳 **Open WebUI** | 💬 **LibreChat** | 📦 **AnythingLLM** |
-| :--- | :--- | :--- | :--- | :--- |
-| **Tech Stack** | Node.js + Fastify + SQLite | Python + Go + Svelte | Node + React + Mongo + Redis | Electron / Docker |
-| **RAM Footprint** | **~50 - 100 MB** | 1.5 GB+ (Docker container) | 1 GB+ (Docker multi-container) | 500 MB+ (Electron/Docker) |
-| **Dependencies** | None (Just Node.js & npm) | Requires Docker & Ollama | Requires Docker, Mongo, Redis | Requires Docker or Desktop App |
-| **Startup Time** | **< 1 second** | 30 - 60 seconds | 30 - 60 seconds | 10 - 20 seconds |
-| **Database** | Embedded SQLite (+ `sqlite-vec`) | PostgreSQL / MySQL / SQLite | MongoDB + Meilisearch | Embedded Vector DB + SQLite |
-| **Ideal For** | Fast, lightweight personal use | Heavy multi-user hosting | Multi-user enterprise chat | Document-focused local RAG |
+| Feature / Metric | 🤖 **PAIAgent (This Project)** | 🐳 **Open WebUI** | 💬 **LibreChat** | 📦 **AnythingLLM** | 🦞 **OpenClaw** |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Tech Stack** | Node.js + Fastify + SQLite | Python + Go + Svelte | Node + React + Mongo + Redis | Electron / Docker | TypeScript + Fastify / FastAPI |
+| **RAM Footprint** | **~50 - 100 MB** | 1.5 GB+ (Docker container) | 1 GB+ (Docker multi-container) | 500 MB+ (Electron/Docker) | 200 MB+ (pnpm / Docker) |
+| **Startup Time** | **< 1 second** | 30 - 60 seconds | 30 - 60 seconds | 10 - 20 seconds | 5 - 10 seconds |
+| **Installation** | **< 1 minute (One-command)** | 5+ minutes (Docker setup) | 10+ minutes (Complex Compose) | 5+ minutes (Docker / Installer) | 5+ minutes (pnpm / Docker) |
+| **Dependencies** | None (Just Node.js & npm) | Requires Docker & Ollama | Requires Docker, Mongo, Redis | Requires Docker or Desktop App | Node.js, pnpm (or Docker) |
+| **Database** | Embedded SQLite (+ `sqlite-vec`) | PostgreSQL / MySQL / SQLite | MongoDB + Meilisearch | Embedded Vector DB + SQLite | SQLite (embedded) |
+| **Ideal For** | Fast, lightweight personal use | Heavy multi-user hosting | Multi-user enterprise chat | Document-focused local RAG | Multi-channel agent bots |
 
 ---
 
