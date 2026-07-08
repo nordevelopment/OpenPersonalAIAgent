@@ -125,13 +125,39 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
     }
   });
 
-  // Chat with agent
+  // Chat with agent (Streaming via Server-Sent Events)
   app.post('/api/chat', async (request: FastifyRequest<{ Body: ChatRequestBody }>, reply: FastifyReply) => {
     const { message, image } = request.body;
-    const sessionId = request.sessionId; // Magic!
-    console.log('Chat request:', { message, sessionId, hasImage: !!image });
-    const response = await chatManager.sendMessage(message, sessionId, image);
-    return reply.send({ message: response.content, reasoning: response.reasoning });
+    const sessionId = request.sessionId;
+    console.log('Chat request (stream):', { message, sessionId, hasImage: !!image });
+
+    reply.raw.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    });
+
+    const sendEvent = (event: string, data: any) => {
+      reply.raw.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    };
+
+    try {
+      const response = await chatManager.sendMessage(message, sessionId, image, (event, data) => {
+        sendEvent(event, data);
+      });
+      sendEvent('final', {
+        message: response.content,
+        reasoning: response.reasoning
+      });
+    } catch (error) {
+      request.log.error({ err: error }, 'Chat stream error');
+      sendEvent('error', {
+        message: error instanceof Error ? error.message : 'Internal Server Error'
+      });
+    } finally {
+      reply.raw.end();
+    }
   });
 
   app.get('/api/sessions', async (_request, _reply) => {

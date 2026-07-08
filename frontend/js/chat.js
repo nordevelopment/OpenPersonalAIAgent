@@ -289,12 +289,40 @@ class AIAgentChat {
                 throw new Error('NEURAL TRANSMISSION FAILED');
             }
 
-            const data = await response.json();
-            console.log('Chat response:', data);
-            this.hideTyping();
-            this.addMessage(data.message, 'agent', data.reasoning || null);
-            if (window.robotPet) {
-                window.robotPet.toHappy();
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let buffer = '';
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n\n');
+                
+                // Keep the last partial event in the buffer
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+
+                    // Parse event and data
+                    const eventMatch = line.match(/^event:\s*(.+)$/m);
+                    const dataMatch = line.match(/^data:\s*(.+)$/m);
+
+                    if (eventMatch && dataMatch) {
+                        const eventName = eventMatch[1].trim();
+                        let eventData = null;
+                        try {
+                            eventData = JSON.parse(dataMatch[1].trim());
+                        } catch (e) {
+                            console.error('Failed to parse SSE data:', e);
+                            continue;
+                        }
+
+                        this.handleSSEEvent(eventName, eventData);
+                    }
+                }
             }
 
         } catch (error) {
@@ -305,6 +333,99 @@ class AIAgentChat {
                 window.robotPet.toError();
             }
         }
+    }
+
+    handleSSEEvent(eventName, eventData) {
+        if (eventName === 'tool_start') {
+            const toolName = eventData.name;
+            const args = eventData.arguments || {};
+            let detailText = '';
+            
+            // Format details depending on the tool
+            if (toolName === 'write_file' || toolName === 'read_file' || toolName === 'delete_item' || toolName === 'get_file_info') {
+                detailText = `Path: ${args.path || ''}`;
+            } else if (toolName === 'move_or_rename') {
+                detailText = `From: ${args.source || ''} -> To: ${args.destination || ''}`;
+            } else if (toolName === 'fetch_web_page') {
+                detailText = `URL: ${args.url || ''}`;
+            } else if (toolName === 'generate_image') {
+                detailText = `Prompt: ${args.prompt || ''}`;
+            } else if (toolName === 'save_memory' || toolName === 'delete_memory') {
+                detailText = `Key: ${args.key || ''}`;
+            } else {
+                detailText = JSON.stringify(args);
+            }
+
+            // Update typing indicator text
+            const typingTextEl = this.typingIndicator.querySelector('.typing-text');
+            if (typingTextEl) {
+                typingTextEl.textContent = `EXECUTING TOOL: ${toolName.toUpperCase()}...`;
+            }
+
+            this.addSystemMessage(`Tool execution started: ${toolName}`, detailText, null, false);
+        } else if (eventName === 'tool_done') {
+            const toolName = eventData.name;
+            let resultText = '';
+            
+            if (typeof eventData.result === 'string') {
+                resultText = eventData.result;
+            } else {
+                resultText = JSON.stringify(eventData.result, null, 2);
+            }
+
+            // Truncate overly long outputs (like list_directory or read_file)
+            if (resultText && resultText.length > 250) {
+                resultText = resultText.substring(0, 250) + '\n... [TRUNCATED]';
+            }
+
+            // Update typing indicator text
+            const typingTextEl = this.typingIndicator.querySelector('.typing-text');
+            if (typingTextEl) {
+                typingTextEl.textContent = `TOOL ${toolName.toUpperCase()} COMPLETED`;
+            }
+
+            this.addSystemMessage(`Tool completed: ${toolName}`, null, `Result: ${resultText}`, true);
+        } else if (eventName === 'final') {
+            this.hideTyping();
+            
+            // Restore default text to typing indicator for next execution
+            const typingTextEl = this.typingIndicator.querySelector('.typing-text');
+            if (typingTextEl) {
+                typingTextEl.textContent = 'AI IS THINKING...';
+            }
+
+            this.addMessage(eventData.message, 'agent', eventData.reasoning || null);
+            if (window.robotPet) {
+                window.robotPet.toHappy();
+            }
+        } else if (eventName === 'error') {
+            this.hideTyping();
+            this.addMessage(`⚠️ SYSTEM ERROR: ${eventData.message}`, 'agent');
+            if (window.robotPet) {
+                window.robotPet.toError();
+            }
+        }
+    }
+
+    addSystemMessage(title, subtitle, content, isDone = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message system`;
+        messageDiv.style.alignSelf = 'flex-start';
+        messageDiv.style.maxWidth = '90%';
+
+        const bgColor = isDone ? 'rgba(0, 255, 136, 0.04)' : 'rgba(0, 255, 255, 0.04)';
+        const borderColor = isDone ? 'var(--cyber-primary)' : 'var(--cyber-secondary)';
+
+        messageDiv.innerHTML = `
+            <div class="message-box" style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 10px 15px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor};">
+                <div style="font-weight: bold; margin-bottom: 4px;">⚙️ [SYSTEM] ${title}</div>
+                ${subtitle ? `<div style="opacity: 0.8; font-size: 11px; margin-bottom: 4px;">${subtitle}</div>` : ''}
+                ${content ? `<pre style="margin: 5px 0 0 0; white-space: pre-wrap; font-size: 11px; opacity: 0.7; overflow-x: auto; max-height: 150px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 2px;">${content}</pre>` : ''}
+            </div>
+        `;
+
+        this.chatMessages.appendChild(messageDiv);
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
     }
 
     addMessage(content, type, reasoning = null) {

@@ -43,7 +43,12 @@ export class ChatManager {
    */
 
 
-  async sendMessage(userMessage: string, sessionId: string, imageBase64?: string): Promise<{ content: string; reasoning?: string }> {
+  async sendMessage(
+    userMessage: string,
+    sessionId: string,
+    imageBase64?: string,
+    onProgress?: (event: 'tool_start' | 'tool_done', data: any) => void | Promise<void>
+  ): Promise<{ content: string; reasoning?: string }> {
     let finalContent: any = userMessage;
 
     if (imageBase64) {
@@ -117,10 +122,26 @@ export class ChatManager {
 
       for (const toolCall of aiResponse.toolCalls) {
         try {
+          const toolArgs = JSON.parse(toolCall.function.arguments);
+
+          if (onProgress) {
+            await onProgress('tool_start', {
+              name: toolCall.function.name,
+              arguments: toolArgs
+            });
+          }
+
           const result = await this.tools.executeTool({
             name: toolCall.function.name,
-            arguments: JSON.parse(toolCall.function.arguments)
+            arguments: toolArgs
           }, sessionId);
+
+          if (onProgress) {
+            await onProgress('tool_done', {
+              name: toolCall.function.name,
+              result: result.result
+            });
+          }
 
           // Save result of tool execution in history
           await this.historyManager.addMessage(sessionId, {
@@ -130,6 +151,14 @@ export class ChatManager {
           });
         } catch (error) {
           console.error(`[ChatManager] Error executing tool ${toolCall.function.name}:`, error);
+          
+          if (onProgress) {
+            await onProgress('tool_done', {
+              name: toolCall.function.name,
+              result: { error: (error as Error).message }
+            });
+          }
+
           // save error in history for AI to know
           await this.historyManager.addMessage(sessionId, {
             role: 'tool',
