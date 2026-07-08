@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIA - Task Management</title>
+    <!-- Use absolute paths starting with slash since static path prefix is '/' -->
+    <link href="/css/cybercore.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/chat.css">
+    <style>
+        .tasks-container {
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 20px 0;
+            font-family: var(--font-mono, monospace);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(6, 8, 16, 0.85);
+            border: 1px solid var(--cyber-primary);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .task-table th, .task-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .task-table th {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--cyber-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13px;
+        }
+
+        .task-table tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.1);
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-ready {
+            background: rgba(0, 180, 255, 0.15);
+            color: #00b4ff;
+            border: 1px solid #00b4ff;
+            text-shadow: 0 0 5px #00b4ff;
+        }
+
+        .status-running {
+            background: rgba(255, 170, 0, 0.15);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+            text-shadow: 0 0 5px #ffaa00;
+            animation: pulse-border 1.5s infinite;
+        }
+
+        .status-done {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--cyber-primary);
+            border: 1px solid var(--cyber-primary);
+            text-shadow: 0 0 5px var(--cyber-primary);
+        }
+
+        .status-failed {
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--cyber-secondary);
+            border: 1px solid var(--cyber-secondary);
+            text-shadow: 0 0 5px var(--cyber-secondary);
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(255, 170, 0, 0.5); }
+            50% { border-color: rgba(255, 170, 0, 1); box-shadow: 0 0 10px rgba(255, 170, 0, 0.4); }
+            100% { border-color: rgba(255, 170, 0, 0.5); }
+        }
+
+        /* Modal styling */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: rgba(6, 8, 16, 0.98);
+            border: 2px solid var(--cyber-primary);
+            box-shadow: 0 0 30px var(--cyber-primary);
+            width: 550px;
+            max-width: 90%;
+            padding: 30px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: modal-slide 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        @keyframes modal-slide {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: var(--cyber-secondary);
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .task-title-cell {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-result-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .task-result-cell:hover {
+            color: var(--cyber-primary);
+            text-decoration: underline;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Tiny buttons */
+        .btn-mini {
+            padding: 6px 12px;
+            font-size: 11px;
+            min-height: auto;
+        }
+    </style>
+</head>
+
+<body class="cyber-theme" style="overflow-y: auto;">
+    <div class="container">
+        <div class="tasks-container">
+            <!-- Back Button -->
+            <a href="/" style="text-decoration: none; display: inline-block; margin-bottom: 20px;">
+                <button class="cyber-btn cyber-btn--cyan">< BACK TO CHAT</button>
+            </a>
+
+            <!-- Logo Area -->
+            <div class="logo-panel">
+                <div class="logo cyber-glitch" data-text="TASK MANAGER">
+                    TASK MANAGER
+                </div>
+                <div class="cyber-status">
+                    <div class="cyber-status__dot cyber-icon--pulse"></div>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <div class="cyber-text-glow" style="font-size: 14px; text-transform: uppercase;">
+                    Manage background instructions for the AI
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <button id="btnRunTasks" class="cyber-btn cyber-btn--green">
+                        RUN READY TASKS ⚡
+                    </button>
+                    <button id="btnOpenAddTask" class="cyber-btn">
+                        ADD NEW TASK +
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tasks Table -->
+            <div class="cyber-tile" style="padding: 0; overflow: hidden; border: 1px solid var(--cyber-primary);">
+                <table class="task-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">ID</th>
+                            <th>Task Instruction</th>
+                            <th style="width: 150px;">Status</th>
+                            <th style="width: 200px;">Scheduled Run</th>
+                            <th>AI Execution Result</th>
+                            <th style="width: 180px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasksTableBody">
+                        <!-- Will be dynamically populated -->
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: rgba(255,255,255,0.5); padding: 40px;">
+                                SYSTEM INITIALIZING & LOADING TASKS...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="taskModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="sessions-title cyber-text-glow" id="modalTitle" style="font-size: 18px; margin: 0; padding-bottom: 10px; border-bottom: 1px solid rgba(0,255,136,0.3);">
+                CREATE NEW TASK
+            </div>
+            
+            <input type="hidden" id="taskFormId">
+
+            <div class="form-group">
+                <label for="taskFormTitle">Instruction (What should AI do?)</label>
+                <textarea id="taskFormTitle" class="cyber-textarea" style="height: 100px; resize: none;" placeholder="e.g. Scan directory './src' for any TODO comments and write a report to todo_report.txt"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="taskFormStatus">Status</label>
+                <select id="taskFormStatus" class="cyber-select">
+                    <option value="ready">Ready for run</option>
+                    <option value="done">Done</option>
+                    <option value="running" disabled>Running (system lock)</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="taskFormRunAt">Scheduled Run (Optional)</label>
+                <input type="datetime-local" id="taskFormRunAt" class="cyber-input" style="padding: 8px;">
+                <small style="color: rgba(255,255,255,0.5); font-size: 11px;">If set, task will not execute until this time has arrived.</small>
+            </div>
+
+            <div class="modal-footer">
+                <button id="btnCancelModal" class="cyber-btn cyber-btn--magenta btn-mini">CANCEL</button>
+                <button id="btnSaveTask" class="cyber-btn btn-mini">SAVE TASK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Result Modal -->
+    <div id="resultModal" class="modal-backdrop">
+        <div class="modal-content" style="width: 700px; max-width: 95%;">
+            <div class="sessions-title cyber-text-glow" style="font-size: 18px; margin: 0; padding-bottom: 10px; border-bottom: 1px solid rgba(0,255,136,0.3);">
+                AI EXECUTION RESULT
+            </div>
+            
+            <div class="form-group">
+                <label>Task Instruction</label>
+                <div id="resultModalInstruction" style="background: rgba(255,255,255,0.05); padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; max-height: 80px; overflow-y: auto; white-space: pre-wrap;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Output</label>
+                <div id="resultModalOutput" style="background: rgba(0, 255, 136, 0.03); border: 1px solid var(--cyber-primary); color: #e0e0e0; padding: 15px; border-radius: 4px; max-height: 350px; overflow-y: auto; white-space: pre-wrap; font-size: 13px; line-height: 1.5; box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.05);"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="btnCloseResultModal" class="cyber-btn cyber-btn--cyan btn-mini">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/tasks.js"></script>
+</body>
+
+</html>

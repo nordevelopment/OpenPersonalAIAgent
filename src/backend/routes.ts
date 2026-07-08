@@ -9,6 +9,8 @@ import { AgentService } from './ai/AgentService.js';
 import { TelegramBot } from './services/TelegramBot.js';
 import { config } from './config.js';
 import { updateEnvFile } from './utils/envHelper.js';
+import { DatabaseClient } from './database/DatabaseClient.js';
+import { TaskModel } from './models/task.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -31,8 +33,12 @@ interface ClearHistoryRequestBody {
  * @param app - Fastify instance
  * @param chatManager - chat manager
  * @param agentService - agent service
+ * @param telegramBot - telegram bot
+ * @param db - database client
  */
-export async function registerRoutes(app: FastifyInstance, chatManager: ChatManager, agentService: AgentService, telegramBot: TelegramBot): Promise<void> {
+export async function registerRoutes(app: FastifyInstance, chatManager: ChatManager, agentService: AgentService, telegramBot: TelegramBot, db: DatabaseClient): Promise<void> {
+
+  const taskModel = new TaskModel(db);
 
   // Main chat template route
   app.get('/', async (_request, reply) => {
@@ -42,6 +48,133 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   // Render system settings page
   app.get('/settings', async (_request, reply) => {
     return reply.view('settings.ejs');
+  });
+
+  // Render task management page
+  app.get('/tasks', async (_request, reply) => {
+    return reply.view('tasks.ejs');
+  });
+
+  // Get all tasks
+  app.get('/api/tasks', async (_request, reply) => {
+    const tasks = await taskModel.findAll();
+    return reply.send({ tasks });
+  });
+
+  // Create a new task
+  app.post('/api/tasks', async (request: FastifyRequest<{ Body: { title: string, status?: 'ready' | 'done' | 'running' | 'failed', run_at?: string } }>, reply: FastifyReply) => {
+    const { title, status, run_at } = request.body;
+    if (!title || typeof title !== 'string') {
+      return reply.status(400).send({ success: false, message: 'Invalid title' });
+    }
+
+    try {
+      const taskId = await taskModel.create({
+        title,
+        status,
+        run_at: run_at || undefined
+      });
+      return reply.send({ success: true, taskId, message: 'Task created successfully' });
+    } catch (error) {
+      request.log.error({ err: error }, 'Failed to create task');
+      return reply.status(500).send({ success: false, message: error instanceof Error ? error.message : 'Failed to create task' });
+    }
+  });
+
+  // Update a task
+  app.put('/api/tasks/:id', async (request: FastifyRequest<{ Params: { id: string }, Body: { title?: string, status?: 'ready' | 'done' | 'running' | 'failed', result?: string, run_at?: string } }>, reply: FastifyReply) => {
+    const id = parseInt(request.params.id, 10);
+    if (isNaN(id)) {
+      return reply.status(400).send({ success: false, message: 'Invalid task ID' });
+    }
+
+    const { title, status, result, run_at } = request.body;
+
+    try {
+      const existing = await taskModel.findById(id);
+      if (!existing) {
+        return reply.status(404).send({ success: false, message: 'Task not found' });
+      }
+
+      await taskModel.update(id, {
+        title,
+        status,
+        result,
+        run_at: run_at === '' ? undefined : run_at
+      });
+      return reply.send({ success: true, message: 'Task updated successfully' });
+    } catch (error) {
+      request.log.error({ err: error }, 'Failed to update task');
+      return reply.status(500).send({ success: false, message: error instanceof Error ? error.message : 'Failed to update task' });
+    }
+  });
+
+  // Delete a task
+  app.delete('/api/tasks/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    const id = parseInt(request.params.id, 10);
+    if (isNaN(id)) {
+      return reply.status(400).send({ success: false, message: 'Invalid task ID' });
+    }
+
+    try {
+      const existing = await taskModel.findById(id);
+      if (!existing) {
+        return reply.status(404).send({ success: false, message: 'Task not found' });
+      }
+
+      await taskModel.delete(id);
+      return reply.send({ success: true, message: 'Task deleted successfully' });
+    } catch (error) {
+      request.log.error({ err: error }, 'Failed to delete task');
+      return reply.status(500).send({ success: false, message: error instanceof Error ? error.message : 'Failed to delete task' });
+    }
+  });
+
+  // Run ready tasks in background
+  app.post('/api/tasks/run', async (_request, reply) => {
+    const nowIso = new Date().toISOString();
+    const readyTasks = await taskModel.findReadyToRun(nowIso);
+
+    if (readyTasks.length === 0) {
+      return reply.send({ success: true, message: 'No tasks ready to run' });
+    }
+
+    // Run them in background
+    (async () => {
+      const taskSessionId = 'task_session';
+      
+      // Ensure session exists
+      const session = await chatManager.getSession(taskSessionId);
+      if (!session) {
+        await chatManager.createSession(taskSessionId, 'main_agent');
+      }
+
+      for (const task of readyTasks) {
+        try {
+          // Set to running
+          await taskModel.update(task.id, { status: 'running' });
+
+          // Send message to agent
+          const response = await chatManager.sendMessage(task.title, taskSessionId);
+
+          // Set to done
+          await taskModel.update(task.id, {
+            status: 'done',
+            result: response.content
+          });
+        } catch (error) {
+          console.error(`Failed to execute task ${task.id}:`, error);
+          await taskModel.update(task.id, {
+            status: 'failed',
+            result: error instanceof Error ? error.message : String(error)
+          });
+        }
+      }
+    })().catch(err => {
+      console.error('Error in background tasks runner:', err);
+    });
+
+    return reply.send({ success: true, message: `Started executing ${readyTasks.length} tasks in the background.` });
   });
 
   // Render agent editor page

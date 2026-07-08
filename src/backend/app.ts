@@ -143,7 +143,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     });
 
     // Register routes
-    await registerRoutes(app, chatManager, agentService, telegramBot);
+    await registerRoutes(app, chatManager, agentService, telegramBot, db);
 
     return app;
 
