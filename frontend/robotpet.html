@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +10,17 @@
         body {
             margin: 0;
             padding: 0;
+            background-color: #1e1e24;
         }
 
         /* Контейнер робота-питомца */
         .robot-pet-container {
-            width: 200px; /* Увеличил размер, так как теперь есть тело */
+            width: 200px;
+            /* Увеличил размер, так как теперь есть тело */
             height: 300px;
             user-select: none;
             position: relative;
+            margin: 50px auto;
         }
 
         /* Анимация левитации всего робота */
@@ -28,27 +32,36 @@
 
         /* Анимация тени под роботом */
         .pet-shadow {
-            transform-origin: 50% 95%; /* Точка трансформации в центре тени */
+            transform-origin: 50% 95%;
+            /* Точка трансформации в центре тени */
             animation: scaleShadow 4s ease-in-out infinite;
         }
 
         /* Базовые стили для элементов SVG */
         .pet-metal {
-			fill: #eaeaf0;
-			stroke: #868688;
+            fill: #e7e7ed;
+            stroke: #868688;
             stroke-width: 2;
             transition: fill 0.3s ease, stroke 0.3s ease;
         }
 
         .pet-dark-plate {
-			fill: #fff;
-			stroke: #bcbcbc;
+            fill: #fff;
+            stroke: #a4a1a1;
             stroke-width: 1.5;
         }
 
         /* Группы элементов для анимации при наведении */
-        .pet-head, .pet-arm, .pet-leg {
+        .pet-head,
+        .pet-arm,
+        .pet-leg {
             transition: transform 0.3s ease-out;
+        }
+
+        /* Постоянное покачивание головы для эффекта "живого" робота */
+        .pet-head {
+            transform-origin: 50px 50px;
+            animation: swayHead 6s ease-in-out infinite;
         }
 
         /* Элементы неонового свечения (глаза, рот, антенна, индикатор) */
@@ -56,7 +69,9 @@
             transition: fill 0.3s ease, stroke 0.3s ease, r 0.2s ease, transform 0.2s ease;
         }
 
-        .pet-eye { transform-origin: center; }
+        .pet-eye {
+            transform-origin: center;
+        }
 
         .pet-antenna-glow {
             transform-origin: 50px 10px;
@@ -69,7 +84,7 @@
         }
 
         /* --- Эффекты при наведении мыши --- */
-        
+
         /* Глаза увеличиваются */
         .robot-pet-container:hover .pet-eye {
             transform: scale(1.15);
@@ -77,33 +92,83 @@
 
         /* Голова немного наклоняется */
         .robot-pet-container:hover .pet-head {
-            transform: rotate(-2deg) translateY(-2px);
+            animation: none;
+            transform: rotate(-4deg) translateY(-2px);
             transform-origin: 50px 50px;
         }
 
         /* Руки немного разводятся */
-        .robot-pet-container:hover .pet-arm-left { transform: rotate(5deg); transform-origin: 25px 65px; }
-        .robot-pet-container:hover .pet-arm-right { transform: rotate(-5deg); transform-origin: 75px 65px; }
+        .robot-pet-container:hover .pet-arm-left {
+            transform: rotate(5deg);
+            transform-origin: 25px 65px;
+        }
+
+        .robot-pet-container:hover .pet-arm-right {
+            transform: rotate(-5deg);
+            transform-origin: 75px 65px;
+        }
 
         /* --- Ключевые кадры CSS Анимаций --- */
         @keyframes floatRobot {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
         }
 
         @keyframes scaleShadow {
-            0%, 100% { transform: scale(1); opacity: 0.15; }
-            50% { transform: scale(0.7); opacity: 0.05; }
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.15;
+            }
+
+            50% {
+                transform: scale(0.7);
+                opacity: 0.05;
+            }
         }
 
         @keyframes antennaBlink {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; filter: drop-shadow(0 0 3px var(--glow-color, #00f0ff)); }
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+                filter: drop-shadow(0 0 3px var(--glow-color, #00f0ff));
+            }
         }
 
         @keyframes bellyPulse {
-            0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px var(--glow-color, #00f0ff)); }
-            50% { opacity: 1; filter: drop-shadow(0 0 5px var(--glow-color, #00f0ff)); }
+
+            0%,
+            100% {
+                opacity: 0.7;
+                filter: drop-shadow(0 0 2px var(--glow-color, #00f0ff));
+            }
+
+            50% {
+                opacity: 1;
+                filter: drop-shadow(0 0 5px var(--glow-color, #00f0ff));
+            }
+        }
+
+        @keyframes swayHead {
+            0%, 100% {
+                transform: rotate(-1.5deg);
+            }
+            50% {
+                transform: rotate(1.5deg);
+            }
         }
 
         /* Панель управления */
@@ -132,26 +197,30 @@
             transition: all 0.2s ease;
         }
 
-        .demo-btn:hover { background: #3a3a45; border-color: #00f0ff; }
-        .demo-btn.active { background: #00f0ff; color: #1e1e24; border-color: #00f0ff; box-shadow: 0 0 10px rgba(0,240,255,0.5); }
+        .demo-btn:hover {
+            background: #3a3a45;
+            border-color: #00f0ff;
+        }
+
+        .demo-btn.active {
+            background: #00f0ff;
+            color: #1e1e24;
+            border-color: #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
     </style>
 </head>
+
 <body>
 
     <div class="robot-pet-container">
         <!-- Увеличил viewBox по вертикали, чтобы влезло тело (0 0 100 140) -->
         <svg id="robot-pet-svg" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
-            
+
             <!-- Тень (теперь ниже, под ногами) -->
             <ellipse class="pet-shadow" cx="50" cy="135" rx="25" ry="5" fill="#000" opacity="0.15" />
-            
-            <!-- Уши (остались от твоей версии) -->
-            <rect x="16" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
-            <rect x="78" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
 
-            <!-- Антенна -->
-            <line x1="50" y1="20" x2="50" y2="10" stroke="#3a3a45" stroke-width="2.5" stroke-linecap="round" />
-            <circle class="pet-neon pet-antenna-glow" cx="50" cy="8" r="4" fill="#00f0ff" style="--glow-color: #00f0ff;" />
+
 
             <!-- НОГИ -->
             <g class="pet-legs">
@@ -179,27 +248,39 @@
                 <!-- Панель на животе -->
                 <rect class="pet-dark-plate" x="32" y="68" width="36" height="38" rx="8" />
                 <!-- Пульсирующий индикатор (LED) -->
-                <circle class="pet-neon pet-belly-led" cx="50" cy="87" r="6" fill="#00f0ff" style="--glow-color: #00f0ff;" />
+                <circle class="pet-neon pet-belly-led" cx="50" cy="87" r="6" fill="#00f0ff"
+                    style="--glow-color: #00f0ff;" />
                 <!-- Декоративные линии -->
                 <line x1="38" y1="75" x2="62" y2="75" stroke="#2c2c35" stroke-width="1" />
                 <line x1="38" y1="80" x2="42" y2="80" stroke="#2c2c35" stroke-width="1" />
             </g>
-            
+
             <!-- ГОЛОВА (Твоя оригинальная, немного смещена вверх) -->
             <g class="pet-head">
-                <rect class="pet-metal" x="22" y="18" width="56" height="50" rx="18" />
-                
+
+                <!-- Уши -->
+                <rect x="19" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
+                <rect x="75" y="32" width="6" height="16" rx="3" fill="#2c2c35" stroke="#3a3a45" stroke-width="1.5" />
+
+                <!-- Антенна (перенесена в голову для наклона при ховере) -->
+                <line x1="50" y1="20" x2="50" y2="10" stroke="#3a3a45" stroke-width="2.5" stroke-linecap="round" />
+                <circle class="pet-neon pet-antenna-glow" cx="50" cy="8" r="4" fill="#00f0ff"
+                    style="--glow-color: #00f0ff;" />
+
+                <rect class="pet-metal" x="25" y="18" width="50" height="46" rx="18" />
+
                 <!-- Экран лица -->
-                <rect class="pet-dark-plate" x="28" y="24" width="44" height="30" rx="10" />
-                
+                <rect class="pet-dark-plate" x="31" y="24" width="38" height="30" rx="10" />
+
                 <!-- Глаза -->
                 <g class="pet-eyes">
                     <circle class="pet-neon pet-eye" id="pet-eye-left" cx="41" cy="36" r="4.5" fill="#00f0ff" />
                     <circle class="pet-neon pet-eye" id="pet-eye-right" cx="59" cy="36" r="4.5" fill="#00f0ff" />
                 </g>
-                
+
                 <!-- Рот -->
-                <path class="pet-neon pet-mouth" id="pet-mouth-path" d="M 43 46 Q 50 46 57 46" stroke="#00f0ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path class="pet-neon pet-mouth" id="pet-mouth-path" d="M 43 46 Q 50 46 57 46" stroke="#00f0ff"
+                    stroke-width="2.5" fill="none" stroke-linecap="round" />
             </g>
 
         </svg>
@@ -222,7 +303,7 @@
                 this.antenna = this.svg.querySelector('.pet-antenna-glow');
                 this.bellyLed = this.svg.querySelector('.pet-belly-led');
                 this.joints = this.svg.querySelectorAll('.pet-joint'); // Шарниры рук
-                
+
                 // Элементы, которые меняют цвет
                 this.neonElements = [...this.eyes, this.mouth, this.antenna, this.bellyLed, ...this.joints];
             }
@@ -261,9 +342,9 @@
                 this._resetEyes();
                 this._setNeonColor('#f1c40f'); // Янтарный
                 this.mouth.setAttribute('d', 'M 45 46 Q 50 46 55 46'); // Узкий рот
-                
+
                 this.eyes.forEach(eye => eye.setAttribute('r', '3')); // Прищурился
-                
+
                 this.antenna.style.animationDuration = '0.4s'; // Быстро мигает
                 this.bellyLed.style.animationDuration = '0.8s'; // Быстро пульсирует
             }
@@ -272,9 +353,9 @@
                 this._resetEyes();
                 this._setNeonColor('#2ecc71'); // Зеленый
                 this.mouth.setAttribute('d', 'M 41 43 Q 50 53 59 43'); // Улыбка (корректировал координаты под новую позицию головы)
-                
+
                 this.eyes.forEach(eye => eye.setAttribute('r', '5.5')); // Большие глаза
-                
+
                 this.antenna.style.animationDuration = '1s';
                 this.bellyLed.style.animationDuration = '1.5s';
             }
@@ -283,7 +364,7 @@
                 this._resetEyes();
                 this._setNeonColor('#e74c3c'); // Красный
                 this.mouth.setAttribute('d', 'M 43 49 Q 50 41 57 49'); // Грустный рот
-                
+
                 this.antenna.style.animationDuration = '0.2s'; // Паника
                 this.bellyLed.style.animationDuration = '0.4s';
             }
@@ -297,7 +378,7 @@
             document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            switch(state) {
+            switch (state) {
                 case 'neutral': pet.toNeutral(); break;
                 case 'thinking': pet.toThinking(); break;
                 case 'happy': pet.toHappy(); break;
@@ -306,4 +387,5 @@
         }
     </script>
 </body>
+
 </html>
