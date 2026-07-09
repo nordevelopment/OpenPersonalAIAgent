@@ -15,6 +15,12 @@ A lightweight, fast and Personal AI Agent (PAIAgent) running locally on your com
 ## 💡 What is this project for?
 This project is designed for anyone who wants a personal AI assistant that can manage local files, browse the web, generate images, and communicate seamlessly through a slick web interface or remotely on-the-go via a Telegram bot.
 
+### 🔒 100% Self-Hosted & Private
+PAIAgent runs entirely on your local machine or private server. All chat history, settings, and workspace documents are stored in a local SQLite database. Your private data never leaves your computer, and you retain absolute control over which external APIs (like OpenRouter or Together AI) are called.
+
+### 🔓 Fully Open Source
+Built with clean TypeScript and vanilla web technologies under the MIT license. No massive, opaque frameworks (like LangChain) or hidden tracking. You have full transparency, can easily audit the source code, and can freely modify or extend the agent's tools and behaviors.
+
 ---
 
 ## ⚡Features

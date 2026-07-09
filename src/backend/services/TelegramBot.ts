@@ -7,6 +7,9 @@
 import type { ChatManager } from '../ai/ChatManager.js';
 import { config } from '../config.js';
 import { Telegraf, Context } from 'telegraf';
+import path from 'path';
+import fs from 'fs';
+
 
 export class TelegramBot {
   private bot: Telegraf | null = null;
@@ -106,12 +109,64 @@ export class TelegramBot {
         return;
       }
 
+      // Send initial typing status
       await ctx.sendChatAction('typing');
 
-      const sessionId = `telegram_${userId}`;
-      const response = await this.chatManager.sendMessage(userMessage, sessionId);
+      // Keep showing "typing..." status in Telegram while AI is thinking (which can take time due to image gen/tool calls)
+      const typingInterval = setInterval(() => {
+        ctx.sendChatAction('typing').catch(err => {
+          console.error('[Telegram] Error sending typing action:', err);
+        });
+      }, 4000);
 
-      await ctx.reply(response.content);
+      const sessionId = `telegram_${userId}`;
+      let response;
+      try {
+        response = await this.chatManager.sendMessage(userMessage, sessionId);
+      } finally {
+        clearInterval(typingInterval);
+      }
+
+      const content = response.content;
+
+      // Extract markdown images: ![caption](image_path)
+      const imgRegex = /!\[(.*?)\]\((.*?)\)/g;
+      const imagesToSend: { alt: string; path: string }[] = [];
+      let match;
+
+      while ((match = imgRegex.exec(content)) !== null) {
+        imagesToSend.push({ alt: match[1], path: match[2] });
+      }
+
+      if (imagesToSend.length === 0) {
+        await ctx.reply(content);
+        return;
+      }
+
+      // Split text by markdown images to send messages in correct sequence
+      const plainTexts = content.split(/!\[.*?\]\(.*?\)/g);
+
+      for (let i = 0; i < plainTexts.length; i++) {
+        const textPart = plainTexts[i].trim();
+        if (textPart) {
+          await ctx.reply(textPart);
+        }
+        if (i < imagesToSend.length) {
+          const img = imagesToSend[i];
+          let cleanPath = img.path;
+          if (cleanPath.startsWith('/')) {
+            cleanPath = cleanPath.substring(1);
+          }
+          const absolutePath = path.resolve(process.cwd(), cleanPath);
+
+          if (fs.existsSync(absolutePath)) {
+            await ctx.replyWithPhoto({ source: absolutePath }, { caption: img.alt || undefined });
+          } else {
+            console.error(`[Telegram] Image file not found: ${absolutePath}`);
+            await ctx.reply(`[Image: ${img.alt || 'photo'}]`);
+          }
+        }
+      }
     } catch (error) {
       console.error('[Telegram] Error handling message:', error);
       await ctx.reply('Error handling message');
