@@ -70,6 +70,7 @@
                 linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
             background-size: 50px 50px;
+            min-width: 0;
         }
 
         .chat-header {
@@ -89,11 +90,13 @@
             flex-direction: column;
             gap: 20px;
             scroll-behavior: smooth;
+            min-width: 0;
         }
 
         /* Message Styling - Advanced Cards */
         .message {
             max-width: 90%;
+            min-width: 0;
             position: relative;
             animation: slideIn 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
@@ -111,6 +114,7 @@
             border: 1px solid var(--cyber-border);
             clip-path: polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%);
             max-width: 100%;
+            overflow: auto;
         }
 
         .message.agent .message-box {
@@ -131,6 +135,8 @@
             line-height: 1.8;
             font-size: 15px;
             letter-spacing: 0.5px;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .message-content img {
