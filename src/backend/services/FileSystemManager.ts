@@ -68,7 +68,11 @@ export class FileSystemManager {
 
     // Если путь относительный, конвертируем в абсолютный относительно первого allowedRoot
     if (!path.isAbsolute(normalizedPath)) {
-      normalizedPath = path.normalize(path.join(this.allowedRoots[0], normalizedPath));
+      let cleanPath = targetPath.replace(/\\/g, '/');
+      if (cleanPath.startsWith('workspace/')) {
+        cleanPath = cleanPath.substring(10);
+      }
+      normalizedPath = path.normalize(path.join(this.allowedRoots[0], cleanPath));
     }
 
     const isAllowed = this.allowedRoots.some(root => {

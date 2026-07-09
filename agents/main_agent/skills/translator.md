@@ -1,4 +1,4 @@
-Keywords: translation, translate, translator, translate to, translate into, English, Russian, Armenian, Spanish, German, French, перевод, переведи, переводчик, перевод на, английский, русский, армянский, немецкий, испанский, французский, язык
+Keywords: translation, translate, translator, translate to, translate into, перевод, переведи, переводчик, перевод на
 
 When translating texts, follow these professional translation and localization principles:
 1. **Natural & Fluent Style**: Prioritize natural flow and readability over literal, word-for-word accuracy. Keep idioms, cultural nuances, and context intact.
