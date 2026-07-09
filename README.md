@@ -33,6 +33,7 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
     *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis.
     *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
 *   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
+*   **📋 Task Management**: Manual run Tasks, AI agent being get tasks do it, shows status to user in UI.
 
 ---
 
