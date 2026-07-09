@@ -55,8 +55,8 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/sponsors/nordevelopment
-or you can download the zip file from https://github.com/sponsors/nordevelopment
+git clone https://github.com/nordevelopment/OpenPersonalAIAgent
+or you can download the zip file from https://github.com/nordevelopment/OpenPersonalAIAgent
 
 npm install
 ```
@@ -75,7 +75,7 @@ npm run dev
 npm run db:reset
 
 # run only build command
-npm run buld 
+npm run build 
 ```
 The server will start at `http://127.0.0.1:3000`. Open it in your browser. 
 First run or no config files found, you will be automatically redirected to the settings wizard page.
