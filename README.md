@@ -93,6 +93,7 @@ First run or no config files found, you will be automatically redirected to the 
 <img width="1549" height="903" alt="Image" src="https://github.com/user-attachments/assets/5a6d1b22-39a2-4e05-a167-1c5eef931b65" />
 
 <img width="1248" height="614" alt="Image" src="https://github.com/user-attachments/assets/d321fd1c-2841-4e4d-8569-9a62e938a1ea" />
+
 ---
 
 ## ⚖️ Comparison: PAIAgent vs. Heavyweight Alternatives
