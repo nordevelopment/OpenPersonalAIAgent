@@ -60,7 +60,6 @@ export class AIClient {
         'Identity.md',
         'User.md',
         'Agent.md',
-        'Skills.md',
         'Memory.md'
       ];
 
@@ -84,6 +83,74 @@ export class AIClient {
   }
 
   /**
+   * Search for matching skills inside agents/<agentId>/skills/ based on query
+   */
+  getMatchingSkills(agentId: string, query: string): string {
+    if (!query) return '';
+
+    const agentPath = path.join(__dirname, `../../../agents/${agentId}`);
+    const skillsDirPath = path.join(agentPath, 'skills');
+
+    if (!fs.existsSync(skillsDirPath) || !fs.statSync(skillsDirPath).isDirectory()) {
+      return '';
+    }
+
+    const files = fs.readdirSync(skillsDirPath);
+    const matchedSkills: string[] = [];
+    const queryLower = query.toLowerCase();
+
+    for (const file of files) {
+      if (file.endsWith('.md')) {
+        const filePath = path.join(skillsDirPath, file);
+        try {
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const lines = content.split(/\r?\n/);
+          if (lines.length === 0) continue;
+
+          const firstLine = lines[0].trim();
+          let keywords: string[] = [];
+          let body = '';
+
+          if (firstLine.toLowerCase().startsWith('keywords:')) {
+            keywords = firstLine
+              .substring(9)
+              .split(',')
+              .map(k => k.trim().toLowerCase())
+              .filter(k => k.length > 0);
+            body = lines.slice(1).join('\n').trim();
+          } else {
+            // Fallback: use filename without extension as keyword
+            const filenameKeyword = file.substring(0, file.lastIndexOf('.')).toLowerCase();
+            keywords = [filenameKeyword];
+            body = content.trim();
+          }
+
+          const isMatched = keywords.some(keyword => {
+            if (!keyword) return false;
+            if (keyword.length > 2) {
+              return queryLower.includes(keyword);
+            } else {
+              // Word boundary check for short words like "js", "py"
+              const regex = new RegExp(`\\b${keyword}\\b`, 'i');
+              return regex.test(queryLower);
+            }
+          });
+
+          if (isMatched) {
+            const skillName = file.substring(0, file.lastIndexOf('.')).toUpperCase();
+            matchedSkills.push(`### SKILL: ${skillName}\n${body}`);
+            console.log(`[AIClient] Dynamic skill loaded: ${file}`);
+          }
+        } catch (err) {
+          console.error(`[AIClient] Failed to read skill file ${file}:`, err);
+        }
+      }
+    }
+
+    return matchedSkills.join('\n\n');
+  }
+
+  /**
    * Send a message to AI
    * @param messages - array of messages (dialog history)
    * @param tools - list of available tools (from AITools.getAvailableTools())
@@ -95,6 +162,26 @@ export class AIClient {
   async sendMessage(messages: AIMessages[], agentId?: string, tools?: any[], additionalSystem?: string): Promise<AIResponse> {
 
     const systemPrompt = this.buildSystemPrompt(agentId);
+
+    // Dynamic skills selection based on last user query
+    let userQuery = '';
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'user') {
+        const content = messages[i].content;
+        if (typeof content === 'string') {
+          userQuery = content;
+          break;
+        } else if (Array.isArray(content)) {
+          userQuery = content
+            .filter(item => item.type === 'text')
+            .map(item => item.text)
+            .join(' ');
+          break;
+        }
+      }
+    }
+
+    const activeSkillsContent = this.getMatchingSkills(agentId || 'main_agent', userQuery);
 
     // Convert local stored image paths to base64 strings for the API request
     const processedMessages: AIMessages[] = await Promise.all(messages.map(async (msg): Promise<AIMessages> => {
@@ -129,6 +216,9 @@ export class AIClient {
     // Add system prompt to the beginning of messages
     const messagesWithSystem: AIMessages[] = [];
     let finalSystemPrompt = systemPrompt;
+    if (activeSkillsContent) {
+      finalSystemPrompt = finalSystemPrompt ? `${finalSystemPrompt}\n\n[ACTIVE SKILLS]\n${activeSkillsContent}` : activeSkillsContent;
+    }
     if (additionalSystem) {
       finalSystemPrompt = finalSystemPrompt ? `${finalSystemPrompt}\n${additionalSystem}` : additionalSystem;
     }

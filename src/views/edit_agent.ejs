@@ -47,7 +47,7 @@
         <div class="chat-area editor-main" style="display: flex; flex-direction: column; flex: 1; height: 100vh;">
             <!-- Tabs Header -->
             <div class="editor-header-tabs cyber-tile--bottom" style="display: flex;">
-                <% const allowedFiles=['Agent.md', 'Identity.md' , 'Memory.md' , 'Skills.md' , 'User.md' ]; %>
+                <% const allowedFiles=['Agent.md', 'Identity.md' , 'Memory.md' , 'User.md' ]; %>
                     <% allowedFiles.forEach((file, index)=> { %>
                         <button class="editor-tab-btn <%= index === 0 ? 'active' : '' %>" data-file="<%= file %>">
                             <%= file %>

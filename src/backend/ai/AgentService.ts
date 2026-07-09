@@ -43,7 +43,7 @@ export class AgentService {
     }
 
     // List of allowed files to be edited for security
-    public readonly ALLOWED_EDIT_FILES = ['Agent.md', 'Identity.md', 'Memory.md', 'Skills.md', 'User.md'];
+    public readonly ALLOWED_EDIT_FILES = ['Agent.md', 'Identity.md', 'Memory.md', 'User.md'];
 
     /**
      * Get the contents of all allowed markdown files for a given agent
@@ -113,6 +113,19 @@ export class AgentService {
                     fs.copyFileSync(srcFile, destFile);
                 } else {
                     fs.writeFileSync(destFile, '', 'utf-8');
+                }
+            }
+
+            // Copy skills directory if it exists
+            const srcSkillsDir = path.join(mainAgentPath, 'skills');
+            const destSkillsDir = path.join(newAgentPath, 'skills');
+            if (fs.existsSync(srcSkillsDir)) {
+                fs.mkdirSync(destSkillsDir, { recursive: true });
+                const skillFiles = fs.readdirSync(srcSkillsDir);
+                for (const file of skillFiles) {
+                    if (file.endsWith('.md')) {
+                        fs.copyFileSync(path.join(srcSkillsDir, file), path.join(destSkillsDir, file));
+                    }
                 }
             }
         } else {

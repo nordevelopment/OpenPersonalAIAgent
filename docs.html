@@ -5,24 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PAIAgent Documentation - Lightweight Personal AI Assistant</title>
-    <meta name="description" content="PAIAgent Documentation - Comprehensive guide for installation, configuration, and modular prompt structure of the lightweight local Personal AI Assistant.">
-    <meta name="keywords" content="PAIAgent Docs, AI agent installation, local LLM configuration, custom tools, SQLite vector setup">
+    <meta name="description"
+        content="PAIAgent Documentation - Comprehensive guide for installation, configuration, and modular prompt structure of the lightweight local Personal AI Assistant.">
+    <meta name="keywords"
+        content="PAIAgent Docs, AI agent installation, local LLM configuration, custom tools, SQLite vector setup">
     <meta name="author" content="Norayr Petrosyan">
     <meta name="robots" content="index, follow">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://github.com/nordevelopment/OpenPersonalAIAgent">
     <meta property="og:title" content="PAIAgent Documentation - Lightweight Personal AI Assistant">
-    <meta property="og:description" content="Comprehensive guide for installation, configuration, and modular prompt structure of the lightweight local Personal AI Assistant.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
+    <meta property="og:description"
+        content="Comprehensive guide for installation, configuration, and modular prompt structure of the lightweight local Personal AI Assistant.">
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://github.com/nordevelopment/OpenPersonalAIAgent">
     <meta property="twitter:title" content="PAIAgent Documentation - Lightweight Personal AI Assistant">
-    <meta property="twitter:description" content="Comprehensive guide for installation, configuration, and modular prompt structure of the lightweight local Personal AI Assistant.">
-    <meta property="twitter:image" content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
+    <meta property="twitter:description"
+        content="Comprehensive guide for installation, configuration, and modular prompt structure of the lightweight local Personal AI Assistant.">
+    <meta property="twitter:image"
+        content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
     <!-- Google Fonts for Cyberpunk Aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -344,7 +350,8 @@
                 <!-- Quick Start -->
                 <section id="quickstart" class="docs-section">
                     <h2>2. Quick Start</h2>
-                    <p>Get your local agent up and running in less than a minute. Follow these simple steps to install and start the server locally.</p>
+                    <p>Get your local agent up and running in less than a minute. Follow these simple steps to install
+                        and start the server locally.</p>
 
                     <h3>Prerequisites</h3>
                     <div class="cyber-alert" style="margin-bottom: var(--space-md); margin-top: var(--space-xs);">
@@ -376,7 +383,8 @@ npm install</code></pre>
                     </div>
 
                     <h3>Running The Agent</h3>
-                    <p>To start the agent in production mode (which automatically builds and starts the application):</p>
+                    <p>To start the agent in production mode (which automatically builds and starts the application):
+                    </p>
                     <div class="terminal-box">
                         <div class="terminal-header">
                             <span>BASH // PRODUCTION START</span>
@@ -412,15 +420,18 @@ npm install</code></pre>
                     <h2>3. Configuration & APIs</h2>
                     <p>
                         PAIAgent features a built-in <strong>Setup Wizard</strong>. When you launch the server for the
-                        first time, simply navigate to <strong class="highlight-text">http://127.0.0.1:3000</strong>. You will be automatically redirected to a web settings page.
+                        first time, simply navigate to <strong class="highlight-text">http://127.0.0.1:3000</strong>.
+                        You will be automatically redirected to a web settings page.
                     </p>
                     <p>
-                        If no <code>.env</code> file exists, your settings are saved securely in a local, git-ignored file named <code>config.json</code> in your project root.
+                        If no <code>.env</code> file exists, your settings are saved securely in a local, git-ignored
+                        file named <code>config.json</code> in your project root.
                     </p>
-                    
+
                     <h3>Optional: Manual .env Configuration</h3>
                     <p>
-                        If you prefer using traditional environment variables instead of the web setup wizard, you can manually copy the environment template and edit the resulting <code>.env</code> file:
+                        If you prefer using traditional environment variables instead of the web setup wizard, you can
+                        manually copy the environment template and edit the resulting <code>.env</code> file:
                     </p>
                     <div class="terminal-box">
                         <div class="terminal-header">
@@ -438,7 +449,8 @@ npm install</code></pre>
 
                     <h3>Configurable API Providers</h3>
                     <ul>
-                        <li><strong>OpenRouter / Gemini / OpenAI (or any OpenAI-compatible API)</strong>: The LLM provider for chat interactions, code writing,
+                        <li><strong>OpenRouter / Gemini / OpenAI (or any OpenAI-compatible API)</strong>: The LLM
+                            provider for chat interactions, code writing,
                             and image analysis (Vision).</li>
                         <li><strong>Together AI / Grok X.AI</strong>: Used as API providers for the image generation
                             tool. Features automatic fallback if one service is offline.</li>
@@ -450,7 +462,8 @@ npm install</code></pre>
                         <div class="cyber-alert__title">⚠️ Security Warning</div>
                         <p>Do NOT commit your <code>config.json</code> or <code>.env</code> files to public Git
                             repositories. They contain raw API keys and private tokens. Both files are listed in
-                            <code>.gitignore</code> by default.</p>
+                            <code>.gitignore</code> by default.
+                        </p>
                     </div>
                 </section>
 
@@ -464,11 +477,14 @@ npm install</code></pre>
                     </p>
                     <h3>Prompts structure:</h3>
                     <ul>
-                        <li><code>Identity.md</code>: The persona, tone, and character definitions of the assistant.</li>
-                        <li><code>User.md</code>: Contextual information about the user (preferences, environment settings).</li>
-                        <li><code>Agent.md</code>: The main ruleset defining how tools are structured and how responses should be formatted.</li>
-                        <li><code>Skills.md</code>: Guidelines defining the available tools and helping guide function calling.</li>
-                        <li><code>Memory.md</code>: Guidelines on how the agent should structure memory summaries and search triggers.</li>
+                        <li><code>Identity.md</code>: The persona, tone, and character definitions of the assistant.
+                        </li>
+                        <li><code>User.md</code>: Contextual information about the user (preferences, environment
+                            settings).</li>
+                        <li><code>Agent.md</code>: The main ruleset defining how tools are structured and how responses
+                            should be formatted.</li>
+                        <li><code>Memory.md</code>: Guidelines on how the agent should structure memory summaries and
+                            search triggers.</li>
                     </ul>
                     <p>
                         This modular layout allows you to easily edit agent behaviors using any Markdown editor without

@@ -59,16 +59,8 @@
             </div>
 
             <div class="sidebar-footer">
-                <a href="/tasks" style="text-decoration: none; width: 100%;">
-                    <button id="btnOpenTasks" class="cyber-btn cyber-btn--green" style="width: 100%; margin-bottom: 10px;">
-                        TASK MANAGER 📋
-                    </button>
-                </a>
-
-                <a href="/settings" style="text-decoration: none; width: 100%;">
-                    <button id="btnOpenSettings" class="cyber-btn --cyan" style="width: 100%;">
-                        SETTINGS ⚙️
-                    </button>
+                <a href="/settings" id="btnOpenSettings" class="cyber-btn --cyan" style="width: 100%;">
+                    ⚙️ SETTINGS
                 </a>
 
                 <button id="btnClearChat" class="cyber-btn cyber-btn--magenta">
@@ -91,6 +83,10 @@
         <div class="chat-area">
             <div class="chat-header cyber-tile--bottom">
                 <div class="system-status" id="system-status">SYSTEM INITIALIZING...</div>
+
+                <a href="/tasks" id="btnOpenTasks" class="cyber-btn cyber-btn--green">
+                    📋 TASK MANAGER
+                </a>
             </div>
 
             <!-- Setup Warning Banner -->
