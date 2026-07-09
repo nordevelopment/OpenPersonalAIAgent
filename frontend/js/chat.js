@@ -5,6 +5,7 @@ class AIAgentChat {
         this.sendButton = document.getElementById('sendButton');
         this.typingIndicator = document.getElementById('typingIndicator');
         this.sessionId = null;
+        this.isLoading = false;
         this.messageCount = 1;
         this.statusElement = document.getElementById('system-status');
 
@@ -252,11 +253,16 @@ class AIAgentChat {
     }
 
     async sendMessage() {
+        if (this.isLoading) return;
         const message = this.messageInput.value.trim();
         const image = this.selectedImageBase64;
         if (!message && !image) return;
 
         console.log('Sending message:', { message, hasImage: !!image, sessionId: this.sessionId });
+
+        this.isLoading = true;
+        this.sendButton.disabled = true;
+        this.messageInput.disabled = true;
 
         if (image) {
             this.addMessage([
@@ -332,6 +338,11 @@ class AIAgentChat {
             if (window.robotPet) {
                 window.robotPet.toError();
             }
+        } finally {
+            this.isLoading = false;
+            this.sendButton.disabled = false;
+            this.messageInput.disabled = false;
+            this.messageInput.focus();
         }
     }
 
