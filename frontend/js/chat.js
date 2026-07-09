@@ -693,8 +693,7 @@ class AIAgentChat {
                 throw new Error('Failed to clear memory');
             }
 
-            // Создать новую сессию
-            await this.createNewChat();
+            alert('Memory cleared successfully!');
         } catch (error) {
             console.error('Memory clear error:', error);
             alert('Failed to clear memory. Please try again.');

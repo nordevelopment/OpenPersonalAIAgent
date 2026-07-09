@@ -225,7 +225,7 @@ export class AITools {
         type: 'function',
         function: {
           name: 'generate_image',
-          description: 'Generates an image from a text prompt using AI. Returns the relative path to the generated image.',
+          description: 'Generates an image from a text prompt using AI. Returns the relative path. IMPORTANT: You MUST display the generated image in your response using markdown syntax: ![Caption](relative_path).',
           parameters: {
             type: 'object',
             properties: {

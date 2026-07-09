@@ -79,7 +79,25 @@ export class TelegramBot {
     });
 
     this.bot.help(async (ctx: Context) => {
-      await ctx.reply("Commands:\n/start - Start\n/help - Help");
+      await ctx.reply("Commands:\n/start - Start the agent\n/help - Show this help message\n/clear - Clear current chat history");
+    });
+
+    this.bot.command('clear', async (ctx: Context) => {
+      const userId = ctx.from?.id;
+      if (!userId) return;
+
+      const sessionId = `telegram_${userId}`;
+      try {
+        if (this.chatManager) {
+          await this.chatManager.clearHistory(sessionId);
+          await ctx.reply('🧹 Chat history cleared successfully!');
+        } else {
+          await ctx.reply('AI service is not available');
+        }
+      } catch (err) {
+        console.error('[Telegram] Error clearing history:', err);
+        await ctx.reply('Failed to clear chat history.');
+      }
     });
 
     this.bot.on('text', async (ctx: Context) => {
@@ -129,43 +147,48 @@ export class TelegramBot {
 
       const content = response.content;
 
-      // Extract markdown images: ![caption](image_path)
-      const imgRegex = /!\[(.*?)\]\((.*?)\)/g;
-      const imagesToSend: { alt: string; path: string }[] = [];
-      let match;
+      // Regex that matches either a markdown image OR a raw storage path (with optional backticks/quotes)
+      const splitRegex = /(!\[.*?\]\(.*?\)|`?\b\/?storage\/generated\/img_[a-f0-9-]+\.(?:png|jpg|jpeg|webp)\b`?)/gi;
+      const parts = content.split(splitRegex);
 
-      while ((match = imgRegex.exec(content)) !== null) {
-        imagesToSend.push({ alt: match[1], path: match[2] });
-      }
+      for (const part of parts) {
+        const trimmed = part.trim();
+        if (!trimmed) continue;
 
-      if (imagesToSend.length === 0) {
-        await ctx.reply(content);
-        return;
-      }
-
-      // Split text by markdown images to send messages in correct sequence
-      const plainTexts = content.split(/!\[.*?\]\(.*?\)/g);
-
-      for (let i = 0; i < plainTexts.length; i++) {
-        const textPart = plainTexts[i].trim();
-        if (textPart) {
-          await ctx.reply(textPart);
-        }
-        if (i < imagesToSend.length) {
-          const img = imagesToSend[i];
-          let cleanPath = img.path;
+        // Check if this part is a markdown image
+        const mdMatch = /!\[(.*?)\]\((.*?)\)/.exec(trimmed);
+        if (mdMatch) {
+          const alt = mdMatch[1];
+          let cleanPath = mdMatch[2];
           if (cleanPath.startsWith('/')) {
             cleanPath = cleanPath.substring(1);
           }
           const absolutePath = path.resolve(process.cwd(), cleanPath);
-
           if (fs.existsSync(absolutePath)) {
-            await ctx.replyWithPhoto({ source: absolutePath }, { caption: img.alt || undefined });
+            await ctx.replyWithPhoto({ source: absolutePath }, { caption: alt || undefined });
           } else {
             console.error(`[Telegram] Image file not found: ${absolutePath}`);
-            await ctx.reply(`[Image: ${img.alt || 'photo'}]`);
+            await ctx.reply(`[Image: ${alt || 'photo'}]`);
           }
+          continue;
         }
+
+        // Check if this part is a raw path (possibly enclosed in backticks or quotes)
+        const pathMatch = /`?\b\/?(storage\/generated\/img_[a-f0-9-]+\.(?:png|jpg|jpeg|webp))\b`?/i.exec(trimmed);
+        if (pathMatch) {
+          const cleanPath = pathMatch[1];
+          const absolutePath = path.resolve(process.cwd(), cleanPath);
+          if (fs.existsSync(absolutePath)) {
+            await ctx.replyWithPhoto({ source: absolutePath }, { caption: 'Generated Image' });
+          } else {
+            console.error(`[Telegram] Image file not found: ${absolutePath}`);
+            await ctx.reply(`[Image: Generated Image]`);
+          }
+          continue;
+        }
+
+        // Otherwise it's plain text
+        await ctx.reply(part);
       }
     } catch (error) {
       console.error('[Telegram] Error handling message:', error);

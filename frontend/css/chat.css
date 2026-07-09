@@ -282,19 +282,17 @@
 
         .session-item {
             padding: 5px 12px;
-            border: 1px solid var(--cyber-green-500);
+            border: 1px solid var(--cyber-green-900);
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .session-item:hover {
-            background: rgba(0, 212, 255, 0.08);
-            border-color: var(--cyber-secondary);
+            border-color: var(--cyber-green-900);
         }
 
         .session-item.active {
-            background: var(--cyber-primary);
             border-color: var(--cyber-green-500);
             border-left: 4px solid var(--cyber-green-700);
         }
