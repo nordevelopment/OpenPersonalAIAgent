@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import basicAuth from '@fastify/basic-auth';
 import staticPlugin from '@fastify/static';
 import cookiePlugin from '@fastify/cookie';
 import multipartPlugin from '@fastify/multipart';
@@ -21,10 +22,11 @@ import { AgentService } from './ai/AgentService.js';
 
 import { TelegramBot } from './services/TelegramBot.js';
 
-// Augment Fastify types to support sessionId
+// Augment Fastify types to support sessionId and basicAuth
 declare module 'fastify' {
   interface FastifyRequest {
     sessionId: string;
+    basicAuth: () => Promise<void>;
   }
 }
 
@@ -59,6 +61,28 @@ export async function buildApp(): Promise<FastifyInstance> {
 
     // Multipart for file uploads
     await app.register(multipartPlugin);
+
+    // Basic Auth Setup
+    if (config.APP_PASSWORD) {
+      await app.register(basicAuth, {
+        validate: async (username, password) => {
+          const expectedUser = config.APP_USER || 'admin';
+          if (username !== expectedUser || password !== config.APP_PASSWORD) {
+            throw new Error('Unauthorized');
+          }
+        },
+        authenticate: true
+      });
+
+      app.addHook('onRequest', async (request, reply) => {
+        if (request.url === '/api/health') return;
+        try {
+          await request.basicAuth();
+        } catch (err) {
+          return reply.status(401).send({ success: false, message: 'Unauthorized' });
+        }
+      });
+    }
 
     // Create chat components
     const db = new DatabaseClient();

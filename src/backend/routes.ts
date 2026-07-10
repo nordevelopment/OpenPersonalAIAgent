@@ -378,6 +378,9 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       aiDefaultModel: config.AI_DEFAULT_MODEL || 'qwen/qwen3.5-flash-02-23',
       hasTelegramBotToken: !!config.TELEGRAM_BOT_TOKEN,
       allowedTelegramUserIds: config.ALLOWED_TELEGRAM_USER_IDS || '',
+      appUser: config.APP_USER || 'admin',
+      hasAppPassword: !!config.APP_PASSWORD,
+      appPasswordMasked: config.APP_PASSWORD ? '******' : '',
       hasTogetherApiKey: !!config.images.together.key,
       hasXaiApiKey: !!config.images.xai.key,
       aiApiKeyMasked: config.AI_API_KEY ? '******' : '',
@@ -388,8 +391,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Save system settings
-  app.post('/api/settings', async (request: FastifyRequest<{ Body: { aiApiKey?: string, aiApiUrl?: string, aiDefaultModel?: string, telegramBotToken?: string, allowedTelegramUserIds?: string, togetherApiKey?: string, xaiApiKey?: string } }>, reply: FastifyReply) => {
-    const { aiApiKey, aiApiUrl, aiDefaultModel, telegramBotToken, allowedTelegramUserIds, togetherApiKey, xaiApiKey } = request.body;
+  app.post('/api/settings', async (request: FastifyRequest<{ Body: { aiApiKey?: string, aiApiUrl?: string, aiDefaultModel?: string, telegramBotToken?: string, allowedTelegramUserIds?: string, appUser?: string, appPassword?: string, togetherApiKey?: string, xaiApiKey?: string } }>, reply: FastifyReply) => {
+    const { aiApiKey, aiApiUrl, aiDefaultModel, telegramBotToken, allowedTelegramUserIds, appUser, appPassword, togetherApiKey, xaiApiKey } = request.body;
 
     const envPath = path.join(process.cwd(), '.env');
     const configJsonPath = path.join(process.cwd(), 'config.json');
@@ -426,6 +429,16 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         const clean = allowedTelegramUserIds.trim();
         envUpdates.ALLOWED_TELEGRAM_USER_IDS = clean;
         config.ALLOWED_TELEGRAM_USER_IDS = clean;
+      }
+      if (appUser !== undefined) {
+        const clean = appUser.trim();
+        envUpdates.APP_USER = clean;
+        config.APP_USER = clean;
+      }
+      if (isNewKey(appPassword)) {
+        const clean = appPassword!.trim();
+        envUpdates.APP_PASSWORD = clean;
+        config.APP_PASSWORD = clean;
       }
       if (isNewKey(togetherApiKey)) {
         const clean = togetherApiKey!.trim();
@@ -488,6 +501,16 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         const cleanIds = allowedTelegramUserIds.trim();
         configData.allowed_telegram_user_ids = cleanIds;
         config.ALLOWED_TELEGRAM_USER_IDS = cleanIds;
+      }
+      if (appUser !== undefined) {
+        const clean = appUser.trim();
+        configData.app_user = clean;
+        config.APP_USER = clean;
+      }
+      if (isNewKey(appPassword)) {
+        const clean = appPassword!.trim();
+        configData.app_password = clean;
+        config.APP_PASSWORD = clean;
       }
       if (isNewKey(togetherApiKey)) {
         configData.together_api_key = togetherApiKey!.trim();

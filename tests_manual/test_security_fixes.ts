@@ -52,6 +52,82 @@ async function testSecurityFixes() {
     console.log(`[PASS] FileSystemManager blocked prefix-based path bypass: "${err.message}"`);
   }
 
+  // 3. Test HTTP Basic Auth
+  console.log('\nTesting HTTP Basic Auth...');
+  const { config } = await import('../src/backend/config.js');
+  const { buildApp } = await import('../src/backend/app.js');
+
+  // Backup configs
+  const originalUser = config.APP_USER;
+  const originalPassword = config.APP_PASSWORD;
+
+  // Set mock configs
+  config.APP_USER = 'testuser';
+  config.APP_PASSWORD = 'testpassword';
+
+  try {
+    const app = await buildApp();
+
+    // 3.1 Test request without credentials -> should return 401
+    const responseNoCreds = await app.inject({
+      method: 'GET',
+      url: '/'
+    });
+    if (responseNoCreds.statusCode === 401) {
+      console.log('[PASS] GET / without credentials returned 401 Unauthorized');
+    } else {
+      console.log('[FAIL] GET / without credentials returned', responseNoCreds.statusCode);
+    }
+
+    // 3.2 Test request with WRONG credentials -> should return 401
+    const responseWrongCreds = await app.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        authorization: 'Basic ' + Buffer.from('testuser:wrong').toString('base64')
+      }
+    });
+    if (responseWrongCreds.statusCode === 401) {
+      console.log('[PASS] GET / with wrong credentials returned 401 Unauthorized');
+    } else {
+      console.log('[FAIL] GET / with wrong credentials returned', responseWrongCreds.statusCode);
+    }
+
+    // 3.3 Test request with CORRECT credentials -> should return 200
+    const responseCorrectCreds = await app.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        authorization: 'Basic ' + Buffer.from('testuser:testpassword').toString('base64')
+      }
+    });
+    if (responseCorrectCreds.statusCode === 200) {
+      console.log('[PASS] GET / with correct credentials returned 200 OK');
+    } else {
+      console.log('[FAIL] GET / with correct credentials returned', responseCorrectCreds.statusCode);
+    }
+
+    // 3.4 Test health check endpoint (should bypass auth) -> should return 200
+    const responseHealth = await app.inject({
+      method: 'GET',
+      url: '/api/health'
+    });
+    if (responseHealth.statusCode === 200) {
+      console.log('[PASS] GET /api/health bypassed Basic Auth and returned 200 OK');
+    } else {
+      console.log('[FAIL] GET /api/health returned', responseHealth.statusCode);
+    }
+
+    // Close app to free handles
+    await app.close();
+  } catch (err) {
+    console.log('[FAIL] HTTP Basic Auth test failed with error:', err);
+  } finally {
+    // Restore original configs
+    config.APP_USER = originalUser;
+    config.APP_PASSWORD = originalPassword;
+  }
+
   console.log('\n--- SECURITY FIXES TEST COMPLETED ---');
 }
 

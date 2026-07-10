@@ -8,6 +8,8 @@ export const config = {
   PORT: process.env.PORT || 3000,
   HOST: process.env.HOST || '127.0.0.1',
   ENV: process.env.NODE_ENV || 'local',
+  APP_USER: process.env.APP_USER || 'admin',
+  APP_PASSWORD: process.env.APP_PASSWORD || '',
   AI_API_KEY: process.env.AI_API_KEY || '',
   AI_API_URL: process.env.AI_API_URL || '',
   AI_DEFAULT_MODEL: process.env.AI_DEFAULT_MODEL || 'qwen/qwen3.5-flash-02-23',
@@ -62,6 +64,12 @@ if (fs.existsSync(configJsonPath)) {
       }
       if (parsed.allowed_telegram_user_ids) {
         config.ALLOWED_TELEGRAM_USER_IDS = parsed.allowed_telegram_user_ids;
+      }
+      if (parsed.app_user) {
+        config.APP_USER = parsed.app_user;
+      }
+      if (parsed.app_password) {
+        config.APP_PASSWORD = parsed.app_password;
       }
       if (parsed.together_api_key) {
         config.images.together.key = parsed.together_api_key;
