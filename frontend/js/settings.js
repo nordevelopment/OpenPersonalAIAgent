@@ -8,6 +8,9 @@ class SystemSettings {
         this.settingsAiApiUrl = document.getElementById('settingsAiApiUrl');
         this.settingsAiDefaultModel = document.getElementById('settingsAiDefaultModel');
         this.settingsTelegramToken = document.getElementById('settingsTelegramToken');
+        this.settingsAllowedTelegramUserIds = document.getElementById('settingsAllowedTelegramUserIds');
+        this.settingsAppUser = document.getElementById('settingsAppUser');
+        this.settingsAppPassword = document.getElementById('settingsAppPassword');
         this.settingsTogetherApiKey = document.getElementById('settingsTogetherApiKey');
         this.settingsXaiApiKey = document.getElementById('settingsXaiApiKey');
 
@@ -51,6 +54,12 @@ class SystemSettings {
                 this.settingsTelegramToken.value = '';
                 this.settingsTelegramToken.placeholder = settings.hasTelegramBotToken ? '****** (configured)' : 'Enter Telegram Bot Token';
 
+                this.settingsAllowedTelegramUserIds.value = settings.allowedTelegramUserIds || '';
+                this.settingsAppUser.value = settings.appUser || 'admin';
+
+                this.settingsAppPassword.value = '';
+                this.settingsAppPassword.placeholder = settings.hasAppPassword ? '****** (configured)' : 'Enter Password to enable Web Auth';
+
                 this.settingsTogetherApiKey.value = '';
                 this.settingsTogetherApiKey.placeholder = settings.hasTogetherApiKey ? '****** (configured)' : 'Enter Together AI API Key';
 
@@ -68,6 +77,9 @@ class SystemSettings {
         const aiApiUrl = this.settingsAiApiUrl.value.trim();
         const aiDefaultModel = this.settingsAiDefaultModel.value.trim();
         const telegramBotToken = this.settingsTelegramToken.value.trim();
+        const allowedTelegramUserIds = this.settingsAllowedTelegramUserIds.value.trim();
+        const appUser = this.settingsAppUser.value.trim();
+        const appPassword = this.settingsAppPassword.value.trim();
         const togetherApiKey = this.settingsTogetherApiKey.value.trim();
         const xaiApiKey = this.settingsXaiApiKey.value.trim();
 
@@ -76,6 +88,9 @@ class SystemSettings {
         if (aiApiUrl !== '') payload.aiApiUrl = aiApiUrl;
         if (aiDefaultModel !== '') payload.aiDefaultModel = aiDefaultModel;
         if (telegramBotToken !== '') payload.telegramBotToken = telegramBotToken === '-' ? '' : telegramBotToken;
+        if (allowedTelegramUserIds !== '') payload.allowedTelegramUserIds = allowedTelegramUserIds;
+        if (appUser !== '') payload.appUser = appUser;
+        if (appPassword !== '') payload.appPassword = appPassword === '-' ? '' : appPassword;
         if (togetherApiKey !== '') payload.togetherApiKey = togetherApiKey === '-' ? '' : togetherApiKey;
         if (xaiApiKey !== '') payload.xaiApiKey = xaiApiKey === '-' ? '' : xaiApiKey;
 

@@ -117,6 +117,34 @@
                 </div>
 
                 <div class="form-group">
+                    <label
+                        style="display: block; font-family: var(--font-mono); color: var(--cyber-secondary); margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase;">Allowed Telegram User IDs</label>
+                    <input type="text" id="settingsAllowedTelegramUserIds" class="cyber-input"
+                        style="width: 100%;font-family: var(--font-mono); padding: 8px;" placeholder="e.g. 1234567,8901234">
+                    <small
+                        style="display: block; font-family: var(--font-mono); color: rgba(255,255,255,0.6); margin-top: 5px;">Optional.
+                        Comma-separated list of Telegram User IDs. Leave empty to allow anyone.</small>
+                </div>
+
+                <div class="form-group">
+                    <label
+                        style="display: block; font-family: var(--font-mono); color: var(--cyber-secondary); margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase;">Basic Auth Username</label>
+                    <input type="text" id="settingsAppUser" class="cyber-input"
+                        style="width: 100%;font-family: var(--font-mono); padding: 8px;" placeholder="admin">
+                    <small
+                        style="display: block; font-family: var(--font-mono); color: rgba(255,255,255,0.6); margin-top: 5px;">Username for Web UI protection. Default is 'admin'.</small>
+                </div>
+
+                <div class="form-group">
+                    <label
+                        style="display: block; font-family: var(--font-mono); color: var(--cyber-secondary); margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase;">Basic Auth Password</label>
+                    <input type="password" id="settingsAppPassword" class="cyber-input"
+                        style="width: 100%;font-family: var(--font-mono); padding: 8px;" placeholder="Not configured">
+                    <small
+                        style="display: block; font-family: var(--font-mono); color: rgba(255,255,255,0.6); margin-top: 5px;">Optional. Leave empty to disable authentication. Enter new password to update, or '-' to clear.</small>
+                </div>
+
+                <div class="form-group">
                     <button id="btnSaveSettings" class="cyber-btn">
                         SAVE CONFIG
                     </button>

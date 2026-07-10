@@ -81,6 +81,16 @@ npm run build
 The server will start at `http://127.0.0.1:3000`. Open it in your browser. 
 First run or no config files found, you will be automatically redirected to the settings wizard page.
 
+## 🔒 Security
+
+PAIAgent includes built-in security features to protect your server, files, and API balances when deployed remotely:
+
+*   **HTTP Basic Auth**: Lock the Web UI and API endpoints behind a password. Set `APP_PASSWORD` (and optionally `APP_USER`) in your `.env` to enable it. Leaving `APP_PASSWORD` empty disables authentication (ideal for local localhost use).
+*   **Telegram Bot Whitelist**: Restrict access to your Telegram bot. Set `ALLOWED_TELEGRAM_USER_IDS` in your `.env` with a comma-separated list of Telegram User IDs to prevent unauthorized users from using your bot and API balances.
+*   **Strict Path Validation**: All AI file operations (read, write, delete) are strictly validated using `path.relative` comparison to ensure the AI cannot escape or access files outside the designated `workspace/` folder.
+*   **Safe Agent Directory Routing**: Directory operations on agent profiles (like editing files) sanitize all incoming IDs to prevent Path Traversal outside the `agents/` folder.
+*   **Secure Cookies & Sessions**: Session IDs are generated using Node's cryptographically secure `crypto.randomUUID()` and session cookies are protected with `sameSite: 'lax'` and conditional `secure` flags.
+
 ---
 
 ## 📸 Screenshots
