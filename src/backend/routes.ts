@@ -4,6 +4,7 @@
  */
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import crypto from 'crypto';
 import { ChatManager } from './ai/ChatManager.js';
 import { AgentService } from './ai/AgentService.js';
 import { TelegramBot } from './services/TelegramBot.js';
@@ -322,13 +323,15 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   // Create new session
   app.post('/api/sessions/create', async (request: FastifyRequest<{ Body: { agentId?: string } }>, reply: FastifyReply) => {
     const { agentId } = request.body || {};
-    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(30).substring(2, 9);
+    const sessionId = 'session_' + crypto.randomUUID();
     await chatManager.createSession(sessionId, agentId);
 
     reply.setCookie('sessionId', sessionId, {
       path: '/',
       maxAge: 86400000,
       httpOnly: true,
+      sameSite: 'lax',
+      secure: config.ENV === 'production'
     });
 
     return reply.send({ success: true, sessionId });
@@ -353,6 +356,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       path: '/',
       maxAge: 86400000,
       httpOnly: true,
+      sameSite: 'lax',
+      secure: config.ENV === 'production'
     });
 
     return reply.send({ success: true, sessionId });
@@ -372,6 +377,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       aiApiUrl: config.AI_API_URL || 'https://openrouter.ai/api/v1/chat/completions',
       aiDefaultModel: config.AI_DEFAULT_MODEL || 'qwen/qwen3.5-flash-02-23',
       hasTelegramBotToken: !!config.TELEGRAM_BOT_TOKEN,
+      allowedTelegramUserIds: config.ALLOWED_TELEGRAM_USER_IDS || '',
       hasTogetherApiKey: !!config.images.together.key,
       hasXaiApiKey: !!config.images.xai.key,
       aiApiKeyMasked: config.AI_API_KEY ? '******' : '',
@@ -382,8 +388,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Save system settings
-  app.post('/api/settings', async (request: FastifyRequest<{ Body: { aiApiKey?: string, aiApiUrl?: string, aiDefaultModel?: string, telegramBotToken?: string, togetherApiKey?: string, xaiApiKey?: string } }>, reply: FastifyReply) => {
-    const { aiApiKey, aiApiUrl, aiDefaultModel, telegramBotToken, togetherApiKey, xaiApiKey } = request.body;
+  app.post('/api/settings', async (request: FastifyRequest<{ Body: { aiApiKey?: string, aiApiUrl?: string, aiDefaultModel?: string, telegramBotToken?: string, allowedTelegramUserIds?: string, togetherApiKey?: string, xaiApiKey?: string } }>, reply: FastifyReply) => {
+    const { aiApiKey, aiApiUrl, aiDefaultModel, telegramBotToken, allowedTelegramUserIds, togetherApiKey, xaiApiKey } = request.body;
 
     const envPath = path.join(process.cwd(), '.env');
     const configJsonPath = path.join(process.cwd(), 'config.json');
@@ -415,6 +421,11 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         telegramBot.updateToken(clean).catch(err => {
           request.log.error({ err }, 'Failed to reload Telegram bot dynamically');
         });
+      }
+      if (allowedTelegramUserIds !== undefined) {
+        const clean = allowedTelegramUserIds.trim();
+        envUpdates.ALLOWED_TELEGRAM_USER_IDS = clean;
+        config.ALLOWED_TELEGRAM_USER_IDS = clean;
       }
       if (isNewKey(togetherApiKey)) {
         const clean = togetherApiKey!.trim();
@@ -472,6 +483,11 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         telegramBot.updateToken(cleanToken).catch(err => {
           request.log.error({ err }, 'Failed to reload Telegram bot dynamically');
         });
+      }
+      if (allowedTelegramUserIds !== undefined) {
+        const cleanIds = allowedTelegramUserIds.trim();
+        configData.allowed_telegram_user_ids = cleanIds;
+        config.ALLOWED_TELEGRAM_USER_IDS = cleanIds;
       }
       if (isNewKey(togetherApiKey)) {
         configData.together_api_key = togetherApiKey!.trim();

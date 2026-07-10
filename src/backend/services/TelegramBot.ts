@@ -74,6 +74,31 @@ export class TelegramBot {
   private setupHandlers(): void {
     if (!this.isEnabled || !this.bot) return;
 
+    // Warning about open bot
+    if (!config.ALLOWED_TELEGRAM_USER_IDS) {
+      console.warn('[Telegram] WARNING: ALLOWED_TELEGRAM_USER_IDS is empty. Anyone can use your bot and consume your API balances!');
+    }
+
+    // Middleware to restrict access
+    this.bot.use(async (ctx, next) => {
+      const userId = ctx.from?.id;
+      const allowedIdsStr = config.ALLOWED_TELEGRAM_USER_IDS || '';
+      const allowedIds = allowedIdsStr.split(',').map(id => id.trim()).filter(Boolean).map(Number);
+
+      if (allowedIds.length > 0) {
+        if (!userId || !allowedIds.includes(userId)) {
+          console.warn(`[Telegram] Access denied for user ${userId || 'unknown'} (${ctx.from?.username || 'no username'})`);
+          try {
+            await ctx.reply("Access denied. Please configure ALLOWED_TELEGRAM_USER_IDS in settings.");
+          } catch (err) {
+            console.error('[Telegram] Error sending access denied message:', err);
+          }
+          return;
+        }
+      }
+      await next();
+    });
+
     this.bot.start(async (ctx: Context) => {
       await ctx.reply("Hi! I'm Personal AI Agent. How can I help you today?");
     });

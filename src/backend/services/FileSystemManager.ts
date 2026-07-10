@@ -77,7 +77,8 @@ export class FileSystemManager {
 
     const isAllowed = this.allowedRoots.some(root => {
       const normalizedRoot = path.normalize(root);
-      return normalizedPath.startsWith(normalizedRoot);
+      const relative = path.relative(normalizedRoot, normalizedPath);
+      return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
     });
 
     if (!isAllowed) {

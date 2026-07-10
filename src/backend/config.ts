@@ -18,6 +18,7 @@ export const config = {
   AI_TOP_P: process.env.AI_TOP_P || 0.9,
   AI_TIMEOUT: 180000,
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
+  ALLOWED_TELEGRAM_USER_IDS: process.env.ALLOWED_TELEGRAM_USER_IDS || '',
 
   default_agent: 'main_agent',
 
@@ -58,6 +59,9 @@ if (fs.existsSync(configJsonPath)) {
       }
       if (parsed.telegram_bot_token) {
         config.TELEGRAM_BOT_TOKEN = parsed.telegram_bot_token;
+      }
+      if (parsed.allowed_telegram_user_ids) {
+        config.ALLOWED_TELEGRAM_USER_IDS = parsed.allowed_telegram_user_ids;
       }
       if (parsed.together_api_key) {
         config.images.together.key = parsed.together_api_key;

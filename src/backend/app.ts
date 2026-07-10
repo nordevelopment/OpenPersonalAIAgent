@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 import staticPlugin from '@fastify/static';
 import cookiePlugin from '@fastify/cookie';
 import multipartPlugin from '@fastify/multipart';
@@ -99,7 +100,7 @@ export async function buildApp(): Promise<FastifyInstance> {
         if (lastSession) {
           sessionId = lastSession.id;
         } else {
-          sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+          sessionId = 'session_' + crypto.randomUUID();
           await chatManager.createSession(sessionId);
         }
 
@@ -108,6 +109,8 @@ export async function buildApp(): Promise<FastifyInstance> {
           path: '/',
           maxAge: 86400000,
           httpOnly: true,
+          sameSite: 'lax',
+          secure: config.ENV === 'production'
         });
       }
 

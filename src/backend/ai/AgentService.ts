@@ -34,11 +34,21 @@ export class AgentService {
     }
 
     /**
+     * Sanitize agent ID to prevent Path Traversal.
+     * Returns only the safe folder name.
+     */
+    private getSafeAgentId(agentId: string): string {
+        return agentId.replace(/[^a-zA-Z0-9_-]/g, '').trim().toLowerCase();
+    }
+
+    /**
      * Check if agent exists
      * @param agentId - agent ID (folder name)
      */
     async agentExists(agentId: string): Promise<boolean> {
-        const agentPath = path.join(this.baseAgentsPath, agentId);
+        const safeAgentId = this.getSafeAgentId(agentId);
+        if (!safeAgentId) return false;
+        const agentPath = path.join(this.baseAgentsPath, safeAgentId);
         return fs.existsSync(agentPath) && fs.lstatSync(agentPath).isDirectory();
     }
 
@@ -50,8 +60,9 @@ export class AgentService {
      * @param agentId - agent ID (folder name)
      */
     async getAgentFiles(agentId: string): Promise<Record<string, string>> {
+        const safeAgentId = this.getSafeAgentId(agentId);
         const files: Record<string, string> = {};
-        const agentPath = path.join(this.baseAgentsPath, agentId);
+        const agentPath = path.join(this.baseAgentsPath, safeAgentId);
 
         for (const filename of this.ALLOWED_EDIT_FILES) {
             const filePath = path.join(agentPath, filename);
@@ -70,9 +81,10 @@ export class AgentService {
      * @param files - dictionary of filename to file content
      */
     async saveAgentFiles(agentId: string, files: Record<string, string>): Promise<void> {
-        const agentPath = path.join(this.baseAgentsPath, agentId);
+        const safeAgentId = this.getSafeAgentId(agentId);
+        const agentPath = path.join(this.baseAgentsPath, safeAgentId);
         if (!fs.existsSync(agentPath) || !fs.lstatSync(agentPath).isDirectory()) {
-            throw new Error(`Agent directory does not exist: ${agentId}`);
+            throw new Error(`Agent directory does not exist: ${safeAgentId}`);
         }
 
         for (const [filename, content] of Object.entries(files)) {
@@ -90,7 +102,7 @@ export class AgentService {
      * @param agentId - agent ID (folder name)
      */
     async createAgent(agentId: string): Promise<void> {
-        const safeAgentId = agentId.replace(/[^a-zA-Z0-9_-]/g, '').trim().toLowerCase();
+        const safeAgentId = this.getSafeAgentId(agentId);
         if (!safeAgentId) {
             throw new Error('Invalid Agent ID');
         }
@@ -142,7 +154,7 @@ export class AgentService {
      * @param agentId - agent ID (folder name)
      */
     async deleteAgent(agentId: string): Promise<void> {
-        const safeAgentId = agentId.replace(/[^a-zA-Z0-9_-]/g, '').trim().toLowerCase();
+        const safeAgentId = this.getSafeAgentId(agentId);
         if (safeAgentId === 'main_agent') {
             throw new Error('Cannot delete the default main_agent');
         }
