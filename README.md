@@ -33,6 +33,7 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
     *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis.
     *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
 *   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
+*   **📋 Task Management**: Manual run Tasks, AI agent being get tasks do it, shows status to user in UI.
 
 ---
 
@@ -55,8 +56,8 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/sponsors/nordevelopment
-or you can download the zip file from https://github.com/sponsors/nordevelopment
+git clone https://github.com/nordevelopment/OpenPersonalAIAgent
+or you can download the zip file from https://github.com/nordevelopment/OpenPersonalAIAgent
 
 npm install
 ```
@@ -75,7 +76,7 @@ npm run dev
 npm run db:reset
 
 # run only build command
-npm run buld 
+npm run build 
 ```
 The server will start at `http://127.0.0.1:3000`. Open it in your browser. 
 First run or no config files found, you will be automatically redirected to the settings wizard page.
@@ -90,6 +91,8 @@ First run or no config files found, you will be automatically redirected to the 
 <img width="1305" height="897" alt="Image" src="https://github.com/user-attachments/assets/f02a3c3b-0ea0-41de-b73d-99a36dabd475" />
 
 <img width="1549" height="903" alt="Image" src="https://github.com/user-attachments/assets/5a6d1b22-39a2-4e05-a167-1c5eef931b65" />
+
+<img width="1248" height="614" alt="Image" src="https://github.com/user-attachments/assets/d321fd1c-2841-4e4d-8569-9a62e938a1ea" />
 
 ---
 
