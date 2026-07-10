@@ -1,7 +1,7 @@
         /* Контейнер робота-питомца */
         .robot-pet-container {
-            width: 150px;
-            height: 250px;
+            width: 160px;
+            height: 200px;
             user-select: none;
             position: relative;
             margin-top: 30px;

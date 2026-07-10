@@ -38,7 +38,8 @@
             flex-direction: column;
             gap: 15px;
             padding-top: 20px;
-            padding-bottom: 20px;
+            margin-top: 20PX;
+            padding-bottom: 10px;
             border-top: 1px solid var(--cyber-green-500);
         }
 
