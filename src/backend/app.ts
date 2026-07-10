@@ -22,11 +22,10 @@ import { AgentService } from './ai/AgentService.js';
 
 import { TelegramBot } from './services/TelegramBot.js';
 
-// Augment Fastify types to support sessionId and basicAuth
+// Augment Fastify types to support sessionId
 declare module 'fastify' {
   interface FastifyRequest {
     sessionId: string;
-    basicAuth: () => Promise<void>;
   }
 }
 
@@ -65,7 +64,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     // Basic Auth Setup
     if (config.APP_PASSWORD) {
       await app.register(basicAuth, {
-        validate: async (username, password) => {
+        validate: async (username, password, _request, _reply) => {
           const expectedUser = config.APP_USER || 'admin';
           if (username !== expectedUser || password !== config.APP_PASSWORD) {
             throw new Error('Unauthorized');
@@ -74,13 +73,19 @@ export async function buildApp(): Promise<FastifyInstance> {
         authenticate: true
       });
 
-      app.addHook('onRequest', async (request, reply) => {
-        if (request.url === '/api/health') return;
-        try {
-          await request.basicAuth();
-        } catch (err) {
-          return reply.status(401).send({ success: false, message: 'Unauthorized' });
+      app.addHook('onRequest', (request, reply, next) => {
+        if (request.url === '/api/health') {
+          next();
+          return;
         }
+        app.basicAuth(request, reply, (err) => {
+          if (err) {
+            console.error('[BasicAuth] Auth error:', err.message || err);
+            reply.status(401).send({ success: false, message: 'Unauthorized' });
+            return;
+          }
+          next();
+        });
       });
     }
 

@@ -245,7 +245,11 @@ export class TelegramBot {
       console.log('[Telegram] Cannot stop: bot is not enabled');
       return;
     }
-    this.bot.stop();
+    try {
+      this.bot.stop();
+    } catch (err) {
+      console.warn('[Telegram] Error stopping bot (might not be running):', err instanceof Error ? err.message : err);
+    }
     // console.log('[Telegram] Bot stopped');
   }
 
