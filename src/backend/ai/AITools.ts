@@ -8,6 +8,7 @@ import { FileSystemManager } from "../services/FileSystemManager.js";
 import { WebPageContent } from "../services/WebPageContent.js";
 import { imageService } from "../services/imageService.js";
 import { MemoryManager } from "./MemoryManager.js";
+import { browserService } from "../services/BrowserService.js";
 
 export interface ToolCall {
   name: string;
@@ -61,8 +62,14 @@ export class AITools {
           break;
         case 'fetch_web_page':
           result = await this.webPage.fetchPage({
-            url: args.url as string
+            url: args.url as string,
+            dynamic: args.dynamic as boolean | undefined
           });
+          break;
+        case 'generate_pdf':
+          const pdfPath = this.fsManager.validatePath(args.path as string);
+          await browserService.generatePdf(args.html as string, pdfPath);
+          result = `PDF successfully generated and saved to ${args.path}`;
           break;
         case 'generate_image':
           result = await imageService.generateImage(
@@ -211,13 +218,29 @@ export class AITools {
         type: 'function',
         function: {
           name: 'fetch_web_page',
-          description: 'Gets the HTML cleaned web page content. Supports JSON responses from APIs.',
+          description: 'Gets the HTML cleaned web page content. Supports JSON responses from APIs and dynamic JavaScript sites.',
           parameters: {
             type: 'object',
             properties: {
-              url: { type: 'string', description: 'URL of the page to retrieve' }
+              url: { type: 'string', description: 'URL of the page to retrieve' },
+              dynamic: { type: 'boolean', description: 'Set to true to use a real browser (Puppeteer) to render dynamic pages (e.g. SPAs, React, etc.) or bypass basic scraper blocks.' }
             },
             required: ['url']
+          }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'generate_pdf',
+          description: 'Generates a PDF document from HTML content and saves it in the workspace.',
+          parameters: {
+            type: 'object',
+            properties: {
+              html: { type: 'string', description: 'The complete HTML document content to render (with CSS, margins, styles, etc.). Use clean layouts and inline/embedded CSS.' },
+              path: { type: 'string', description: 'The output file path relative to the workspace (e.g. workspace/report.pdf or report.pdf).' }
+            },
+            required: ['html', 'path']
           }
         }
       },

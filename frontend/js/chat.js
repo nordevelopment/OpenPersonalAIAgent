@@ -353,7 +353,7 @@ class AIAgentChat {
             let detailText = '';
             
             // Format details depending on the tool
-            if (toolName === 'write_file' || toolName === 'read_file' || toolName === 'delete_item' || toolName === 'get_file_info') {
+            if (toolName === 'write_file' || toolName === 'read_file' || toolName === 'delete_item' || toolName === 'get_file_info' || toolName === 'generate_pdf') {
                 detailText = `Path: ${args.path || ''}`;
             } else if (toolName === 'move_or_rename') {
                 detailText = `From: ${args.source || ''} -> To: ${args.destination || ''}`;
@@ -428,11 +428,13 @@ class AIAgentChat {
         const borderColor = isDone ? 'var(--cyber-primary)' : 'var(--cyber-secondary)';
 
         messageDiv.innerHTML = `
-            <div class="message-box" style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 10px 15px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor};">
-                <div style="font-weight: bold; margin-bottom: 4px;">⚙️ [SYSTEM] ${title}</div>
-                ${subtitle ? `<div style="opacity: 0.8; font-size: 11px; margin-bottom: 4px;">${subtitle}</div>` : ''}
-                ${content ? `<pre style="margin: 5px 0 0 0; white-space: pre-wrap; font-size: 11px; opacity: 0.7; overflow-x: auto; max-height: 150px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 2px;">${content}</pre>` : ''}
-            </div>
+            <details style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor}; width: 100%;">
+                <summary style="font-weight: bold; cursor: pointer; outline: none; user-select: none;">⚙️ [SYSTEM] ${title}</summary>
+                <div style="margin-top: 8px; border-top: 1px dashed ${borderColor}; padding-top: 8px;">
+                    ${subtitle ? `<div style="opacity: 0.8; font-size: 11px; margin-bottom: 4px;">${subtitle}</div>` : ''}
+                    ${content ? `<pre style="margin: 5px 0 0 0; white-space: pre-wrap; font-size: 11px; opacity: 0.7; overflow-x: auto; max-height: 250px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 2px;">${content}</pre>` : ''}
+                </div>
+            </details>
         `;
 
         this.chatMessages.appendChild(messageDiv);

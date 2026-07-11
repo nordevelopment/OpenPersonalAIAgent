@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { browserService } from "./BrowserService.js";
 
 const TIMEOUT = 30000;
 const MAX_HTML_LENGTH = 12000;
@@ -107,36 +108,54 @@ export class WebPageContent {
             .trim();
     }
 
-    async fetchPage({ url, method = 'GET', data, headers }: {
+    async fetchPage({ url, method = 'GET', data, headers, dynamic }: {
         url: string;
         method?: string;
         data?: Record<string, unknown>;
-        headers?: Record<string, string>
+        headers?: Record<string, string>;
+        dynamic?: boolean;
     }): Promise<string> {
         if (!url) return 'Error: URL is required';
 
         try {
-            const response = await axios({
-                url: String(url),
-                method: String(method).toUpperCase(),
-                data,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                    'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    ...headers
-                },
-                timeout: TIMEOUT
-            });
+            let html: string;
 
-            if (typeof response.data === 'object') {
-                return JSON.stringify(response.data, null, 2);
+            if (dynamic) {
+                html = await browserService.fetchDynamicPage(url);
+            } else {
+                const response = await axios({
+                    url: String(url),
+                    method: String(method).toUpperCase(),
+                    data,
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache',
+                        ...headers
+                    },
+                    timeout: TIMEOUT
+                });
+
+                if (typeof response.data === 'object') {
+                    return JSON.stringify(response.data, null, 2);
+                }
+
+                html = String(response.data);
             }
 
-            if (typeof response.data === 'string' && response.data.includes('<html')) {
-                const $ = cheerio.load(response.data);
+            if (typeof html === 'string' && html.includes('<html')) {
+                const $ = cheerio.load(html);
+
+                // If it looks like an empty SPA root and we haven't forced dynamic mode, fall back to Puppeteer
+                const bodyText = $('body').text().trim();
+                const hasSPARoot = $('#root, #app, #__next, [id*="app"], [id*="root"]').length > 0;
+                if (!dynamic && bodyText.length < 300 && hasSPARoot) {
+                    console.log(`WebPageContent: SPA detected, falling back to dynamic rendering for ${url}`);
+                    return await this.fetchPage({ url, method, data, headers, dynamic: true });
+                }
+
                 $('script, style, noscript, iframe, ad, svg, canvas, form').remove();
 
                 const title = $('title').text().trim();
@@ -152,9 +171,19 @@ export class WebPageContent {
                 return `Title: ${title}\n\nContent:\n${cleanContent}`;
             }
 
-            return String(response.data).substring(0, MAX_TEXT_LENGTH);
+            return String(html).substring(0, MAX_TEXT_LENGTH);
 
         } catch (error: unknown) {
+            // Fallback to dynamic if static fetch fails
+            if (!dynamic) {
+                console.log(`WebPageContent: Static fetch failed for ${url}. Trying dynamic rendering...`);
+                try {
+                    return await this.fetchPage({ url, method, data, headers, dynamic: true });
+                } catch (fallbackError) {
+                    // Ignore fallback error, let original or fallback error be handled
+                }
+            }
+
             const errorMsg = axios.isAxiosError(error) && error.response
                 ? `Status: ${error.response.status} - ${JSON.stringify(error.response.data)}`
                 : error instanceof Error ? error.message : String(error);

@@ -51,6 +51,7 @@
     "fastify": "^5.8.2",
     "fastify-plugin": "^5.1.0",
     "fastify-sse-v2": "^4.2.2",
+    "puppeteer": "^25.3.0",
     "sharp": "^0.34.5",
     "sqlite-vec": "^0.1.9",
     "telegraf": "^4.16.3"

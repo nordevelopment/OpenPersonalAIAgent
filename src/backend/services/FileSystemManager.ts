@@ -63,7 +63,7 @@ export class FileSystemManager {
   /**
    * Проверить, что путь находится в разрешённой директории
    */
-  private validatePath(targetPath: string): string {
+  public validatePath(targetPath: string): string {
     let normalizedPath = path.normalize(targetPath);
 
     // Если путь относительный, конвертируем в абсолютный относительно первого allowedRoot
