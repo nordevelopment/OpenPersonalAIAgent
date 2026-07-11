@@ -30,7 +30,8 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 *   **👁️ AI Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
 *   **🔧 Powerful Tool Execution (Function Calling)**:
     *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
-    *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis.
+    *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis. Supports both fast static scraping (via Axios/Cheerio) and dynamic rendering (via Puppeteer/Chromium) with automatic fallback for SPAs (like React, Vue, e-commerce sites).
+    *   **PDF Generator**: The AI can write custom HTML/CSS templates and render them into professional A4 PDF documents saved directly to the workspace.
     *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
 *   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
 *   **📋 Task Management**: Manual run Tasks, AI agent being get tasks do it, shows status to user in UI.
@@ -43,7 +44,7 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 *   **Frontend**: EJS, Vanilla CSS (cyberpunk theme), Vanilla JS.
 *   **Database**: `better-sqlite3` & `sqlite-vec` extension.
 *   **Media Processing**: `sharp` (optimizes images for AI inputs).
-*   **HTTP & Scraping**: `axios` + `cheerio`.
+*   **HTTP, Scraping & PDF**: `axios` + `cheerio` + `puppeteer` (headless Chrome).
 *   **Telegram integration**: `telegraf`.
 
 ---
