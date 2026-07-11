@@ -93,6 +93,9 @@ PAIAgent includes built-in security features to protect your server, files, and 
 
 ---
 
+## 🚀 Video Install & Features Demo
+https://www.youtube.com/watch?v=rcRkP_UiDRo
+
 ## 📸 Screenshots
 <img width="1303" height="895" alt="Image" src="https://github.com/user-attachments/assets/dd7af846-8534-4f9a-860b-59f654326fac" />
 
