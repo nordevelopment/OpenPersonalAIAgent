@@ -97,7 +97,8 @@ export class AIClient {
 
     const files = fs.readdirSync(skillsDirPath);
     const matchedSkills: string[] = [];
-    const queryLower = query.toLowerCase();
+    // Strip URLs to prevent keyword matching inside links (e.g., 'development' in amazon URL)
+    const queryLower = query.replace(/https?:\/\/[^\s]+/g, '').toLowerCase();
 
     for (const file of files) {
       if (file.endsWith('.md')) {
