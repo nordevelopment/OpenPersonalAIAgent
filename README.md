@@ -64,8 +64,7 @@ npm install
 ```
 ### 2. Run the Application
 ```bash
-# Run Server - build and start app
-# Start the compiled production app
+# Start - Build & start the app, Run Server
 npm start
 
 
@@ -110,19 +109,14 @@ https://www.youtube.com/watch?v=rcRkP_UiDRo
 
 ---
 
-## ⚖️ Comparison: PAIAgent vs. Heavyweight Alternatives
+## ⚖️ Why PAIAgent? (Instead of heavy alternatives)
 
-If you've tried running other self-hosted AI interfaces, you know how resource-heavy they can be. Here is how **PAIAgent** compares to popular alternatives:
+If you've tried running other self-hosted AI interfaces, you know they can easily hog your system resources. PAIAgent is designed to be the exact opposite:
 
-| Feature / Metric | 🤖 **PAIAgent (This Project)** | 🐳 **Open WebUI** | 💬 **LibreChat** | 📦 **AnythingLLM** | 🦞 **OpenClaw** |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Tech Stack** | Node.js + Fastify + SQLite | Python + Go + Svelte | Node + React + Mongo + Redis | Electron / Docker | TypeScript + Fastify / FastAPI |
-| **RAM Footprint** | **~50 - 100 MB** | 1.5 GB+ (Docker container) | 1 GB+ (Docker multi-container) | 500 MB+ (Electron/Docker) | 200 MB+ (pnpm / Docker) |
-| **Startup Time** | **< 1 second** | 30 - 60 seconds | 30 - 60 seconds | 10 - 20 seconds | 5 - 10 seconds |
-| **Installation** | **< 1 minute (One-command)** | 5+ minutes (Docker setup) | 10+ minutes (Complex Compose) | 5+ minutes (Docker / Installer) | 5+ minutes (pnpm / Docker) |
-| **Dependencies** | None (Just Node.js & npm) | Requires Docker & Ollama | Requires Docker, Mongo, Redis | Requires Docker or Desktop App | Node.js, pnpm (or Docker) |
-| **Database** | Embedded SQLite (+ `sqlite-vec`) | PostgreSQL / MySQL / SQLite | MongoDB + Meilisearch | Embedded Vector DB + SQLite | SQLite (embedded) |
-| **Ideal For** | Fast, lightweight personal use | Heavy multi-user hosting | Multi-user enterprise chat | Document-focused local RAG | Multi-channel agent bots |
+*   **Ultra-lightweight**: Uses only **~50-100 MB RAM** (compared to 1GB+ for Open WebUI or LibreChat).
+*   **Instant startup**: Boots up in **less than a second** (no waiting for multi-container Docker warmups).
+*   **Zero-bloat setup**: No Docker, MongoDB, or Redis required. Just Node.js, `npm install`, and you're good to go.
+*   **Embedded Database**: Powered by a single local SQLite file (with fast vector search support).
 
 ---
 
