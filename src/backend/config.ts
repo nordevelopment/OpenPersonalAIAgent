@@ -20,6 +20,7 @@ export const config = {
   AI_TOP_P: process.env.AI_TOP_P || 0.9,
   AI_TIMEOUT: 180000,
   AI_MAX_FILE_READ_SIZE: parseInt(process.env.AI_MAX_FILE_READ_SIZE || '1048576'),
+  AI_MAX_THINKING_STEPS: parseInt(process.env.AI_MAX_THINKING_STEPS || '15'),
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
   ALLOWED_TELEGRAM_USER_IDS: process.env.ALLOWED_TELEGRAM_USER_IDS || '',
 
@@ -80,6 +81,9 @@ if (fs.existsSync(configJsonPath)) {
       }
       if (parsed.ai_max_file_read_size) {
         config.AI_MAX_FILE_READ_SIZE = parseInt(parsed.ai_max_file_read_size, 10);
+      }
+      if (parsed.ai_max_thinking_steps) {
+        config.AI_MAX_THINKING_STEPS = parseInt(parsed.ai_max_thinking_steps, 10);
       }
     }
   } catch (err) {

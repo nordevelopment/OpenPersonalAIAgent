@@ -3,12 +3,12 @@ import * as cheerio from "cheerio";
 import { browserService } from "./BrowserService.js";
 
 const TIMEOUT = 30000;
-const MAX_HTML_LENGTH = 12000;
-const MAX_TEXT_LENGTH = 10000;
+const MAX_HTML_LENGTH = 60000;
+const MAX_TEXT_LENGTH = 50000;
 
 export class WebPageContent {
 
-    private elementToMarkdown($: cheerio.CheerioAPI, element: any): string {
+    private elementToMarkdown($: cheerio.CheerioAPI, element: any, baseUrl?: string): string {
         if (!element) return "";
         let text = "";
 
@@ -22,7 +22,7 @@ export class WebPageContent {
                     return;
                 }
 
-                const childContent = this.elementToMarkdown($, child).trim();
+                const childContent = this.elementToMarkdown($, child, baseUrl).trim();
                 if (!childContent) {
                     if (tagName === 'br') {
                         text += '\n';
@@ -62,9 +62,14 @@ export class WebPageContent {
                         text += '\n---\n';
                         break;
                     case 'a':
-                        const href = $(child).attr('href');
+                        let href = $(child).attr('href');
                         if (href && !href.startsWith('javascript:') && !href.startsWith('#')) {
-                            const shortHref = href.length > 60 ? href.substring(0, 57) + '...' : href;
+                            if (baseUrl && (href.startsWith('/') || !href.startsWith('http'))) {
+                                try {
+                                    href = new URL(href, baseUrl).href;
+                                } catch (e) {}
+                            }
+                            const shortHref = href.length > 90 ? href.substring(0, 87) + '...' : href;
                             text += ` [${childContent}](${shortHref}) `;
                         } else {
                             text += ` ${childContent} `;
@@ -165,7 +170,7 @@ export class WebPageContent {
                     $content = $('body');
                 }
 
-                const rawMarkdown = this.elementToMarkdown($, $content[0]);
+                const rawMarkdown = this.elementToMarkdown($, $content[0], url);
                 const cleanContent = this.cleanMarkdown(rawMarkdown).substring(0, MAX_HTML_LENGTH);
 
                 return `Title: ${title}\n\nContent:\n${cleanContent}`;

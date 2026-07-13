@@ -82,8 +82,9 @@ export class ChatManager {
       console.error('[ChatManager] Failed to fetch relevant memories context:', err);
     }
 
-    // Run loop of interaction with AI (maximum 5 iterations, to not go into infinite loop)
-    for (let i = 0; i < 5; i++) {
+    // Run loop of interaction with AI (maximum iterations from config, to not go into infinite loop)
+    const maxSteps = config.AI_MAX_THINKING_STEPS || 15;
+    for (let i = 0; i < maxSteps; i++) {
       const fullHistory = await this.historyManager.getHistory(sessionId);
 
       // Limit history of last messages from config

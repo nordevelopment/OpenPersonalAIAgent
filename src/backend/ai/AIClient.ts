@@ -128,13 +128,10 @@ export class AIClient {
 
           const isMatched = keywords.some(keyword => {
             if (!keyword) return false;
-            if (keyword.length > 2) {
-              return queryLower.includes(keyword);
-            } else {
-              // Word boundary check for short words like "js", "py"
-              const regex = new RegExp(`\\b${keyword}\\b`, 'i');
-              return regex.test(queryLower);
-            }
+            const escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            // Match whole word using Unicode property escapes (not preceded or followed by any letter)
+            const regex = new RegExp(`(?<!\\p{L})${escaped}(?!\\p{L})`, 'gu');
+            return regex.test(queryLower);
           });
 
           if (isMatched) {
