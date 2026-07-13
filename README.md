@@ -97,11 +97,11 @@ PAIAgent includes built-in security features to protect your server, files, and 
 https://www.youtube.com/watch?v=rcRkP_UiDRo
 
 ## 📸 Screenshots
-<img width="1303" height="895" alt="Image" src="https://github.com/user-attachments/assets/dd7af846-8534-4f9a-860b-59f654326fac" />
+<img width="1331" height="852" alt="Image" src="https://github.com/user-attachments/assets/ae759646-c82d-43b5-82fc-66ff4a2857f0" />
 
-<img width="1297" height="898" alt="Image" src="https://github.com/user-attachments/assets/d9a2a92e-6338-4a39-bb11-a68821ff2e4b" />
+<img width="1326" height="849" alt="Image" src="https://github.com/user-attachments/assets/c3992754-6573-4608-8402-dc91edc8e9f8" />
 
-<img width="1305" height="897" alt="Image" src="https://github.com/user-attachments/assets/f02a3c3b-0ea0-41de-b73d-99a36dabd475" />
+<img width="1334" height="1314" alt="Image" src="https://github.com/user-attachments/assets/ec96e54e-f5d8-4dbe-9965-1e6c38d5dfed" />
 
 <img width="1549" height="903" alt="Image" src="https://github.com/user-attachments/assets/5a6d1b22-39a2-4e05-a167-1c5eef931b65" />
 
