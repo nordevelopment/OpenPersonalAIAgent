@@ -109,6 +109,34 @@ export class ChatManager {
           content: finalContent
         });
 
+        // Trigger auto-rename if session has no title and it's a standard user session
+        if (session && !session.title && sessionId !== 'task_session' && !sessionId.startsWith('telegram_')) {
+          (async () => {
+            try {
+              const fullHistory = await this.historyManager.getHistory(sessionId);
+              const firstMessages = fullHistory.slice(0, 3);
+              const chatText = firstMessages
+                .map(m => `${m.role === 'user' ? 'User' : 'Agent'}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`)
+                .join('\n');
+
+              const prompt = `Based on the following beginning of a chat session, generate a short, descriptive title of 2 to 4 words in the user's language. Respond ONLY with the title. Do not include quotes, markdown formatting, or any extra text.
+
+Chat Beginning:
+${chatText}
+
+Title:`;
+
+              const titleResponse = await this.aiClient.sendMessage([{ role: 'user', content: prompt }], agentId);
+              const title = titleResponse.content ? titleResponse.content.trim().replace(/^["']|["']$/g, '') : '';
+              if (title && title.length > 0 && !title.startsWith('Error:')) {
+                await this.sessionManager.updateSessionTitle(sessionId, title);
+              }
+            } catch (err) {
+              console.error('[Auto-Rename] Failed to auto-rename session:', err);
+            }
+          })().catch(e => console.error('[Auto-Rename] Unhandled background error:', e));
+        }
+
         return { content: finalContent, reasoning: lastReasoning };
       }
 
@@ -240,5 +268,12 @@ export class ChatManager {
    */
   async updateSessionsAgent(oldAgentId: string, newAgentId: string): Promise<number> {
     return await this.sessionManager.updateSessionsAgent(oldAgentId, newAgentId);
+  }
+
+  /**
+   * Update session title
+   */
+  async updateSessionTitle(sessionId: string, title: string): Promise<number> {
+    return await this.sessionManager.updateSessionTitle(sessionId, title);
   }
 }

@@ -5,12 +5,14 @@
 export interface Session {
   id: string;
   agent_id: string;
+  title?: string;
   created_at: Date;
 }
 
 export interface CreateSession {
   id: string;
   agent_id?: string;
+  title?: string;
 }
 
 import { DatabaseClient } from '../database/DatabaseClient.js';
@@ -51,6 +53,13 @@ export class Session {
    */
   async deleteById(id: string): Promise<number> {
     return await this.db.delete('sessions', { id });
+  }
+
+  /**
+   * Обновить заголовок сессии
+   */
+  async updateTitle(id: string, title: string): Promise<number> {
+    return await this.db.update('sessions', { title }, { id });
   }
 
   /**

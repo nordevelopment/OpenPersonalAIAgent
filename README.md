@@ -12,6 +12,20 @@ A lightweight, fast and Personal AI Agent (PAIAgent) running locally on your com
 
 ---
 
+## 🧠 Key Architectural Decisions
+
+PAIAgent is built with a clear focus on lightweight, efficient, and transparent AI engineering:
+
+* **Why No LangChain / LlamaIndex?**
+  * **Complete State Control**: The agent's cognitive loop (think-act-evaluate) is written in vanilla TypeScript, ensuring complete control over LLM tool-calling and historical state.
+  * **Sub-Second Boot**: The backend starts in **< 1 second** and consumes a minuscule **~50-100 MB of RAM**.
+  * **Auditability**: Clean, readable code without nested abstractions makes debugging prompts and tools trivial.
+* **Smart Hybrid RAG & Memory**:
+  * Uses a local **SQLite database** combined with the lightweight **`sqlite-vec`** extension for vector embeddings.
+  * Combines semantic vector similarity search with keyword fallback (`LIKE` queries), providing high-recall context retrieval with zero external database dependencies (no pgvector, Qdrant, or Pinecone required).
+
+---
+
 ## 💡 What is this project for?
 This project is designed for anyone who wants a personal AI assistant that can manage local files, browse the web, generate images, and communicate seamlessly through a slick web interface or remotely on-the-go via a Telegram bot.
 
@@ -32,6 +46,7 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
     *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
     *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis. Supports both fast static scraping (via Axios/Cheerio) and dynamic rendering (via Puppeteer/Chromium) with automatic fallback for SPAs (like React, Vue, e-commerce sites).
     *   **PDF Generator**: The AI can write custom HTML/CSS templates and render them into professional A4 PDF documents saved directly to the workspace.
+    *   **Office Document Generator**: The AI can generate structured Excel spreadsheets (`.xlsx`) with custom columns, row styling, and formulas, as well as Word documents (`.docx`) with headings, styled paragraphs, text alignment, and tables.
     *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
 *   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
 *   **📋 Task Management**: Manual run Tasks, AI agent being get tasks do it, shows status to user in UI.
@@ -111,17 +126,13 @@ https://www.youtube.com/watch?v=rcRkP_UiDRo
 
 ## ⚖️ Comparison: PAIAgent vs. Heavyweight Alternatives
 
-If you've tried running other self-hosted AI interfaces, you know how resource-heavy they can be. Here is how **PAIAgent** compares to popular alternatives:
+While other self-hosted AI interfaces require heavy setups (Docker, multi-container databases, etc.), **PAIAgent** is optimized for raw local performance and resource conservation:
 
-| Feature / Metric | 🤖 **PAIAgent (This Project)** | 🐳 **Open WebUI** | 💬 **LibreChat** | 📦 **AnythingLLM** | 🦞 **OpenClaw** |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Tech Stack** | Node.js + Fastify + SQLite | Python + Go + Svelte | Node + React + Mongo + Redis | Electron / Docker | TypeScript + Fastify / FastAPI |
-| **RAM Footprint** | **~50 - 100 MB** | 1.5 GB+ (Docker container) | 1 GB+ (Docker multi-container) | 500 MB+ (Electron/Docker) | 200 MB+ (pnpm / Docker) |
-| **Startup Time** | **< 1 second** | 30 - 60 seconds | 30 - 60 seconds | 10 - 20 seconds | 5 - 10 seconds |
-| **Installation** | **< 1 minute (One-command)** | 5+ minutes (Docker setup) | 10+ minutes (Complex Compose) | 5+ minutes (Docker / Installer) | 5+ minutes (pnpm / Docker) |
-| **Dependencies** | None (Just Node.js & npm) | Requires Docker & Ollama | Requires Docker, Mongo, Redis | Requires Docker or Desktop App | Node.js, pnpm (or Docker) |
-| **Database** | Embedded SQLite (+ `sqlite-vec`) | PostgreSQL / MySQL / SQLite | MongoDB + Meilisearch | Embedded Vector DB + SQLite | SQLite (embedded) |
-| **Ideal For** | Fast, lightweight personal use | Heavy multi-user hosting | Multi-user enterprise chat | Document-focused local RAG | Multi-channel agent bots |
+* **RAM Footprint**: **~50-100 MB** (compared to 1.5 GB+ for Open WebUI or 1 GB+ for LibreChat).
+* **Startup Time**: **Sub-second (< 1s)** (compared to 30-60s boot times for Docker-based alternatives).
+* **Dependencies**: **Zero**. Runs natively with just Node.js and npm.
+* **Database**: Embedded SQLite. Supports semantic vector search directly via the loaded `sqlite-vec` library extension.
+* **Ideal For**: Private on-the-go AI assistance, local file manipulation, and fast scraping workflows.
 
 ---
 

@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS sessions (
   id TEXT PRIMARY KEY,
   agent_id TEXT DEFAULT 'main_agent',
+  title TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -48,6 +49,12 @@ CREATE TABLE IF NOT EXISTS tasks (
   status TEXT NOT NULL CHECK(status IN ('ready', 'done', 'running', 'failed')),
   result TEXT,
   run_at DATETIME,
+  is_auto INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ============================================
+-- Default global session for cross-session memory
+-- ============================================
+INSERT OR IGNORE INTO sessions (id, agent_id) VALUES ('global', 'main_agent');

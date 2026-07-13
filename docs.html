@@ -506,10 +506,8 @@ npm install</code></pre>
                         dedicated <code>workspace/</code> directory.
                     </p>
                     <div class="cyber-alert">
-                        <div class="cyber-alert__title">🔒 Sandbox Restriction</div>
-                        <p>The file system manager uses strict path resolution to prevent directory traversal attacks.
-                            The agent cannot read or write to directories outside of the local <code>workspace/</code>
-                            folder.</p>
+                        <div class="cyber-alert__title">🔒 Sandbox Restriction & Size Limits</div>
+                        <p>The file system manager uses strict path resolution to prevent directory traversal attacks. Additionally, the agent enforces a safe file reading size limit (configured via <code>AI_MAX_FILE_READ_SIZE</code> in <code>config.ts</code>, defaulting to 1 MB) to prevent Out of Memory (OOM) failures and API context token spikes. Files exceeding the limit are cleanly truncated with a warning.</p>
                     </div>
 
                     <h3>Web Scraper</h3>
@@ -517,6 +515,20 @@ npm install</code></pre>
                         Accepts a URL, downloads the markup, and strips out bloated HTML, script tags, and CSS using
                         <code>cheerio</code>. This supplies the agent with clean, token-efficient text for real-time
                         analysis.
+                    </p>
+
+                    <h3>Office Document Generator</h3>
+                    <p>
+                        Allows the AI to generate natively-formatted spreadsheets and documents directly in the workspace folder.
+                    </p>
+                    <ul>
+                        <li><strong>Excel Spreadsheets (<code>generate_excel</code>)</strong>: The model receives a structured JSON schema mapping sheets, columns, and rows (including formulas like <code>SUM</code>). It compiles a stylized workbook using <code>exceljs</code> with custom colors, borders, and auto-adjusted columns.</li>
+                        <li><strong>Word Documents (<code>generate_docx</code>)</strong>: The agent compiles paragraphs with alignments (left, center, right, justify), text styling (bold, italics), hierarchical headings, and layout tables into formatted <code>.docx</code> binaries using the <code>docx</code> builder.</li>
+                    </ul>
+
+                    <h3>Background Task Scheduler</h3>
+                    <p>
+                        Enables autonomous agent executions. Users can schedule tasks to run at a specific timestamp or continuously on a background interval. Automated tasks (<code>is_auto = 1</code>) run on the server, log actions, and send status notifications (started, completed, or failed with logs) directly to the Telegram bot owner.
                     </p>
 
                     <h3>Image Generation</h3>

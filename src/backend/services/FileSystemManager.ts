@@ -8,6 +8,7 @@ import fs from 'fs/promises';
 import fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { config } from '../config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,6 +98,19 @@ export class FileSystemManager {
     const stats = await fs.stat(validatedPath);
     if (stats.isDirectory()) {
       throw new Error(`Path ${filePath} is a directory, not a file`);
+    }
+
+    const limit = config.AI_MAX_FILE_READ_SIZE || 1024 * 1024; // Use config value or fallback to 1MB
+    if (stats.size > limit) {
+      const handle = await fs.open(validatedPath, 'r');
+      try {
+        const buffer = Buffer.alloc(limit);
+        await handle.read(buffer, 0, limit, 0);
+        const text = buffer.toString(options.encoding || 'utf-8');
+        return `${text}\n\n[WARNING: File was truncated. Total size is ${stats.size} bytes, but only the first ${limit} bytes were read to prevent OOM/token burn.]`;
+      } finally {
+        await handle.close();
+      }
     }
 
     if (options.limit && stats.size > options.limit) {

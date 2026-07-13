@@ -67,4 +67,11 @@ export class SessionManager {
   async updateSessionsAgent(oldAgentId: string, newAgentId: string): Promise<number> {
     return await this.sessionModel.updateAgentId(oldAgentId, newAgentId);
   }
+
+  /**
+   * Update session title
+   */
+  async updateSessionTitle(sessionId: string, title: string): Promise<number> {
+    return await this.sessionModel.updateTitle(sessionId, title);
+  }
 }

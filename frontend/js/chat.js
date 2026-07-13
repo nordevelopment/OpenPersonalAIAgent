@@ -628,20 +628,32 @@ class AIAgentChat {
                     sessionDiv.dataset.sessionId = session.id;
 
                     const date = new Date(session.created_at).toLocaleString('ru-RU');
-                    const shortId = session.id.substring(0, 20) + '...';
+                    const displayTitle = session.title ? session.title : (session.id.substring(0, 20) + '...');
 
                     sessionDiv.innerHTML = `
-                        <div class="session-info">
-                            <div class="session-time">[${date}]</div>
-                            <div class="session-id">${shortId}</div>
-                            <button class="session-delete cyber-btn cyber-btn--magenta" data-session-id="${session.id}" title="PURGE SESSION">×</button>
+                        <div class="session-info" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="flex: 1; min-width: 0; cursor: pointer;">
+                                <div class="session-time">[${date}]</div>
+                                <div class="session-id" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${session.title || session.id}">${displayTitle}</div>
+                            </div>
+                            <div style="display: flex; gap: 4px; align-items: center; margin-left: 10px;">
+                                <button class="session-rename cyber-btn" data-session-id="${session.id}" title="RENAME SESSION" style="padding: 2px 6px; font-size: 11px;">✏️</button>
+                                <button class="session-delete cyber-btn cyber-btn--magenta" data-session-id="${session.id}" title="PURGE SESSION" style="padding: 2px 6px; font-size: 11px;">×</button>
+                            </div>
                         </div>`;
 
                     // Клик по сессии для переключения
                     sessionDiv.addEventListener('click', (e) => {
-                        if (!e.target.classList.contains('session-delete')) {
+                        if (!e.target.classList.contains('session-delete') && !e.target.classList.contains('session-rename')) {
                             this.switchSession(session.id);
                         }
+                    });
+
+                    // Клик по кнопке переименования
+                    const renameBtn = sessionDiv.querySelector('.session-rename');
+                    renameBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.renameSession(session.id, session.title || '');
                     });
 
                     // Клик по кнопке удаления
@@ -794,6 +806,36 @@ class AIAgentChat {
         } catch (error) {
             console.error('Delete agent error:', error);
             alert(`Error deleting agent: ${error.message}`);
+        }
+    }
+
+    async renameSession(sessionId, currentTitle) {
+        const newTitle = prompt('Enter new session title:', currentTitle);
+        if (newTitle === null) return; // Cancelled
+        
+        const trimmed = newTitle.trim();
+        if (!trimmed) {
+            alert('Session title cannot be empty.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/sessions/${sessionId}/title`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title: trimmed }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                await this.getSessions();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error renaming session:', error);
+            alert('Failed to rename session.');
         }
     }
 }

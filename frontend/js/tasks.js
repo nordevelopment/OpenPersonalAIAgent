@@ -10,6 +10,7 @@ class TaskManager {
         this.taskFormId = document.getElementById('taskFormId');
         this.taskFormTitle = document.getElementById('taskFormTitle');
         this.taskFormStatus = document.getElementById('taskFormStatus');
+        this.taskFormIsAuto = document.getElementById('taskFormIsAuto');
         this.taskFormRunAt = document.getElementById('taskFormRunAt');
         this.btnCancelModal = document.getElementById('btnCancelModal');
         this.btnSaveTask = document.getElementById('btnSaveTask');
@@ -65,7 +66,7 @@ class TaskManager {
             console.error('Error loading tasks:', err);
             this.tasksTableBody.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align: center; color: var(--cyber-secondary); padding: 40px;">
+                    <td colspan="7" style="text-align: center; color: var(--cyber-secondary); padding: 40px;">
                         ERROR LOADING TASKS FROM SERVER.
                     </td>
                 </tr>
@@ -77,7 +78,7 @@ class TaskManager {
         if (this.tasks.length === 0) {
             this.tasksTableBody.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align: center; color: rgba(255,255,255,0.4); padding: 40px;">
+                    <td colspan="7" style="text-align: center; color: rgba(255,255,255,0.4); padding: 40px;">
                         NO TASKS AVAILABLE. CREATE ONE TO START.
                     </td>
                 </tr>
@@ -100,6 +101,10 @@ class TaskManager {
             const statusClass = `status-${task.status}`;
             const statusLabel = task.status === 'ready' ? 'Ready for run' : task.status;
 
+            const runTypeBadge = task.is_auto 
+                ? '<span class="status-badge" style="background: rgba(0, 255, 136, 0.1); color: var(--cyber-primary); border: 1px solid var(--cyber-primary);">AUTO</span>'
+                : '<span class="status-badge" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.3);">MANUAL</span>';
+
             // Result preview
             let resultHtml = '<span style="color: rgba(255,255,255,0.3)">Empty</span>';
             if (task.result) {
@@ -117,6 +122,7 @@ class TaskManager {
                 <td>
                     <span class="status-badge ${statusClass}">${statusLabel}</span>
                 </td>
+                <td>${runTypeBadge}</td>
                 <td style="font-size: 12px; color: #00ffff;">${scheduledDate}</td>
                 <td>${resultHtml}</td>
                 <td>
@@ -152,6 +158,7 @@ class TaskManager {
         this.taskFormTitle.value = '';
         this.taskFormStatus.value = 'ready';
         this.taskFormStatus.disabled = false;
+        this.taskFormIsAuto.checked = false;
         this.taskFormRunAt.value = '';
         this.taskModal.style.display = 'flex';
     }
@@ -164,6 +171,7 @@ class TaskManager {
         this.taskFormId.value = task.id;
         this.taskFormTitle.value = task.title;
         this.taskFormStatus.value = task.status;
+        this.taskFormIsAuto.checked = task.is_auto === 1;
         
         // Prevent manual override to 'running'
         if (task.status === 'running') {
@@ -211,6 +219,7 @@ class TaskManager {
         const title = this.taskFormTitle.value.trim();
         const status = this.taskFormStatus.value;
         const runAtVal = this.taskFormRunAt.value;
+        const is_auto = this.taskFormIsAuto.checked;
 
         if (!title) {
             alert('Please enter an instruction!');
@@ -218,7 +227,7 @@ class TaskManager {
         }
 
         const run_at = runAtVal ? new Date(runAtVal).toISOString() : null;
-        const payload = { title, status, run_at };
+        const payload = { title, status, run_at, is_auto };
 
         this.btnSaveTask.disabled = true;
         this.btnSaveTask.textContent = 'SAVING...';

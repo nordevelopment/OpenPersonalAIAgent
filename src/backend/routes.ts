@@ -41,6 +41,67 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
   const taskModel = new TaskModel(db);
 
+  // Helper to execute tasks sequentially in background
+  async function executeTasks(tasksToRun: any[]) {
+    const taskSessionId = 'task_session';
+    
+    // Ensure session exists
+    const session = await chatManager.getSession(taskSessionId);
+    if (!session) {
+      await chatManager.createSession(taskSessionId, 'main_agent');
+    }
+
+    let telegramOwnerId: number | null = null;
+    if (config.ALLOWED_TELEGRAM_USER_IDS) {
+      const firstId = config.ALLOWED_TELEGRAM_USER_IDS.split(',')[0].trim();
+      if (firstId) {
+        telegramOwnerId = parseInt(firstId, 10);
+      }
+    }
+
+    for (const task of tasksToRun) {
+      try {
+        app.log.info(`[Task Runner] Starting task #${task.id}: "${task.title}"`);
+        await taskModel.update(task.id, { status: 'running' });
+
+        if (telegramOwnerId && telegramBot) {
+          await telegramBot.sendMessage(telegramOwnerId, `⏳ **[TASK #${task.id}] STARTED**\nInstruction: "${task.title}"`).catch(err => {
+            console.error('[Telegram] Notification error:', err);
+          });
+        }
+
+        // Send message to agent
+        const response = await chatManager.sendMessage(task.title, taskSessionId);
+
+        // Set to done
+        await taskModel.update(task.id, {
+          status: 'done',
+          result: response.content
+        });
+
+        app.log.info(`[Task Runner] Completed task #${task.id}`);
+        if (telegramOwnerId && telegramBot) {
+          await telegramBot.sendMessage(telegramOwnerId, `✅ **[TASK #${task.id}] COMPLETED**\nInstruction: "${task.title}"\n\nResult:\n${response.content}`).catch(err => {
+            console.error('[Telegram] Notification error:', err);
+          });
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error(`Failed to execute task ${task.id}:`, error);
+        await taskModel.update(task.id, {
+          status: 'failed',
+          result: errorMsg
+        });
+
+        if (telegramOwnerId && telegramBot) {
+          await telegramBot.sendMessage(telegramOwnerId, `❌ **[TASK #${task.id}] FAILED**\nInstruction: "${task.title}"\n\nError: ${errorMsg}`).catch(err => {
+            console.error('[Telegram] Notification error:', err);
+          });
+        }
+      }
+    }
+  }
+
   // Main chat template route
   app.get('/', async (_request, reply) => {
     return reply.view('chat.ejs');
@@ -63,8 +124,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Create a new task
-  app.post('/api/tasks', async (request: FastifyRequest<{ Body: { title: string, status?: 'ready' | 'done' | 'running' | 'failed', run_at?: string } }>, reply: FastifyReply) => {
-    const { title, status, run_at } = request.body;
+  app.post('/api/tasks', async (request: FastifyRequest<{ Body: { title: string, status?: 'ready' | 'done' | 'running' | 'failed', run_at?: string, is_auto?: boolean } }>, reply: FastifyReply) => {
+    const { title, status, run_at, is_auto } = request.body;
     if (!title || typeof title !== 'string') {
       return reply.status(400).send({ success: false, message: 'Invalid title' });
     }
@@ -73,7 +134,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       const taskId = await taskModel.create({
         title,
         status,
-        run_at: run_at || undefined
+        run_at: run_at || undefined,
+        is_auto: is_auto ? 1 : 0
       });
       return reply.send({ success: true, taskId, message: 'Task created successfully' });
     } catch (error) {
@@ -83,13 +145,13 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Update a task
-  app.put('/api/tasks/:id', async (request: FastifyRequest<{ Params: { id: string }, Body: { title?: string, status?: 'ready' | 'done' | 'running' | 'failed', result?: string, run_at?: string } }>, reply: FastifyReply) => {
+  app.put('/api/tasks/:id', async (request: FastifyRequest<{ Params: { id: string }, Body: { title?: string, status?: 'ready' | 'done' | 'running' | 'failed', result?: string, run_at?: string, is_auto?: boolean } }>, reply: FastifyReply) => {
     const id = parseInt(request.params.id, 10);
     if (isNaN(id)) {
       return reply.status(400).send({ success: false, message: 'Invalid task ID' });
     }
 
-    const { title, status, result, run_at } = request.body;
+    const { title, status, result, run_at, is_auto } = request.body;
 
     try {
       const existing = await taskModel.findById(id);
@@ -101,7 +163,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         title,
         status,
         result,
-        run_at: run_at === '' ? undefined : run_at
+        run_at: run_at === '' ? undefined : run_at,
+        is_auto: is_auto !== undefined ? (is_auto ? 1 : 0) : undefined
       });
       return reply.send({ success: true, message: 'Task updated successfully' });
     } catch (error) {
@@ -141,37 +204,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
     }
 
     // Run them in background
-    (async () => {
-      const taskSessionId = 'task_session';
-      
-      // Ensure session exists
-      const session = await chatManager.getSession(taskSessionId);
-      if (!session) {
-        await chatManager.createSession(taskSessionId, 'main_agent');
-      }
-
-      for (const task of readyTasks) {
-        try {
-          // Set to running
-          await taskModel.update(task.id, { status: 'running' });
-
-          // Send message to agent
-          const response = await chatManager.sendMessage(task.title, taskSessionId);
-
-          // Set to done
-          await taskModel.update(task.id, {
-            status: 'done',
-            result: response.content
-          });
-        } catch (error) {
-          console.error(`Failed to execute task ${task.id}:`, error);
-          await taskModel.update(task.id, {
-            status: 'failed',
-            result: error instanceof Error ? error.message : String(error)
-          });
-        }
-      }
-    })().catch(err => {
+    executeTasks(readyTasks).catch(err => {
       console.error('Error in background tasks runner:', err);
     });
 
@@ -370,6 +403,23 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
     return reply.send({ success: true, message: 'Session deleted' });
   });
 
+  // Update session title
+  app.put('/api/sessions/:id/title', async (request: FastifyRequest<{ Params: { id: string }, Body: { title: string } }>, reply: FastifyReply) => {
+    const { id } = request.params;
+    const { title } = request.body;
+    if (!title || typeof title !== 'string' || title.trim().length === 0) {
+      return reply.status(400).send({ success: false, message: 'Invalid title' });
+    }
+
+    try {
+      await chatManager.updateSessionTitle(id, title.trim());
+      return reply.send({ success: true, message: 'Session title updated successfully' });
+    } catch (error) {
+      request.log.error({ err: error }, 'Failed to update session title');
+      return reply.status(500).send({ success: false, message: error instanceof Error ? error.message : 'Failed to update session title' });
+    }
+  });
+
   // Get system settings
   app.get('/api/settings', async (_request, reply) => {
     return reply.send({
@@ -525,6 +575,26 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
     }
 
     return reply.send({ success: true, message: 'Settings saved successfully' });
+  });
+
+  // Start automatic task scheduler (scans for ready auto-tasks every 60 seconds)
+  const taskInterval = setInterval(async () => {
+    try {
+      const nowIso = new Date().toISOString();
+      const readyAutoTasks = await taskModel.findReadyToRun(nowIso, true);
+      if (readyAutoTasks.length > 0) {
+        app.log.info(`[Scheduler] Found ${readyAutoTasks.length} auto-run tasks. Executing...`);
+        executeTasks(readyAutoTasks).catch(err => {
+          console.error('[Scheduler] Error running automatic tasks:', err);
+        });
+      }
+    } catch (err) {
+      console.error('[Scheduler] Error in automatic task runner:', err);
+    }
+  }, 60000);
+
+  app.addHook('onClose', async () => {
+    clearInterval(taskInterval);
   });
 
 }

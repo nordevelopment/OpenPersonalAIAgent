@@ -19,6 +19,7 @@ export const config = {
   AI_MAX_TOKENS: process.env.AI_MAX_TOKENS || 16000,
   AI_TOP_P: process.env.AI_TOP_P || 0.9,
   AI_TIMEOUT: 180000,
+  AI_MAX_FILE_READ_SIZE: parseInt(process.env.AI_MAX_FILE_READ_SIZE || '1048576'),
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
   ALLOWED_TELEGRAM_USER_IDS: process.env.ALLOWED_TELEGRAM_USER_IDS || '',
 
@@ -76,6 +77,9 @@ if (fs.existsSync(configJsonPath)) {
       }
       if (parsed.xai_api_key) {
         config.images.xai.key = parsed.xai_api_key;
+      }
+      if (parsed.ai_max_file_read_size) {
+        config.AI_MAX_FILE_READ_SIZE = parseInt(parsed.ai_max_file_read_size, 10);
       }
     }
   } catch (err) {

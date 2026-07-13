@@ -11,6 +11,7 @@ export interface Task {
   status: 'ready' | 'done' | 'running' | 'failed';
   result?: string;
   run_at?: string;
+  is_auto?: number;
   created_at: string;
   updated_at: string;
 }
@@ -20,6 +21,7 @@ export interface CreateTask {
   status?: 'ready' | 'done' | 'running' | 'failed';
   result?: string;
   run_at?: string;
+  is_auto?: number;
 }
 
 export class TaskModel {
@@ -35,7 +37,8 @@ export class TaskModel {
       title: dto.title,
       status: dto.status || 'ready',
       result: dto.result || null,
-      run_at: dto.run_at || null
+      run_at: dto.run_at || null,
+      is_auto: dto.is_auto !== undefined ? dto.is_auto : 0
     });
   }
 
@@ -59,12 +62,15 @@ export class TaskModel {
   /**
    * Find tasks that are ready to run (status = 'ready' and run_at is null or passed)
    * @param nowIso Current timestamp in ISO format
+   * @param onlyAuto Filter to only return auto-execution tasks (default: false)
    */
-  async findReadyToRun(nowIso: string): Promise<Task[]> {
-    const result = await this.db.query(
-      'SELECT * FROM tasks WHERE status = \'ready\' AND (run_at IS NULL OR run_at <= ?)',
-      [nowIso]
-    );
+  async findReadyToRun(nowIso: string, onlyAuto: boolean = false): Promise<Task[]> {
+    let sql = 'SELECT * FROM tasks WHERE status = \'ready\' AND (run_at IS NULL OR run_at <= ?)';
+    const params: unknown[] = [nowIso];
+    if (onlyAuto) {
+      sql += ' AND is_auto = 1';
+    }
+    const result = await this.db.query(sql, params);
     return result.rows as Task[];
   }
 

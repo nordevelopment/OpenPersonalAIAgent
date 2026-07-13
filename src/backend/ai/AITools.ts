@@ -9,6 +9,7 @@ import { WebPageContent } from "../services/WebPageContent.js";
 import { imageService } from "../services/imageService.js";
 import { MemoryManager } from "./MemoryManager.js";
 import { browserService } from "../services/BrowserService.js";
+import { OfficeDocumentService, ExcelSheetData, DocxDocumentData } from "../services/OfficeDocumentService.js";
 
 export interface ToolCall {
   name: string;
@@ -23,6 +24,7 @@ export interface ToolResult {
 export class AITools {
   private fsManager = new FileSystemManager();
   private webPage = new WebPageContent();
+  private officeService = new OfficeDocumentService();
 
   constructor(private memoryManager?: MemoryManager) {}
   /**
@@ -70,6 +72,16 @@ export class AITools {
           const pdfPath = this.fsManager.validatePath(args.path as string);
           await browserService.generatePdf(args.html as string, pdfPath);
           result = `PDF successfully generated and saved to ${args.path}`;
+          break;
+        case 'generate_excel':
+          const excelPath = this.fsManager.validatePath(args.path as string);
+          await this.officeService.createExcel(excelPath, args.sheets as ExcelSheetData[]);
+          result = `Excel spreadsheet successfully generated and saved to ${args.path}`;
+          break;
+        case 'generate_docx':
+          const docxPath = this.fsManager.validatePath(args.path as string);
+          await this.officeService.createDocx(docxPath, args.document as DocxDocumentData);
+          result = `Word document successfully generated and saved to ${args.path}`;
           break;
         case 'generate_image':
           result = await imageService.generateImage(
@@ -324,6 +336,86 @@ export class AITools {
               key: { type: 'string', description: 'The exact key of the memory to delete.' }
             },
             required: ['key']
+          }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'generate_excel',
+          description: 'Generates a highly-formatted Excel spreadsheet (.xlsx) in the workspace.',
+          parameters: {
+            type: 'object',
+            properties: {
+              path: { type: 'string', description: 'Output path relative to workspace (e.g. sales_report.xlsx).' },
+              sheets: {
+                type: 'array',
+                description: 'Array of sheet definitions to add to the workbook.',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string', description: 'Name of the sheet.' },
+                    columns: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          header: { type: 'string', description: 'Header column title.' },
+                          key: { type: 'string', description: 'Row object key (data identifier).' },
+                          width: { type: 'integer', description: 'Width of column (optional).' }
+                        },
+                        required: ['header', 'key']
+                      }
+                    },
+                    rows: {
+                      type: 'array',
+                      description: 'Row data objects mapping keys to values (numbers, strings, formulas like {"formula": "A2*B2"}).',
+                      items: { type: 'object' }
+                    }
+                  },
+                  required: ['name', 'columns', 'rows']
+                }
+              }
+            },
+            required: ['path', 'sheets']
+          }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'generate_docx',
+          description: 'Generates a professionally-formatted Word document (.docx) in the workspace with paragraphs, headers, and tables.',
+          parameters: {
+            type: 'object',
+            properties: {
+              path: { type: 'string', description: 'Output path relative to workspace (e.g. proposal.docx).' },
+              document: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string', description: 'Title of the document (placed at the top).' },
+                  paragraphs: {
+                    type: 'array',
+                    description: 'Sequential elements of paragraphs or tables.',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        text: { type: 'string', description: 'Paragraph text content (leave empty for table).' },
+                        heading: { type: 'string', enum: ['Heading1', 'Heading2', 'Heading3'], description: 'Header style (optional).' },
+                        bold: { type: 'boolean', description: 'Bold text (optional).' },
+                        italic: { type: 'boolean', description: 'Italic text (optional).' },
+                        alignment: { type: 'string', enum: ['left', 'center', 'right', 'justify'], description: 'Text alignment (optional).' },
+                        type: { type: 'string', enum: ['table'], description: 'Specify "table" to render a grid (optional).' },
+                        headers: { type: 'array', items: { type: 'string' }, description: 'Table column headers (required for table).' },
+                        rows: { type: 'array', items: { type: 'array', items: { type: 'string' } }, description: 'Table body cells matrix (required for table).' }
+                      }
+                    }
+                  }
+                },
+                required: ['title', 'paragraphs']
+              }
+            },
+            required: ['path', 'document']
           }
         }
       }

@@ -176,6 +176,22 @@ export class DatabaseClient {
 
     const schema = fs.readFileSync(schemaPath, 'utf-8');
     this.db.exec(schema);
+
+    // Migration: Add is_auto column to tasks table if it doesn't exist
+    try {
+      this.db.exec('ALTER TABLE tasks ADD COLUMN is_auto INTEGER DEFAULT 0');
+      console.log('DatabaseClient: Added is_auto column to tasks table');
+    } catch (e) {
+      // Ignore error if column already exists
+    }
+
+    // Migration: Add title column to sessions table if it doesn't exist
+    try {
+      this.db.exec('ALTER TABLE sessions ADD COLUMN title TEXT');
+      console.log('DatabaseClient: Added title column to sessions table');
+    } catch (e) {
+      // Ignore error if column already exists
+    }
   }
 
   /**

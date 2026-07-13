@@ -74,7 +74,7 @@ export class MemoryManager {
    * Save memory with embedding
    */
   async saveMemory(
-    sessionId: string,
+    _sessionId: string,
     key: string,
     value: string,
     category: string = 'personal'
@@ -84,7 +84,7 @@ export class MemoryManager {
 
     // Save text record first
     const memoryId = await this.db.insert('memories', {
-      session_id: sessionId,
+      session_id: 'global',
       key,
       value,
       category,
@@ -131,7 +131,7 @@ export class MemoryManager {
           1 - vec_distance_cosine(vm.embedding, ?) as similarity
         FROM memories m
         JOIN vec_memories vm ON m.id = vm.rowid
-        WHERE m.session_id = ?
+        WHERE m.session_id = 'global' OR m.session_id = ?
         ORDER BY similarity DESC
         LIMIT ?
       `;
@@ -162,7 +162,7 @@ export class MemoryManager {
     const searchTerm = `%${query.toLowerCase()}%`;
     const sql = `
       SELECT * FROM memories 
-      WHERE session_id = ? 
+      WHERE (session_id = 'global' OR session_id = ?) 
       AND (LOWER(key) LIKE ? OR LOWER(value) LIKE ? OR LOWER(content) LIKE ?) 
       ORDER BY updated_at DESC LIMIT ?
     `;
@@ -172,20 +172,20 @@ export class MemoryManager {
 
   async deleteMemoryByKey(sessionId: string, key: string): Promise<void> {
     // Find memories matching session_id and key to delete their vectors
-    const sqlSelect = 'SELECT id FROM memories WHERE session_id = ? AND key = ?';
+    const sqlSelect = 'SELECT id FROM memories WHERE (session_id = \'global\' OR session_id = ?) AND key = ?';
     const result = await this.db.query(sqlSelect, [sessionId, key]);
     for (const row of result.rows as any[]) {
       await this.db.run('DELETE FROM vec_memories WHERE rowid = ?', [row.id]);
     }
-    await this.db.run('DELETE FROM memories WHERE session_id = ? AND key = ?', [sessionId, key]);
+    await this.db.run('DELETE FROM memories WHERE (session_id = \'global\' OR session_id = ?) AND key = ?', [sessionId, key]);
   }
 
   async clearAll(sessionId: string): Promise<void> {
     await this.db.run(`
       DELETE FROM vec_memories 
-      WHERE rowid IN (SELECT id FROM memories WHERE session_id = ?)
+      WHERE rowid IN (SELECT id FROM memories WHERE session_id = 'global' OR session_id = ?)
     `, [sessionId]);
-    await this.db.run('DELETE FROM memories WHERE session_id = ?', [sessionId]);
+    await this.db.run('DELETE FROM memories WHERE session_id = \'global\' OR session_id = ?', [sessionId]);
   }
 
   async getRelevantContext(sessionId: string, query: string, limit: number = 3): Promise<string> {
@@ -193,7 +193,7 @@ export class MemoryManager {
 
     try {
       // Optimization: Skip embedding API call if there are no memories stored for this session
-      const countResult = await this.db.query('SELECT COUNT(*) as count FROM memories WHERE session_id = ?', [sessionId]);
+      const countResult = await this.db.query('SELECT COUNT(*) as count FROM memories WHERE session_id = \'global\' OR session_id = ?', [sessionId]);
       const count = (countResult.rows[0] as any)?.count || 0;
       if (count === 0) return '';
     } catch (err) {

@@ -47,7 +47,7 @@ export class BrowserService {
     const browser = await this.getBrowser();
     const page = await browser.newPage();
     try {
-      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+      await page.setContent(htmlContent, { waitUntil: 'networkidle0' as any });
       await page.pdf({
         path: outputPath,
         format: 'A4',
