@@ -589,8 +589,13 @@ class AIAgentChat {
 
             if (data.history && Array.isArray(data.history)) {
                 data.history.forEach(message => {
-                    const type = message.role === 'assistant' ? 'agent' : 'user';
-                    this.addMessage(message.content, type, message.reasoning);
+                    if (message.role === 'tool') return;
+                    if (message.role === 'assistant') {
+                        if (!message.content && !message.reasoning) return;
+                        this.addMessage(message.content, 'agent', message.reasoning);
+                    } else if (message.role === 'user') {
+                        this.addMessage(message.content, 'user');
+                    }
                 });
             }
 
