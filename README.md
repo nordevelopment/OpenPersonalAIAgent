@@ -1,4 +1,4 @@
-# 🤖 Open Personal AI Agent (PAIAgent)
+# 🤖 OpenPAIAgent
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/nordevelopment?color=EA4AAA&style=flat-square)](https://github.com/sponsors/nordevelopment)
 [![GitHub Stars](https://img.shields.io/github/stars/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/stargazers)
@@ -6,15 +6,15 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/commits/main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-<a href="https://nordevelopment.github.io/OpenPersonalAIAgent/">Open Personal AI Agent project page</a>
+<a href="https://nordevelopment.github.io/OpenPersonalAIAgent/">OpenPAIAgent project page</a>
 
-A lightweight, fast and Personal AI Agent (PAIAgent) running locally on your computer or server. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
+A lightweight, fast, and personal AI agent (**OpenPAIAgent**) running locally on your computer or server. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
 
 ---
 
 ## 🧠 Key Architectural Decisions
 
-PAIAgent is built with a clear focus on lightweight, efficient, and transparent AI engineering:
+OpenPAIAgent is built with a clear focus on lightweight, efficient, and transparent AI engineering:
 
 * **Why No LangChain / LlamaIndex?**
   * **Complete State Control**: The agent's cognitive loop (think-act-evaluate) is written in vanilla TypeScript, ensuring complete control over LLM tool-calling and historical state.
@@ -30,7 +30,7 @@ PAIAgent is built with a clear focus on lightweight, efficient, and transparent 
 This project is designed for anyone who wants a personal AI assistant that can manage local files, browse the web, generate images, and communicate seamlessly through a slick web interface or remotely on-the-go via a Telegram bot.
 
 ### 🔒 100% Self-Hosted & Private
-PAIAgent runs entirely on your local machine or private server. All chat history, settings, and workspace documents are stored in a local SQLite database. Your private data never leaves your computer, and you retain absolute control over which external APIs (like OpenRouter or Together AI) are called.
+OpenPAIAgent runs entirely on your local machine or private server. All chat history, settings, and workspace documents are stored in a local SQLite database. Your private data never leaves your computer, and you retain absolute control over which external APIs (like OpenRouter or Together AI) are called.
 
 ### 🔓 Fully Open Source
 Built with clean TypeScript and vanilla web technologies under the MIT license. No massive, opaque frameworks (like LangChain) or hidden tracking. You have full transparency, can easily audit the source code, and can freely modify or extend the agent's tools and behaviors.
