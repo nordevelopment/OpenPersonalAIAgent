@@ -44,7 +44,7 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 *   **👁️ AI Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
 *   **🔧 Powerful Tool Execution (Function Calling)**:
     *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
-    *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis. Supports both fast static scraping (via Axios/Cheerio) and dynamic rendering (via Puppeteer/Chromium) with automatic fallback for SPAs (like React, Vue, e-commerce sites).
+    *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis. Supports both fast static scraping and dynamic rendering with automatic fallback for SPAs (like React, Vue, e-commerce sites).
     *   **PDF Generator**: The AI can write custom HTML/CSS templates and render them into professional A4 PDF documents saved directly to the workspace.
     *   **Office Document Generator**: The AI can generate structured Excel spreadsheets (`.xlsx`) with custom columns, row styling, and formulas, as well as Word documents (`.docx`) with headings, styled paragraphs, text alignment, and tables.
     *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
