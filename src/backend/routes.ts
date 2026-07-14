@@ -44,7 +44,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   // Helper to execute tasks sequentially in background
   async function executeTasks(tasksToRun: any[]) {
     const taskSessionId = 'task_session';
-    
+
     // Ensure session exists
     const session = await chatManager.getSession(taskSessionId);
     if (!session) {
@@ -61,7 +61,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
     for (const task of tasksToRun) {
       try {
-        app.log.info(`[Task Runner] Starting task #${task.id}: "${task.title}"`);
+        //app.log.info(`[Task Runner] Starting task #${task.id}: "${task.title}"`);
         await taskModel.update(task.id, { status: 'running' });
 
         if (telegramOwnerId && telegramBot) {
@@ -79,7 +79,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
           result: response.content
         });
 
-        app.log.info(`[Task Runner] Completed task #${task.id}`);
+        //app.log.info(`[Task Runner] Completed task #${task.id}`);
         if (telegramOwnerId && telegramBot) {
           await telegramBot.sendMessage(telegramOwnerId, `✅ **[TASK #${task.id}] COMPLETED**\nInstruction: "${task.title}"\n\nResult:\n${response.content}`).catch(err => {
             console.error('[Telegram] Notification error:', err);
@@ -214,7 +214,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   // Render agent editor page
   app.get('/edit-agent/:agentId', async (request: FastifyRequest<{ Params: { agentId: string } }>, reply: FastifyReply) => {
     const { agentId } = request.params;
-    
+
     const exists = await agentService.agentExists(agentId);
     if (!exists) {
       return reply.status(404).send('Agent not found');
@@ -296,7 +296,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   app.post('/api/chat', async (request: FastifyRequest<{ Body: ChatRequestBody }>, reply: FastifyReply) => {
     const { message, image } = request.body;
     const sessionId = request.sessionId;
-    console.log('Chat request (stream):', { message, sessionId, hasImage: !!image });
+    //request.log.info({ message, sessionId, hasImage: !!image }, 'Chat request (stream)');
 
     reply.raw.writeHead(200, {
       'Content-Type': 'text/event-stream',
@@ -334,7 +334,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
   app.post('/api/chat/get_history', async (request: FastifyRequest<{ Body: ChatRequestBody }>, reply: FastifyReply) => {
     const sessionId = request.body.sessionId || request.sessionId;
-    console.log('Get history request:', { sessionId });
+    //request.log.info({ sessionId }, 'Get history request');
     const history = await chatManager.getHistory(sessionId);
     return reply.send({ history });
   });
@@ -583,7 +583,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       const nowIso = new Date().toISOString();
       const readyAutoTasks = await taskModel.findReadyToRun(nowIso, true);
       if (readyAutoTasks.length > 0) {
-        app.log.info(`[Scheduler] Found ${readyAutoTasks.length} auto-run tasks. Executing...`);
+        //app.log.info(`[Scheduler] Found ${readyAutoTasks.length} auto-run tasks. Executing...`);
         executeTasks(readyAutoTasks).catch(err => {
           console.error('[Scheduler] Error running automatic tasks:', err);
         });

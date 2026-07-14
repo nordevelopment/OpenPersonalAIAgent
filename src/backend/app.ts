@@ -48,8 +48,16 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   const app = Fastify({
     logger: {
-      level: config.LOG_LEVEL,
+      level: config.LOG_LEVEL || 'info',
+      transport: config.ENV !== 'production' ? {
+        target: 'pino-pretty',
+        options: {
+          translateTime: 'HH:MM:ss Z',
+          ignore: 'pid,hostname',
+        },
+      } : undefined,
     },
+    disableRequestLogging: true,
     bodyLimit: 20971520, // 20MB
   });
 
@@ -80,7 +88,7 @@ export async function buildApp(): Promise<FastifyInstance> {
         }
         app.basicAuth(request, reply, (err) => {
           if (err) {
-            console.error('[BasicAuth] Auth error:', err.message || err);
+            request.log.error({ err }, 'BasicAuth auth error');
             reply.status(401).send({ success: false, message: 'Unauthorized' });
             return;
           }

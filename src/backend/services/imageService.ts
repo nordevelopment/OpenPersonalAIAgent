@@ -8,6 +8,7 @@ import axios from 'axios';
 import nodePath from 'node:path';
 import nodeFs from 'node:fs';
 import crypto from 'node:crypto';
+import logger from '../utils/logger.js';
 
 // ==================== Types ====================
 
@@ -78,7 +79,7 @@ export class ImageService {
     if (!nodeFs.existsSync(config.generatedImagesDir)) {
       nodeFs.mkdirSync(config.generatedImagesDir, { recursive: true });
     }
-    // console.log('[Image] Image service initialized', config.generatedImagesDir);
+    // logger.debug({ dir: config.generatedImagesDir }, '[Image] Image service initialized');
   }
 
   /**
@@ -196,7 +197,7 @@ export class ImageService {
     }
 
     try {
-      console.log('[Image] Generating with Together:', prompt.slice(0, 50) + '...');
+      logger.info({ prompt: prompt.slice(0, 50) + '...' }, '[Image] Generating with Together');
 
       const response = await axios.post<TogetherImageResponse>(
         config.images.together.url!,
@@ -219,7 +220,7 @@ export class ImageService {
       const localPath = await this.downloadImage(imageUrl);
       const relativePath = '/storage/generated/' + nodePath.basename(localPath);
 
-      console.log('[Image] Generated:', localPath);
+      logger.info({ localPath }, '[Image] Generated image successfully');
 
       return {
         relativePath: relativePath,
@@ -230,7 +231,7 @@ export class ImageService {
       const errorMessage = axiosError.response?.data
         ? JSON.stringify(axiosError.response.data)
         : (error as Error).message;
-      console.error('[Image] Together API Error:', errorMessage);
+      logger.error({ err: error, errorMessage }, '[Image] Together API Error');
       throw new Error(`Image generation failed: ${errorMessage}`);
     }
   }
@@ -252,7 +253,7 @@ export class ImageService {
     };
 
     try {
-      console.log('[Image] Generating with XAI:', prompt.slice(0, 50) + '...');
+      logger.info({ prompt: prompt.slice(0, 50) + '...' }, '[Image] Generating with XAI');
 
       const response = await axios.post<XAIImageResponse>(
         config.images.xai.url!,
@@ -274,7 +275,7 @@ export class ImageService {
       const localPath = await this.downloadImage(imageData.url);
       const relativePath = '/storage/generated/' + nodePath.basename(localPath);
 
-      console.log('[Image] Generated:', localPath);
+      logger.info({ localPath }, '[Image] Generated image successfully');
 
       return {
         relativePath: relativePath,
@@ -285,7 +286,7 @@ export class ImageService {
       const errorMessage = axiosError.response?.data
         ? JSON.stringify(axiosError.response.data)
         : (error as Error).message;
-      console.error('[Image] XAI API Error:', errorMessage);
+      logger.error({ err: error, errorMessage }, '[Image] XAI API Error');
       throw new Error(`Image generation failed: ${errorMessage}`);
     }
   }
@@ -310,7 +311,7 @@ export class ImageService {
       nodeFs.writeFileSync(filepath, Buffer.from(response.data));
       return filepath;
     } catch (error) {
-      console.error('[Image] Download Error:', error);
+      logger.error({ err: error }, '[Image] Download Error');
       throw new Error('Failed to download/save image');
     }
   }
@@ -361,10 +362,10 @@ export class ImageService {
       }
 
       if (deletedCount > 0) {
-        console.log(`[Image] Cleaned up ${deletedCount} old images`);
+        logger.info({ deletedCount }, '[Image] Cleaned up old images');
       }
     } catch (error) {
-      console.error('[Image] Cleanup Error:', error);
+      logger.error({ err: error }, '[Image] Cleanup Error');
     }
   }
 }

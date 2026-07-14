@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as sqliteVec from 'sqlite-vec';
+import logger from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,7 +53,7 @@ export class DatabaseClient {
         changes: 0,
       };
     } catch (error) {
-      console.error('DatabaseClient: query error', { sql, params, error });
+      logger.error({ sql, params, err: error }, 'DatabaseClient: query error');
       throw error;
     }
   }
@@ -76,7 +77,7 @@ export class DatabaseClient {
 
       return Number(result.lastInsertRowid);
     } catch (error) {
-      console.error('DatabaseClient: insert error', { table, data, error });
+      logger.error({ table, data, err: error }, 'DatabaseClient: insert error');
       throw error;
     }
   }
@@ -103,7 +104,7 @@ export class DatabaseClient {
       const stmt = this.db.prepare(sql);
       return stmt.all(...values);
     } catch (error) {
-      console.error('DatabaseClient: select error', { table, where, error });
+      logger.error({ table, where, err: error }, 'DatabaseClient: select error');
       throw error;
     }
   }
@@ -128,7 +129,7 @@ export class DatabaseClient {
 
       return result.changes;
     } catch (error) {
-      console.error('DatabaseClient: update error', { table, data, where, error });
+      logger.error({ table, data, where, err: error }, 'DatabaseClient: update error');
       throw error;
     }
   }
@@ -151,7 +152,7 @@ export class DatabaseClient {
 
       return result.changes;
     } catch (error) {
-      console.error('DatabaseClient: delete error', { table, where, error });
+      logger.error({ table, where, err: error }, 'DatabaseClient: delete error');
       throw error;
     }
   }
@@ -170,7 +171,7 @@ export class DatabaseClient {
     }
 
     if (!fs.existsSync(schemaPath)) {
-      console.warn('DatabaseClient: schema.sql not found, skipping initialization');
+      logger.warn('DatabaseClient: schema.sql not found, skipping initialization');
       return;
     }
 
@@ -180,7 +181,7 @@ export class DatabaseClient {
     // Migration: Add is_auto column to tasks table if it doesn't exist
     try {
       this.db.exec('ALTER TABLE tasks ADD COLUMN is_auto INTEGER DEFAULT 0');
-      console.log('DatabaseClient: Added is_auto column to tasks table');
+      logger.info('DatabaseClient: Added is_auto column to tasks table');
     } catch (e) {
       // Ignore error if column already exists
     }
@@ -188,7 +189,7 @@ export class DatabaseClient {
     // Migration: Add title column to sessions table if it doesn't exist
     try {
       this.db.exec('ALTER TABLE sessions ADD COLUMN title TEXT');
-      console.log('DatabaseClient: Added title column to sessions table');
+      logger.info('DatabaseClient: Added title column to sessions table');
     } catch (e) {
       // Ignore error if column already exists
     }
@@ -205,7 +206,7 @@ export class DatabaseClient {
       const stmt = this.db.prepare(sql);
       return stmt.run(...params);
     } catch (error) {
-      console.error('DatabaseClient: run error', { sql, params, error });
+      logger.error({ sql, params, err: error }, 'DatabaseClient: run error');
       throw error;
     }
   }

@@ -7,6 +7,7 @@
 import { DatabaseClient } from '../database/DatabaseClient.js';
 import { config } from '../config.js';
 import axios from 'axios';
+import logger from '../utils/logger.js';
 
 export interface Memory {
   id: number;
@@ -96,9 +97,9 @@ export class MemoryManager {
         const serialized = this.serializeEmbedding(embedding);
         const vecSql = 'INSERT INTO vec_memories (rowid, embedding) VALUES (CAST(? AS INTEGER), ?)';
         await this.db.run(vecSql, [memoryId, serialized]);
-        console.log(`[MemoryManager] ✅ Vector saved for ID ${memoryId} Bytes ${serialized.length}`);
+        logger.info({ memoryId, bytes: serialized.length }, '[MemoryManager] Vector saved successfully');
       } catch (err: any) {
-        console.error(`[MemoryManager] ❌ Vector save failed (ID ${memoryId}):`, err.message);
+        logger.error({ memoryId, err }, '[MemoryManager] Vector save failed');
       }
     }
 
@@ -197,10 +198,10 @@ export class MemoryManager {
       const count = (countResult.rows[0] as any)?.count || 0;
       if (count === 0) return '';
     } catch (err) {
-      console.error('[MemoryManager] Failed to count memories:', err);
+      logger.error({ err }, '[MemoryManager] Failed to count memories');
     }
 
-    console.log('[MemoryManager] Relevant memories query:', query);
+    logger.debug({ query }, '[MemoryManager] Relevant memories query');
 
     // Lower threshold to 0.5 to ensure all relevant session memories are retrieved
     // even for indirect queries. The LLM will ignore them if they are irrelevant to the prompt.
@@ -208,7 +209,7 @@ export class MemoryManager {
 
     const results = await this.searchMemories(sessionId, query, limit);
     const filtered = results.filter(r => r.similarity > threshold);
-    console.log('[MemoryManager] Relevant memories - filtered:', filtered);
+    logger.debug({ filtered }, '[MemoryManager] Relevant memories - filtered');
     if (filtered.length === 0) return '';
 
     const contextItems = filtered.map(r => `  - ${r.memory.key}: ${r.memory.value}`);

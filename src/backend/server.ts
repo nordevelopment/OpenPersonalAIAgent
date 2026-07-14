@@ -5,6 +5,7 @@
 
 import { buildApp } from './app.js';
 import { config } from './config.js';
+import logger from './utils/logger.js';
 
 async function start() {
   let app: ReturnType<typeof buildApp> extends Promise<infer T> ? T : never;
@@ -17,19 +18,19 @@ async function start() {
     const port = config.PORT;
     const host = config.HOST;
     await app.listen({ port: Number(port), host });
-    console.log(`Server running at http://${host}:${port}`);
+    // app.log.info(`Server running at http://${host}:${port}`);
 
     // Graceful shutdown
     const gracefulShutdown = async (signal: string) => {
-      console.log(`\n${signal} received. Starting graceful shutdown...`);
+      app.log.info({ signal }, 'Received shutdown signal. Starting graceful shutdown...');
 
       try {
         // Close server (stop accepting new connections)
         await app.close();
-        console.log('HTTP server closed, Graceful shutdown completed');
+        app.log.info('HTTP server closed. Graceful shutdown completed.');
         process.exit(0);
       } catch (err) {
-        console.error('Error during graceful shutdown:', err);
+        app.log.error({ err }, 'Error during graceful shutdown');
         process.exit(1);
       }
     };
@@ -39,7 +40,7 @@ async function start() {
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
   } catch (err) {
-    console.error('Failed to start server:', err);
+    logger.error({ err }, 'Failed to start server');
     process.exit(1);
   }
 }

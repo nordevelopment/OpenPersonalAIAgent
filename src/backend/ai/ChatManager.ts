@@ -11,6 +11,7 @@ import { SessionManager } from './SessionManager.js';
 import { AITools } from './AITools.js';
 import { MemoryManager } from './MemoryManager.js';
 import { config } from '../config.js';
+import logger from '../utils/logger.js';
 
 export interface ChatManagerDeps {
   aiClient: AIClient;
@@ -133,9 +134,9 @@ Title:`;
                 await this.sessionManager.updateSessionTitle(sessionId, title);
               }
             } catch (err) {
-              console.error('[Auto-Rename] Failed to auto-rename session:', err);
+              logger.error({ err }, '[Auto-Rename] Failed to auto-rename session');
             }
-          })().catch(e => console.error('[Auto-Rename] Unhandled background error:', e));
+          })().catch(e => logger.error({ err: e }, '[Auto-Rename] Unhandled background error'));
         }
 
         return { content: finalContent, reasoning: lastReasoning };
@@ -147,7 +148,7 @@ Title:`;
         tool_calls: aiResponse.toolCalls
       });
 
-      //console.log(`[Agent] AI decided to use ${aiResponse.toolCalls.length} tools: ${JSON.stringify(aiResponse.toolCalls, null, 2)}`);
+      logger.debug({ toolCalls: aiResponse.toolCalls }, '[Agent] AI decided to use tools');
 
       for (const toolCall of aiResponse.toolCalls) {
         try {
@@ -179,8 +180,8 @@ Title:`;
             tool_call_id: toolCall.id
           });
         } catch (error) {
-          console.error(`[ChatManager] Error executing tool ${toolCall.function.name}:`, error);
-          
+          logger.error({ err: error }, `[ChatManager] Error executing tool ${toolCall.function.name}:`);
+
           if (onProgress) {
             await onProgress('tool_done', {
               name: toolCall.function.name,
@@ -209,7 +210,7 @@ Title:`;
    * @returns array of messages
    */
   async getHistory(sessionId: string): Promise<AIMessages[]> {
-    console.log(`[ChatManager] Getting history for session: ${sessionId}`);
+    //logger.info({ sessionId }, '[ChatManager] Getting history for session');
     return await this.historyManager.getHistory(sessionId);
   }
 

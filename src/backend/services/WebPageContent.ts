@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { browserService } from "./BrowserService.js";
+import logger from "../utils/logger.js";
 
 const TIMEOUT = 30000;
 const MAX_HTML_LENGTH = 60000;
@@ -157,7 +158,7 @@ export class WebPageContent {
                 const bodyText = $('body').text().trim();
                 const hasSPARoot = $('#root, #app, #__next, [id*="app"], [id*="root"]').length > 0;
                 if (!dynamic && bodyText.length < 300 && hasSPARoot) {
-                    console.log(`WebPageContent: SPA detected, falling back to dynamic rendering for ${url}`);
+                    logger.info({ url }, 'WebPageContent: SPA detected, falling back to dynamic rendering');
                     return await this.fetchPage({ url, method, data, headers, dynamic: true });
                 }
 
@@ -181,7 +182,7 @@ export class WebPageContent {
         } catch (error: unknown) {
             // Fallback to dynamic if static fetch fails
             if (!dynamic) {
-                console.log(`WebPageContent: Static fetch failed for ${url}. Trying dynamic rendering...`);
+                logger.info({ url }, 'WebPageContent: Static fetch failed. Trying dynamic rendering...');
                 try {
                     return await this.fetchPage({ url, method, data, headers, dynamic: true });
                 } catch (fallbackError) {

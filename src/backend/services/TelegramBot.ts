@@ -9,6 +9,7 @@ import { config } from '../config.js';
 import { Telegraf, Context } from 'telegraf';
 import path from 'path';
 import fs from 'fs';
+import logger from '../utils/logger.js';
 
 
 export class TelegramBot {
@@ -22,7 +23,7 @@ export class TelegramBot {
     this.chatManager = chatManager ?? null;
 
     if (!botToken) {
-      console.log('[Telegram] Bot not initialized, bot token is empty.');
+      logger.info('[Telegram] Bot not initialized, bot token is empty.');
       this.isEnabled = false;
       return;
     }
@@ -42,7 +43,7 @@ export class TelegramBot {
       try {
         await this.stop();
       } catch (err) {
-        console.error('[Telegram] Error stopping bot during reload:', err);
+        logger.error({ err }, '[Telegram] Error stopping bot during reload');
       }
     }
 
@@ -50,7 +51,7 @@ export class TelegramBot {
     if (!trimmedToken) {
       this.bot = null;
       this.isEnabled = false;
-      console.log('[Telegram] Bot disabled (empty token).');
+      logger.info('[Telegram] Bot disabled (empty token).');
       return;
     }
 
@@ -59,11 +60,11 @@ export class TelegramBot {
       this.isEnabled = true;
       this.setupHandlers();
       await this.start();
-      console.log('[Telegram] Bot hot-reloaded successfully.');
+      logger.info('[Telegram] Bot hot-reloaded successfully.');
     } catch (err) {
       this.isEnabled = false;
       this.bot = null;
-      console.error('[Telegram] Failed to start with new token:', err);
+      logger.error({ err }, '[Telegram] Failed to start with new token');
       throw err;
     }
   }
@@ -76,7 +77,7 @@ export class TelegramBot {
 
     // Warning about open bot
     if (!config.ALLOWED_TELEGRAM_USER_IDS) {
-      console.warn('[Telegram] WARNING: ALLOWED_TELEGRAM_USER_IDS is empty. Anyone can use your bot and consume your API balances!');
+      logger.warn('[Telegram] WARNING: ALLOWED_TELEGRAM_USER_IDS is empty. Anyone can use your bot and consume your API balances!');
     }
 
     // Middleware to restrict access
@@ -87,11 +88,11 @@ export class TelegramBot {
 
       if (allowedIds.length > 0) {
         if (!userId || !allowedIds.includes(userId)) {
-          console.warn(`[Telegram] Access denied for user ${userId || 'unknown'} (${ctx.from?.username || 'no username'})`);
+          logger.warn({ userId, username: ctx.from?.username }, '[Telegram] Access denied for user');
           try {
             await ctx.reply("Access denied. Please configure ALLOWED_TELEGRAM_USER_IDS in settings.");
           } catch (err) {
-            console.error('[Telegram] Error sending access denied message:', err);
+            logger.error({ err }, '[Telegram] Error sending access denied message');
           }
           return;
         }
@@ -120,7 +121,7 @@ export class TelegramBot {
           await ctx.reply('AI service is not available');
         }
       } catch (err) {
-        console.error('[Telegram] Error clearing history:', err);
+        logger.error({ err }, '[Telegram] Error clearing history');
         await ctx.reply('Failed to clear chat history.');
       }
     });
@@ -158,7 +159,7 @@ export class TelegramBot {
       // Keep showing "typing..." status in Telegram while AI is thinking (which can take time due to image gen/tool calls)
       const typingInterval = setInterval(() => {
         ctx.sendChatAction('typing').catch(err => {
-          console.error('[Telegram] Error sending typing action:', err);
+          logger.error({ err }, '[Telegram] Error sending typing action');
         });
       }, 4000);
 
@@ -192,7 +193,7 @@ export class TelegramBot {
           if (fs.existsSync(absolutePath)) {
             await ctx.replyWithPhoto({ source: absolutePath }, { caption: alt || undefined });
           } else {
-            console.error(`[Telegram] Image file not found: ${absolutePath}`);
+            logger.error({ absolutePath }, '[Telegram] Image file not found');
             await ctx.reply(`[Image: ${alt || 'photo'}]`);
           }
           continue;
@@ -206,7 +207,7 @@ export class TelegramBot {
           if (fs.existsSync(absolutePath)) {
             await ctx.replyWithPhoto({ source: absolutePath }, { caption: 'Generated Image' });
           } else {
-            console.error(`[Telegram] Image file not found: ${absolutePath}`);
+            logger.error({ absolutePath }, '[Telegram] Image file not found');
             await ctx.reply(`[Image: Generated Image]`);
           }
           continue;
@@ -216,7 +217,7 @@ export class TelegramBot {
         await ctx.reply(part);
       }
     } catch (error) {
-      console.error('[Telegram] Error handling message:', error);
+      logger.error({ err: error }, '[Telegram] Error handling message');
       await ctx.reply('Error handling message');
     }
   }
@@ -226,14 +227,13 @@ export class TelegramBot {
    */
   async start(): Promise<void> {
     if (!this.isEnabled || !this.bot) {
-      console.log('[Telegram] Cannot start: bot is not enabled');
+      logger.warn('[Telegram] Cannot start: bot is not enabled');
       return;
     }
     try {
       await this.bot.launch();
-      // console.log('[Telegram] Bot started');
     } catch (error) {
-      console.error('[Telegram] Error starting bot:', error);
+      logger.error({ err: error }, '[Telegram] Error starting bot');
     }
   }
 
@@ -242,15 +242,14 @@ export class TelegramBot {
    */
   async stop(): Promise<void> {
     if (!this.isEnabled || !this.bot) {
-      console.log('[Telegram] Cannot stop: bot is not enabled');
+      logger.warn('[Telegram] Cannot stop: bot is not enabled');
       return;
     }
     try {
       this.bot.stop();
     } catch (err) {
-      console.warn('[Telegram] Error stopping bot (might not be running):', err instanceof Error ? err.message : err);
+      logger.warn({ err }, '[Telegram] Error stopping bot (might not be running)');
     }
-    // console.log('[Telegram] Bot stopped');
   }
 
   /**
@@ -258,7 +257,7 @@ export class TelegramBot {
    */
   async sendMessage(chatId: number | string, text: string): Promise<void> {
     if (!this.isEnabled || !this.bot) {
-      console.log('[Telegram] Cannot send message: bot is not enabled');
+      logger.warn('[Telegram] Cannot send message: bot is not enabled');
       return;
     }
     await this.bot.telegram.sendMessage(chatId, text);
@@ -269,7 +268,7 @@ export class TelegramBot {
    */
   async getBotInfo(): Promise<any> {
     if (!this.isEnabled || !this.bot) {
-      console.log('[Telegram] Cannot get bot info: bot is not enabled');
+      logger.warn('[Telegram] Cannot get bot info: bot is not enabled');
       return null;
     }
     return await this.bot.telegram.getMe();

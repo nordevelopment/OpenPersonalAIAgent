@@ -10,6 +10,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
+import logger from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -137,10 +138,10 @@ export class AIClient {
           if (isMatched) {
             const skillName = file.substring(0, file.lastIndexOf('.')).toUpperCase();
             matchedSkills.push(`### SKILL: ${skillName}\n${body}`);
-            console.log(`[AIClient] Dynamic skill loaded: ${file}`);
+            logger.info(`[AIClient] Dynamic skill loaded: ${file}`);
           }
         } catch (err) {
-          console.error(`[AIClient] Failed to read skill file ${file}:`, err);
+          logger.error({ err }, `[AIClient] Failed to read skill file ${file}`);
         }
       }
     }
