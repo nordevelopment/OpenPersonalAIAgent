@@ -31,6 +31,10 @@ function runTest() {
     {
       query: "нарисуй мне красивую картинку с киберпанк городом в 16:9",
       expectedSkills: ["IMAGE_GENERATOR"]
+    },
+    {
+      query: "напиши вовлекающий пост в телеграм про новые фичи нашего проекта",
+      expectedSkills: ["CONTENT_WRITER"]
     }
   ];
 
@@ -47,6 +51,7 @@ function runTest() {
     if (result.includes("SKILL: WEB_DESIGN")) loadedSkills.push("WEB_DESIGN");
     if (result.includes("SKILL: LEARNING_TUTOR")) loadedSkills.push("LEARNING_TUTOR");
     if (result.includes("SKILL: IMAGE_GENERATOR")) loadedSkills.push("IMAGE_GENERATOR");
+    if (result.includes("SKILL: CONTENT_WRITER")) loadedSkills.push("CONTENT_WRITER");
 
     console.log(`Подгруженные навыки: [${loadedSkills.join(', ')}]`);
     
