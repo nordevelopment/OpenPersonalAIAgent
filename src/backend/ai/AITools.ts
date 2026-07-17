@@ -69,7 +69,11 @@ export class AITools {
           });
           break;
         case 'generate_pdf':
-          const pdfPath = this.fsManager.validatePath(args.path as string);
+          const originalPath = args.path as string;
+          if (!originalPath.toLowerCase().endsWith('.pdf')) {
+            throw new Error(`The output path for generate_pdf must end with '.pdf' (received: '${originalPath}'). If you want to write a raw HTML/text file, use the 'write_file' tool instead.`);
+          }
+          const pdfPath = this.fsManager.validatePath(originalPath);
           await browserService.generatePdf(args.html as string, pdfPath);
           result = `PDF successfully generated and saved to ${args.path}`;
           break;
@@ -157,7 +161,7 @@ export class AITools {
         type: 'function',
         function: {
           name: 'write_file',
-          description: "Creates or overwrites a file. Creates directories if they don't exist. All paths must be within workspace/ (e.g., project/file.txt).",
+          description: "Creates or overwrites a file. Creates directories if they don't exist. All paths must be within workspace/ (e.g., project/file.txt). Use this tool to save text-based files like HTML, CSS, JS, markdown, and config files.",
           parameters: {
             type: 'object',
             properties: {
@@ -245,7 +249,7 @@ export class AITools {
         type: 'function',
         function: {
           name: 'generate_pdf',
-          description: 'Generates a PDF document from HTML content and saves it in the workspace.',
+          description: 'Generates a binary PDF document from HTML content and saves it in the workspace. The output file path MUST end with `.pdf`. Do NOT use this tool if you only want to save/write an HTML file; use `write_file` for that.',
           parameters: {
             type: 'object',
             properties: {
