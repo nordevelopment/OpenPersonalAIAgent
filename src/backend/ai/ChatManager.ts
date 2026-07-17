@@ -142,7 +142,7 @@ ${chatText}
 
 Title:`;
 
-              const titleResponse = await this.aiClient.sendMessage([{ role: 'user', content: prompt }], agentId);
+              const titleResponse = await this.aiClient.sendMessage([{ role: 'user', content: prompt }], agentId, undefined, undefined, true);
               const title = titleResponse.content ? titleResponse.content.trim().replace(/^["']|["']$/g, '') : '';
               if (title && title.length > 0 && !title.startsWith('Error:')) {
                 await this.sessionManager.updateSessionTitle(sessionId, title);

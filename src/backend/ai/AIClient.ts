@@ -218,29 +218,41 @@ export class AIClient {
    * @param additionalSystem - additional system prompt (e.g., memory context)
    * @returns ответ от AI
    */
-  async sendMessage(messages: AIMessages[], agentId?: string, tools?: any[], additionalSystem?: string): Promise<AIResponse> {
+   async sendMessage(
+    messages: AIMessages[],
+    agentId?: string,
+    tools?: any[],
+    additionalSystem?: string,
+    skipSkills?: boolean
+  ): Promise<AIResponse> {
 
     const systemPrompt = this.buildSystemPrompt(agentId);
 
     // Dynamic skills selection based on last user query
     let userQuery = '';
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].role === 'user') {
-        const content = messages[i].content;
-        if (typeof content === 'string') {
-          userQuery = content;
-          break;
-        } else if (Array.isArray(content)) {
-          userQuery = content
-            .filter(item => item.type === 'text')
-            .map(item => item.text)
-            .join(' ');
-          break;
+    let activeSkillsContent = '';
+
+    if (!skipSkills) {
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].role === 'user') {
+          const content = messages[i].content;
+          if (typeof content === 'string') {
+            userQuery = content;
+            break;
+          } else if (Array.isArray(content)) {
+            userQuery = content
+              .filter(item => item.type === 'text')
+              .map(item => item.text)
+              .join(' ');
+            break;
+          }
         }
       }
-    }
 
-    const activeSkillsContent = this.getMatchingSkills(agentId || 'main_agent', userQuery);
+      if (userQuery) {
+        activeSkillsContent = this.getMatchingSkills(agentId || 'main_agent', userQuery);
+      }
+    }
 
     // Convert local stored image paths to base64 strings for the API request
     const processedMessages: AIMessages[] = await Promise.all(messages.map(async (msg): Promise<AIMessages> => {
