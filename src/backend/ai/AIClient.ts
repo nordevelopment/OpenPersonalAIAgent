@@ -150,6 +150,66 @@ export class AIClient {
   }
 
   /**
+   * Search for matching skills inside agents/<agentId>/skills/ and return their names
+   */
+  getMatchingSkillsList(agentId: string, query: string): string[] {
+    if (!query) return [];
+
+    const agentPath = path.join(__dirname, `../../../agents/${agentId}`);
+    const skillsDirPath = path.join(agentPath, 'skills');
+
+    if (!fs.existsSync(skillsDirPath) || !fs.statSync(skillsDirPath).isDirectory()) {
+      return [];
+    }
+
+    const files = fs.readdirSync(skillsDirPath);
+    const matchedNames: string[] = [];
+    const queryLower = query.replace(/https?:\/\/[^\s]+/g, '').toLowerCase();
+
+    for (const file of files) {
+      if (file.endsWith('.md')) {
+        const filePath = path.join(skillsDirPath, file);
+        try {
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const lines = content.split(/\r?\n/);
+          if (lines.length === 0) continue;
+
+          const firstLine = lines[0].trim();
+          let keywords: string[] = [];
+
+          if (firstLine.toLowerCase().startsWith('keywords:')) {
+            keywords = firstLine
+              .substring(9)
+              .split(',')
+              .map(k => k.trim().toLowerCase())
+              .filter(k => k.length > 0);
+          } else {
+            const filenameKeyword = file.substring(0, file.lastIndexOf('.')).toLowerCase();
+            keywords = [filenameKeyword];
+          }
+
+          const isMatched = keywords.some(keyword => {
+            if (!keyword) return false;
+            const escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`(?<!\\p{L})${escaped}(?!\\p{L})`, 'gu');
+            return regex.test(queryLower);
+          });
+
+          if (isMatched) {
+            const skillName = file.substring(0, file.lastIndexOf('.')).toUpperCase();
+            matchedNames.push(skillName);
+          }
+        } catch (err) {
+          // ignore
+        }
+      }
+    }
+
+    return matchedNames;
+  }
+
+
+  /**
    * Send a message to AI
    * @param messages - array of messages (dialog history)
    * @param tools - list of available tools (from AITools.getAvailableTools())

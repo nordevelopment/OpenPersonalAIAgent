@@ -48,7 +48,7 @@ export class ChatManager {
     userMessage: string,
     sessionId: string,
     imageBase64?: string,
-    onProgress?: (event: 'tool_start' | 'tool_done', data: any) => void | Promise<void>
+    onProgress?: (event: 'tool_start' | 'tool_done' | 'skills_loaded', data: any) => void | Promise<void>
   ): Promise<{ content: string; reasoning?: string }> {
     let finalContent: any = userMessage;
 
@@ -69,6 +69,20 @@ export class ChatManager {
       role: 'user',
       content: finalContent
     });
+
+    // Notify client of matching skills if any
+    if (onProgress && userMessage) {
+      try {
+        const session = await this.sessionManager.getSession(sessionId);
+        const agentId = session?.agent_id || config.default_agent;
+        const loadedSkills = this.aiClient.getMatchingSkillsList(agentId, userMessage);
+        if (loadedSkills.length > 0) {
+          await onProgress('skills_loaded', { skills: loadedSkills });
+        }
+      } catch (err) {
+        console.error('[ChatManager] Failed to fetch or send matching skills:', err);
+      }
+    }
 
     // Get current available tools
     const availableTools = this.tools.getAvailableTools();

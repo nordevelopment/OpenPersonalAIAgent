@@ -140,10 +140,6 @@
             overflow-wrap: break-word;
         }
 
-        .message-content img {
-            max-width: 200px;
-        }
-
         .message-time {
             font-size: 10px;
             font-family: monospace;
@@ -500,7 +496,6 @@
         /* Chat Message Image */
         .chat-message-image {
             max-width: 300px;
-            max-height: 200px;
             border: 1px solid var(--cyber-border);
             border-radius: 2px;
             margin-bottom: 10px;

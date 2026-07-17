@@ -396,6 +396,11 @@ class AIAgentChat {
             }
 
             this.addSystemMessage(`Tool completed: ${toolName}`, null, `Result: ${resultText}`, true);
+        } else if (eventName === 'skills_loaded') {
+            const skills = eventData.skills || [];
+            if (skills.length > 0) {
+                this.addSystemMessage(`Active skills loaded: ${skills.join(', ')}`, null, null, false, '💡');
+            }
         } else if (eventName === 'final') {
             this.hideTyping();
             
@@ -418,7 +423,7 @@ class AIAgentChat {
         }
     }
 
-    addSystemMessage(title, subtitle, content, isDone = false) {
+    addSystemMessage(title, subtitle, content, isDone = false, icon = '⚙️') {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message system`;
         messageDiv.style.alignSelf = 'flex-start';
@@ -427,15 +432,23 @@ class AIAgentChat {
         const bgColor = isDone ? 'rgba(0, 255, 136, 0.04)' : 'rgba(0, 255, 255, 0.04)';
         const borderColor = isDone ? 'var(--cyber-primary)' : 'var(--cyber-secondary)';
 
-        messageDiv.innerHTML = `
-            <details style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor}; width: 100%;">
-                <summary style="font-weight: bold; cursor: pointer; outline: none; user-select: none;">⚙️ [SYSTEM] ${title}</summary>
-                <div style="margin-top: 8px; border-top: 1px dashed ${borderColor}; padding-top: 8px;">
-                    ${subtitle ? `<div style="opacity: 0.8; font-size: 11px; margin-bottom: 4px;">${subtitle}</div>` : ''}
-                    ${content ? `<pre style="margin: 5px 0 0 0; white-space: pre-wrap; font-size: 11px; opacity: 0.7; overflow-x: auto; max-height: 250px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 2px;">${content}</pre>` : ''}
+        if (subtitle || content) {
+            messageDiv.innerHTML = `
+                <details style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor}; width: 100%;">
+                    <summary style="font-weight: bold; cursor: pointer; outline: none; user-select: none;">${icon} [SYSTEM] ${title}</summary>
+                    <div style="margin-top: 8px; border-top: 1px dashed ${borderColor}; padding-top: 8px;">
+                        ${subtitle ? `<div style="opacity: 0.8; font-size: 11px; margin-bottom: 4px;">${subtitle}</div>` : ''}
+                        ${content ? `<pre style="margin: 5px 0 0 0; white-space: pre-wrap; font-size: 11px; opacity: 0.7; overflow-x: auto; max-height: 250px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 2px;">${content}</pre>` : ''}
+                    </div>
+                </details>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor}; width: 100%; font-weight: bold;">
+                    ${icon} [SYSTEM] ${title}
                 </div>
-            </details>
-        `;
+            `;
+        }
 
         this.chatMessages.appendChild(messageDiv);
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
