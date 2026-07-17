@@ -23,6 +23,10 @@ function runTest() {
     {
       query: "создай лендинг страницу для меня как разработчика ИИ агентов",
       expectedSkills: ["WEB_DESIGN"]
+    },
+    {
+      query: "объясни как работает квантовый компьютер простыми словами",
+      expectedSkills: ["LEARNING_TUTOR"]
     }
   ];
 
@@ -37,6 +41,7 @@ function runTest() {
     if (result.includes("SKILL: CODING")) loadedSkills.push("CODING");
     if (result.includes("SKILL: TRANSLATOR")) loadedSkills.push("TRANSLATOR");
     if (result.includes("SKILL: WEB_DESIGN")) loadedSkills.push("WEB_DESIGN");
+    if (result.includes("SKILL: LEARNING_TUTOR")) loadedSkills.push("LEARNING_TUTOR");
 
     console.log(`Подгруженные навыки: [${loadedSkills.join(', ')}]`);
     

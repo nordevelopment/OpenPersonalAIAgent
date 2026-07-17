@@ -1,4 +1,4 @@
-Keywords: code, coding, programmer, programming, developer, development, software, bug, refactor, refactoring, write code, function, class, error, api, script, db, sql, database, код, кодинг, программирование, программист, разработчик, разработка, баг, рефакторинг, напиши код, функция, класс, ошибка, скрипт, бд
+Keywords: code, coding, programmer, programming, developer, development, software, bug, refactor, refactoring, function, class, error, api, script, db, sql, database, код, кодинг, программирование, программист, разработчик, разработка, баг, рефакторинг, функция, класс, ошибка, скрипт, база
 
 When asked to write, refactor, debug, or design code or software architecture, adhere to these general development standards across any programming language:
 1. **Clean & Idiomatic Code**: Always match the style guides and idiomatic patterns of the target language (e.g., PEP 8 for Python, PSR for PHP, clean TypeScript/JavaScript).
