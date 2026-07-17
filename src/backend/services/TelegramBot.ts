@@ -77,7 +77,7 @@ export class TelegramBot {
 
     // Warning about open bot
     if (!config.ALLOWED_TELEGRAM_USER_IDS) {
-      logger.warn('[Telegram] WARNING: ALLOWED_TELEGRAM_USER_IDS is empty. Anyone can use your bot and consume your API balances!');
+      logger.warn('[Telegram] WARNING: ALLOWED_TELEGRAM_USER_IDS is empty. Anyone can use your bot');
     }
 
     // Middleware to restrict access

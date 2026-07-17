@@ -27,6 +27,10 @@ function runTest() {
     {
       query: "объясни как работает квантовый компьютер простыми словами",
       expectedSkills: ["LEARNING_TUTOR"]
+    },
+    {
+      query: "нарисуй мне красивую картинку с киберпанк городом в 16:9",
+      expectedSkills: ["IMAGE_GENERATOR"]
     }
   ];
 
@@ -42,6 +46,7 @@ function runTest() {
     if (result.includes("SKILL: TRANSLATOR")) loadedSkills.push("TRANSLATOR");
     if (result.includes("SKILL: WEB_DESIGN")) loadedSkills.push("WEB_DESIGN");
     if (result.includes("SKILL: LEARNING_TUTOR")) loadedSkills.push("LEARNING_TUTOR");
+    if (result.includes("SKILL: IMAGE_GENERATOR")) loadedSkills.push("IMAGE_GENERATOR");
 
     console.log(`Подгруженные навыки: [${loadedSkills.join(', ')}]`);
     
