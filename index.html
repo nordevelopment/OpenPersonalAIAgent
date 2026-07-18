@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Personal AI Agent (PAIAgent) - Lightweight Personal AI Assistant</title>
+    <title>OpenPAIAgent - Personal AI Agent - Lightweight & Secure open source ai agent</title>
     <meta name="description"
         content="Open Personal AI Agent (PAIAgent) - A lightweight, ultra-fast, and highly secure local personal AI assistant running on your hardware. Works with Web UI and Telegram, support visual models, vector DB, dynamic markdown prompts.">
     <meta name="keywords"
@@ -177,6 +177,12 @@
             font-size: var(--text-xs);
             font-weight: 700;
         }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: var(--text-2xl);
+            }
+        }
     </style>
 </head>
 
@@ -184,12 +190,16 @@
 
     <!-- Cyberpunk Navbar -->
     <nav class="cyber-nav">
-        <a href="index.html" class="cyber-nav__brand">PAIAgent</a>
-        <ul class="cyber-nav__links">
+        <a href="index.html" class="cyber-nav__brand">Open PAIAgent</a>
+        <button class="cyber-nav__burger" id="navBurger" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="cyber-nav__links" id="navLinks">
             <li><a href="index.html" class="cyber-nav__link cyber-nav__link--active">Home</a></li>
             <li><a href="docs.html" class="cyber-nav__link">Docs</a></li>
-            <li><a href="https://github.com/nordevelopment/OpenPersonalAIAgent" class="cyber-nav__link"
-                    target="_blank">GitHub</a></li>
+            <li><a href="https://github.com/nordevelopment/OpenPAIAgent" class="cyber-nav__link"
+                    target="_blank">GitHub</a>
+            </li>
         </ul>
         <div class="cyber-status">
             <span class="cyber-status__dot"></span>
@@ -202,9 +212,11 @@
         <div class="container">
             <h1 class="hero-title" data-text="OPEN PERSONAL AI AGENT">🤖 OPEN PERSONAL AI AGENT</h1>
             <p class="hero-subtitle">
-                A lightweight, lightning-fast, and highly secure <span class="highlight-text">Personal AI Agent</span>
-                running locally on your hardware. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. Support for both local models (Ollama, LM Studio) and cloud APIs (OpenRouter, Gemini, OpenAI). Avoid bloated frameworks that devour your RAM. Just clean TypeScript,
-                modular markdown prompt design, and absolute data privacy.
+                Open PAIAgent a lightweight, lightning-fast, and highly secure <span class="highlight-text">Personal AI
+                    Agent</span> that runs locally on your hardware. Inspired by OpenClaw and designed as its
+                ultra-lightweight, zero-bloat alternative. Support for both local models (Ollama, LM Studio) and cloud
+                APIs (OpenRouter, Gemini, OpenAI). Avoid bloated frameworks that devour your RAM. Just clean
+                TypeScript, modular markdown prompt design, and absolute data privacy.
             </p>
             <div class="hero-buttons">
                 <a href="https://github.com/nordevelopment/OpenPersonalAIAgent"
@@ -228,7 +240,8 @@
                 <h2 class="section-title">⚡ Core Capabilities</h2>
             </div>
 
-            <div class="cyber-grid--3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md);">
+            <div class="cyber-grid--3"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md);">
                 <!-- Dual Interfaces -->
                 <div class="cyber-card cyber-card--interactive">
                     <div class="cyber-card__header">
@@ -269,7 +282,8 @@
                         <h3 class="cyber-card__title">Settings Panel</h3>
                         <span class="cyber-card__badge">WIZARD</span>
                     </div>
-                    <p>No manual editing of <code>.env</code>. Local setup wizard configures everything (including local LLM endpoints or cloud APIs) and writes to a git-ignored JSON config.</p>
+                    <p>No manual editing of <code>.env</code>. Local setup wizard configures everything (including local
+                        LLM endpoints or cloud APIs) and writes to a git-ignored JSON config.</p>
                 </div>
 
                 <!-- Tool Execution -->
@@ -279,7 +293,8 @@
                         <h3 class="cyber-card__title">Tool Execution</h3>
                         <span class="cyber-card__badge">FUNCTIONS</span>
                     </div>
-                    <p>File system manager (restricted to a dedicated workspace folder with safe size limit config), real-time web scraper, and visual PDF generator.</p>
+                    <p>File system manager (restricted to a dedicated workspace folder with safe size limit config),
+                        real-time web scraper, and visual PDF generator.</p>
                 </div>
 
                 <!-- Semantic Memory -->
@@ -289,7 +304,8 @@
                         <h3 class="cyber-card__title">Semantic Memory</h3>
                         <span class="cyber-card__badge">SQL + VEC</span>
                     </div>
-                    <p>Powered by SQLite and the ultra-lightweight <code>sqlite-vec</code> extension. Shared global long-term memory across chats for continuous learning.</p>
+                    <p>Powered by SQLite and the ultra-lightweight <code>sqlite-vec</code> extension. Shared global
+                        long-term memory across chats for continuous learning.</p>
                 </div>
 
                 <!-- Office Document Generator -->
@@ -299,7 +315,8 @@
                         <h3 class="cyber-card__title">Office Generator</h3>
                         <span class="cyber-card__badge">OFFICE</span>
                     </div>
-                    <p>Compile formatted Word documents (<code>.docx</code>) with structured layouts, and Excel spreadsheets (<code>.xlsx</code>) with formula support, custom styling, and grid borders.</p>
+                    <p>Compile formatted Word documents (<code>.docx</code>) with structured layouts, and Excel
+                        spreadsheets (<code>.xlsx</code>) with formula support, custom styling, and grid borders.</p>
                 </div>
 
                 <!-- Background Task Scheduler -->
@@ -309,7 +326,8 @@
                         <h3 class="cyber-card__title">Task Scheduler</h3>
                         <span class="cyber-card__badge">AUTONOMOUS</span>
                     </div>
-                    <p>Automated background engine executes scheduled tasks in the background and sends execution reports/notifications directly to your Telegram channel.</p>
+                    <p>Automated background engine executes scheduled tasks in the background and sends execution
+                        reports/notifications directly to your Telegram channel.</p>
                 </div>
             </div>
         </div>
@@ -362,9 +380,10 @@
             <div class="section-header">
                 <h2 class="section-title">⚙️ Quick Start</h2>
             </div>
-            
+
             <p class="hero-subtitle" style="text-align: center; margin-bottom: var(--space-lg);">
-                Get your local agent up and running in less than a minute. No complex databases, Docker, or external dependencies required.
+                Get your local agent up and running in less than a minute. No complex databases, Docker, or external
+                dependencies required.
             </p>
 
             <div class="cyber-grid--2">
@@ -560,6 +579,38 @@ npm install</code></pre>
                 }, 2000);
             });
         }
+    </script>
+    <!-- Mobile nav toggle -->
+    <script>
+        (function () {
+            const burger = document.getElementById('navBurger');
+            const links = document.getElementById('navLinks');
+            if (!burger || !links) return;
+
+            burger.addEventListener('click', () => {
+                const isOpen = burger.classList.toggle('cyber-nav__burger--open');
+                links.classList.toggle('cyber-nav__links--open', isOpen);
+                burger.setAttribute('aria-expanded', isOpen);
+            });
+
+            // Close menu on link click
+            links.querySelectorAll('.cyber-nav__link').forEach(link => {
+                link.addEventListener('click', () => {
+                    burger.classList.remove('cyber-nav__burger--open');
+                    links.classList.remove('cyber-nav__links--open');
+                    burger.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // Close menu on outside click
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.cyber-nav')) {
+                    burger.classList.remove('cyber-nav__burger--open');
+                    links.classList.remove('cyber-nav__links--open');
+                    burger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
     </script>
 </body>
 

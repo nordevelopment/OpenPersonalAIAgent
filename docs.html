@@ -277,6 +277,11 @@
                 height: auto;
                 margin-bottom: var(--space-lg);
             }
+
+            .hero-title,
+            .docs-title {
+                font-size: var(--text-2xl);
+            }
         }
     </style>
 </head>
@@ -285,8 +290,11 @@
 
     <!-- Cyberpunk Navbar -->
     <nav class="cyber-nav">
-        <a href="index.html" class="cyber-nav__brand">PAIAgent</a>
-        <ul class="cyber-nav__links">
+        <a href="index.html" class="cyber-nav__brand">Open PAIAgent</a>
+        <button class="cyber-nav__burger" id="navBurger" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="cyber-nav__links" id="navLinks">
             <li><a href="index.html" class="cyber-nav__link">Home</a></li>
             <li><a href="docs.html" class="cyber-nav__link cyber-nav__link--active">Docs</a></li>
             <li><a href="https://github.com/nordevelopment/OpenPersonalAIAgent" class="cyber-nav__link"
@@ -299,7 +307,7 @@
     </nav>
 
     <!-- Header Section -->
-    <header class="docs-header cyber-scanlines cyber-scanlines--scroll">
+    <header class="docs-header">
         <div class="container">
             <h1 class="docs-title">PAIAgent // DOCUMENTATION</h1>
             <p class="docs-subtitle">Technical blueprint and system integration instructions for Open Personal AI Agent
@@ -336,7 +344,8 @@
                     </p>
                     <p>
                         Unlike solutions that require complex virtualization or multi-gigabyte container clusters,
-                        PAIAgent boots in less than a second and operates within a tiny memory footprint of 50-100 MB
+                        Open PAIAgent boots in less than a second and operates within a tiny memory footprint of 50-100
+                        MB
                         RAM.
                     </p>
                     <div class="cyber-alert">
@@ -375,9 +384,13 @@
                                 <span class="terminal-dot"></span>
                             </div>
                         </div>
-                        <pre><code>git clone https://github.com/nordevelopment/OpenPersonalAIAgent.git
-cd OpenPersonalAIAgent
-npm install</code></pre>
+                        <pre>
+                            <code>
+                                git clone https://github.com/nordevelopment/OpenPAIAgent.git
+cd OpenPAIAgent
+npm install
+                            </code>
+                        </pre>
                         <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
                             onclick="copyCode(this)">Copy</button>
                     </div>
@@ -507,7 +520,12 @@ npm install</code></pre>
                     </p>
                     <div class="cyber-alert">
                         <div class="cyber-alert__title">🔒 Sandbox Restriction & Size Limits</div>
-                        <p>The file system manager uses strict path resolution to prevent directory traversal attacks. Additionally, the agent enforces a safe file reading size limit (configured via <code>AI_MAX_FILE_READ_SIZE</code> in <code>config.ts</code>, defaulting to 1 MB) to prevent Out of Memory (OOM) failures and API context token spikes. Files exceeding the limit are cleanly truncated with a warning.</p>
+                        <p>The file system manager uses strict path resolution to prevent directory traversal attacks.
+                            Additionally, the agent enforces a safe file reading size limit (configured via
+                            <code>AI_MAX_FILE_READ_SIZE</code> in <code>config.ts</code>, defaulting to 1 MB) to prevent
+                            Out of Memory (OOM) failures and API context token spikes. Files exceeding the limit are
+                            cleanly truncated with a warning.
+                        </p>
                     </div>
 
                     <h3>Web Scraper</h3>
@@ -519,16 +537,28 @@ npm install</code></pre>
 
                     <h3>Office Document Generator</h3>
                     <p>
-                        Allows the AI to generate natively-formatted spreadsheets and documents directly in the workspace folder.
+                        Allows the AI to generate natively-formatted spreadsheets and documents directly in the
+                        workspace folder.
                     </p>
                     <ul>
-                        <li><strong>Excel Spreadsheets (<code>generate_excel</code>)</strong>: The model receives a structured JSON schema mapping sheets, columns, and rows (including formulas like <code>SUM</code>). It compiles a stylized workbook using <code>exceljs</code> with custom colors, borders, and auto-adjusted columns.</li>
-                        <li><strong>Word Documents (<code>generate_docx</code>)</strong>: The agent compiles paragraphs with alignments (left, center, right, justify), text styling (bold, italics), hierarchical headings, and layout tables into formatted <code>.docx</code> binaries using the <code>docx</code> builder.</li>
+                        <li><strong>Excel Spreadsheets (<code>generate_excel</code>)</strong>: The model receives a
+                            structured JSON schema mapping sheets, columns, and rows (including formulas like
+                            <code>SUM</code>). It compiles a stylized workbook using <code>exceljs</code> with custom
+                            colors, borders, and auto-adjusted columns.
+                        </li>
+                        <li><strong>Word Documents (<code>generate_docx</code>)</strong>: The agent compiles paragraphs
+                            with alignments (left, center, right, justify), text styling (bold, italics), hierarchical
+                            headings, and layout tables into formatted <code>.docx</code> binaries using the
+                            <code>docx</code> builder.
+                        </li>
                     </ul>
 
                     <h3>Background Task Scheduler</h3>
                     <p>
-                        Enables autonomous agent executions. Users can schedule tasks to run at a specific timestamp or continuously on a background interval. Automated tasks (<code>is_auto = 1</code>) run on the server, log actions, and send status notifications (started, completed, or failed with logs) directly to the Telegram bot owner.
+                        Enables autonomous agent executions. Users can schedule tasks to run at a specific timestamp or
+                        continuously on a background interval. Automated tasks (<code>is_auto = 1</code>) run on the
+                        server, log actions, and send status notifications (started, completed, or failed with logs)
+                        directly to the Telegram bot owner.
                     </p>
 
                     <h3>Image Generation</h3>
@@ -620,6 +650,36 @@ npm install</code></pre>
             changeActiveLink();
             window.addEventListener('scroll', changeActiveLink);
         });
+    </script>
+    <!-- Mobile nav toggle -->
+    <script>
+        (function () {
+            const burger = document.getElementById('navBurger');
+            const links = document.getElementById('navLinks');
+            if (!burger || !links) return;
+
+            burger.addEventListener('click', () => {
+                const isOpen = burger.classList.toggle('cyber-nav__burger--open');
+                links.classList.toggle('cyber-nav__links--open', isOpen);
+                burger.setAttribute('aria-expanded', isOpen);
+            });
+
+            links.querySelectorAll('.cyber-nav__link').forEach(link => {
+                link.addEventListener('click', () => {
+                    burger.classList.remove('cyber-nav__burger--open');
+                    links.classList.remove('cyber-nav__links--open');
+                    burger.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.cyber-nav')) {
+                    burger.classList.remove('cyber-nav__burger--open');
+                    links.classList.remove('cyber-nav__links--open');
+                    burger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
     </script>
 </body>
 

@@ -6,15 +6,15 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/commits/main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-<a href="https://nordevelopment.github.io/OpenPersonalAIAgent/">OpenPAIAgent project page</a>
+<a href="https://nordevelopment.github.io/OpenPAIAgent">Open PAIAgent project page</a>
 
-A lightweight, fast, and personal AI agent (**OpenPAIAgent**) running locally on your computer or server. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
+A lightweight, fast, and personal AI agent (**Open PAIAgent**) running locally on your computer or server. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
 
 ---
 
 ## 🧠 Key Architectural Decisions
 
-OpenPAIAgent is built with a clear focus on lightweight, efficient, and transparent AI engineering:
+Open PAIAgent is built with a clear focus on lightweight, efficient, and transparent AI engineering:
 
 * **Why No LangChain / LlamaIndex?**
   * **Complete State Control**: The agent's cognitive loop (think-act-evaluate) is written in vanilla TypeScript, ensuring complete control over LLM tool-calling and historical state.
@@ -73,8 +73,8 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/nordevelopment/OpenPersonalAIAgent
-or you can download the zip file from https://github.com/nordevelopment/OpenPersonalAIAgent
+git clone https://github.com/nordevelopment/OpenPAIAgent
+or you can download the zip file from https://github.com/nordevelopment/OpenPAIAgent
 
 npm install
 ```
