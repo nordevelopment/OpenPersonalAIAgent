@@ -15,8 +15,10 @@ Open PAIAgent is a high-speed, zero-bloat open-source personal AI agent built fo
 ## ⚡Features
 *   **💬 Dual Interfaces**: A beautiful cyberpunk-themed Web UI + Remote chat access via a Telegram bot.
 *   **🧠 Modular System Prompt**: The agent's personality and instructions are compiled dynamically from simple Markdown files (`Agent.md`, `Identity.md`, `User.md`, `Memory.md`).
-*   **⚡ Dynamic Agent Skills**: Save context tokens by loading instructions conditionally. Define modular skills inside `agents/<agentId>/skills/*.md`. If the user's query matches the keywords defined in the file's header (e.g., `Keywords: code, coding`), the corresponding instructions are dynamically injected into the system prompt.
-*   **⚙️ Web Settings Panel (Setup Wizard)**: Forget manually editing `.env` files. On first launch, the app automatically redirects you to a system settings page to input your API keys. Configurations are saved securely in a local, gitignored `config.json`.
+*   **⚡ Dynamic Agent Skills**: Save LLM context tokens by loading specialized prompt instructions conditionally. Skills live as modular Markdown files in `agents/<agentId>/skills/*.md`. When a query matches header keywords (e.g., `Keywords: amazon, wildberries, temu, code`), instructions are dynamically injected into the system prompt. Comes with pre-built skills for:
+    *   **🛒 E-commerce & Local Search**: Specialized URL structures, price sorting, and parsing rules for **Amazon**, **Wildberries**, **Ozon**, **Temu**, and **List.am**.
+    *   **💻 Software Engineering**: Refactoring, debugging, and strict code style instructions.
+    *   **🎨 Content Writing & Design**: Copywriting, UI/UX guidelines, and image generation prompt optimization.
 *   **👁️ AI Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
 *   **🔧 Powerful Tool Execution (Function Calling)**:
     *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
